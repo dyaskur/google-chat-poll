@@ -12,7 +12,7 @@
 # below:
 .git
 .gitignore
-.readme.md
+readme.md
 node_modules
 .idea
 # I don't know why, if we upload package-lock.json, will return error:

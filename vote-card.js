@@ -31,15 +31,14 @@ function progressBarText(voteCount, totalVotes) {
 function choice(index, text, voteCount, totalVotes, state) {
   const progressBar = progressBarText(voteCount, totalVotes);
   return {
-    keyValue: {
+    decoratedText: {
       bottomLabel: `${progressBar} ${voteCount}`,
-      content: text,
+      text: text,
       button: {
-        textButton: {
           text: 'vote',
           onClick: {
             action: {
-              actionMethodName: 'vote',
+              function: 'vote',
               parameters: [
                 {
                   key: 'state',
@@ -52,7 +51,6 @@ function choice(index, text, voteCount, totalVotes, state) {
               ],
             },
           },
-        },
       },
     },
   };
@@ -71,7 +69,7 @@ function header(topic, author) {
     subtitle: `Posted by ${author}`,
     imageUrl:
         'https://raw.githubusercontent.com/google/material-design-icons/master/png/social/poll/materialicons/24dp/2x/baseline_poll_black_24dp.png',
-    imageStyle: 'AVATAR',
+    imageType: 'CIRCLE',
   };
 }
 
@@ -101,14 +99,16 @@ function buildVoteCard(poll) {
     widgets.push(choice(i, poll.choices[i], votes, totalVotes, state));
   }
 
-  return {
-    header: header(poll.topic, poll.author.displayName),
-    sections: [
+  const cardsV2 =
       {
-        widgets,
-      },
-    ],
-  };
+        'cardId': 'unique-card-id',
+        'card': {
+          header: header(poll.topic, poll.author.displayName),
+          sections: [{widgets}],
+        },
+      };
+  console.log('cardsV2', JSON.stringify(cardsV2));
+  return cardsV2;
 }
 
 exports.buildVoteCard = buildVoteCard;

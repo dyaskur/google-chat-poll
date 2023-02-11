@@ -19,9 +19,12 @@ exports.app = async (req, res) => {
       reply = showConfigurationForm(event);
     }
   } else if (event.type === 'CARD_CLICKED') {
-    if (event.action?.actionMethodName === 'start_poll') {
+    // todo: remove actionMethodName
+    // this is only used to support old message(Cardv1)
+    const action = event.common?.invokedFunction ?? event.action?.actionMethodName;
+    if (action === 'start_poll') {
       reply = await startPoll(event);
-    } else if (event.action?.actionMethodName === 'vote') {
+    } else if (action === 'vote') {
         reply = recordVote(event);
     }
   }
@@ -98,7 +101,7 @@ async function startPoll(event) {
     votes: {},
   });
   const message = {
-    cards: [pollCard],
+    cardsV2: [pollCard],
   };
   const request = {
     parent: event.space.name,
@@ -151,6 +154,6 @@ function recordVote(event) {
     actionResponse: {
       type: 'UPDATE_MESSAGE',
     },
-    cards: [card],
+    cardsV2: [card],
   }
 }
