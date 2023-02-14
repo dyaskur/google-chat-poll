@@ -1,0 +1,75 @@
+{
+  "sections": [
+    {
+      "widgets": [
+        {
+          "textParagraph": {
+            "text": "Enter the poll topic and up to 5 choices in the poll. Blank options will be omitted."
+          }
+        },
+        {
+          "textInput": {
+            "label": "Topic",
+            "type": "MULTIPLE_LINE",
+            "name": "topic",
+            "value": "Who is the most handsome AI?"
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 1",
+            "type": "SINGLE_LINE",
+            "name": "option0",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 2",
+            "type": "SINGLE_LINE",
+            "name": "option1",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 3",
+            "type": "SINGLE_LINE",
+            "name": "option2",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 4",
+            "type": "SINGLE_LINE",
+            "name": "option3",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 5",
+            "type": "SINGLE_LINE",
+            "name": "option4",
+            "value": ""
+          }
+        },
+        {
+          "buttonList": {
+            "buttons": [
+              {
+                "text": "Submit",
+                "onClick": {
+                  "action": {
+                    "function": "start_poll"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

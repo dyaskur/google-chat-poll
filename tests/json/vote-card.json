@@ -1,0 +1,134 @@
+{
+  "header": {
+    "title": "What is the most beautiful worms?",
+    "subtitle": "Posted by undefined",
+    "imageUrl": "https://raw.githubusercontent.com/google/material-design-icons/master/png/social/poll/materialicons/24dp/2x/baseline_poll_black_24dp.png",
+    "imageType": "CIRCLE"
+  },
+  "sections": [
+    {
+      "widgets": [
+        {
+          "decoratedText": {
+            "bottomLabel": " 0",
+            "text": "Feather Duster Worm",
+            "button": {
+              "text": "vote",
+              "onClick": {
+                "action": {
+                  "function": "vote",
+                  "parameters": [
+                    {
+                      "key": "state",
+                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":\"Dyas Yaskur\",\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{}}"
+                    },
+                    {
+                      "key": "index",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "decoratedText": {
+            "bottomLabel": " 0",
+            "text": "Christmas Tree Worm",
+            "button": {
+              "text": "vote",
+              "onClick": {
+                "action": {
+                  "function": "vote",
+                  "parameters": [
+                    {
+                      "key": "state",
+                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":\"Dyas Yaskur\",\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{}}"
+                    },
+                    {
+                      "key": "index",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "decoratedText": {
+            "bottomLabel": " 0",
+            "text": "Coco Worm",
+            "button": {
+              "text": "vote",
+              "onClick": {
+                "action": {
+                  "function": "vote",
+                  "parameters": [
+                    {
+                      "key": "state",
+                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":\"Dyas Yaskur\",\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{}}"
+                    },
+                    {
+                      "key": "index",
+                      "value": "2"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "decoratedText": {
+            "bottomLabel": " 0",
+            "text": "Bearded Fireworm",
+            "button": {
+              "text": "vote",
+              "onClick": {
+                "action": {
+                  "function": "vote",
+                  "parameters": [
+                    {
+                      "key": "state",
+                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":\"Dyas Yaskur\",\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{}}"
+                    },
+                    {
+                      "key": "index",
+                      "value": "3"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "decoratedText": {
+            "bottomLabel": " 0",
+            "text": "Giant Tube Worm",
+            "button": {
+              "text": "vote",
+              "onClick": {
+                "action": {
+                  "function": "vote",
+                  "parameters": [
+                    {
+                      "key": "state",
+                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":\"Dyas Yaskur\",\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{}}"
+                    },
+                    {
+                      "key": "index",
+                      "value": "4"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

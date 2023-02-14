@@ -4,3 +4,10 @@
 What I updated are:
 
 - Upgrade Card v1 to Card v2
+- Unit Test (ready to TDD)
+
+Todo:
+
+ - Anonymous vote
+ - Save voter names
+ - 
