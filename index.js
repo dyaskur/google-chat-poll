@@ -1,6 +1,7 @@
-const { buildConfigurationForm, MAX_NUM_OF_OPTIONS } = require('./config-form');
-const { buildVoteCard } = require('./vote-card');
+const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./config-form');
+const {buildVoteCard} = require('./vote-card');
 const {google} = require('googleapis');
+const {saveVotes} = require('./helpers/vote');
 
 /**
  * App entry point.
@@ -29,7 +30,7 @@ exports.app = async (req, res) => {
     }
   }
   res.json(reply);
-}
+};
 
 /**
  * Handles the slash command to display the config form.
@@ -67,10 +68,13 @@ async function startPoll(event) {
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
   const choices = [];
+  const votes = {};
+
   for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
     const choice = formValues?.[`option${i}`]?.stringInputs.value[0]?.trim();
     if (choice) {
       choices.push(choice);
+      votes[i] = [];
     }
   }
 
@@ -98,7 +102,7 @@ async function startPoll(event) {
     topic: topic,
     author: event.user,
     choices: choices,
-    votes: {},
+    votes: votes,
   });
   const message = {
     cardsV2: [pollCard],
@@ -143,10 +147,12 @@ function recordVote(event) {
 
   const choice = parseInt(parameters['index']);
   const userId = event.user.name;
+  const userName = event.user.displayName;
+  const voter = {uid: userId, name: userName};
   const state = JSON.parse(parameters['state']);
 
   // Add or update the user's selected option
-  state.votes[userId] = choice;
+  state.votes = saveVotes(choice, voter, state.votes)
 
   const card = buildVoteCard(state);
   return {
@@ -155,5 +161,6 @@ function recordVote(event) {
       type: 'UPDATE_MESSAGE',
     },
     cardsV2: [card],
-  }
+  };
 }
+

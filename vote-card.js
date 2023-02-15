@@ -1,21 +1,4 @@
-/**
- * Creates a small progress bar to show percent of votes for an option. Since
- * width is limited, the percentage is scaled to 20 steps (5% increments).
- *
- * @param {number} voteCount - Number of votes for this option
- * @param {number} totalVotes - Total votes cast in the poll
- * @returns {string} Text snippet with bar and vote totals
- */
-function progressBarText(voteCount, totalVotes) {
-  if (voteCount === 0 || totalVotes === 0) {
-    return '';
-  }
-
-  // For progress bar, calculate share of votes and scale it
-  const percentage = (voteCount * 100) / totalVotes;
-  const progress = Math.round((percentage / 100) * 20);
-  return '▀'.repeat(progress);
-}
+const {progressBarText} = require('./helpers/vote');
 
 /**
  * Builds a line in the card for a single choice, including
@@ -35,22 +18,22 @@ function choice(index, text, voteCount, totalVotes, state) {
       bottomLabel: `${progressBar} ${voteCount}`,
       text: text,
       button: {
-          text: 'vote',
-          onClick: {
-            action: {
-              function: 'vote',
-              parameters: [
-                {
-                  key: 'state',
-                  value: state,
-                },
-                {
-                  key: 'index',
-                  value: index.toString(10),
-                },
-              ],
-            },
+        text: 'vote',
+        onClick: {
+          action: {
+            function: 'vote',
+            parameters: [
+              {
+                key: 'state',
+                value: state,
+              },
+              {
+                key: 'index',
+                value: index.toString(10),
+              },
+            ],
           },
+        },
       },
     },
   };
@@ -80,23 +63,32 @@ function header(topic, author) {
  * @param {object} poll.author - User that submitted the poll
  * @param {string} poll.topic - Topic of poll
  * @param {string[]} poll.choices - Text of choices to display to users
- * @param {object} poll.votes - Map of cast votes keyed by user ids
+ * @param {object} poll.votes - Map of cast votes keyed by choice index
  * @returns {object} card
  */
 function buildVoteCard(poll) {
-  const widgets = [];
+  const sections = [];
   const state = JSON.stringify(poll);
-  const totalVotes = Object.keys(poll.votes).length;
-
+  const totalVotes = Object.values(poll.votes).reduce((sum, vote) => {
+    return sum + vote.length;
+  }, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
-    // Count votes for this choice
-    const votes = Object.values(poll.votes).reduce((sum, vote) => {
-      if (vote === i) {
-        return sum + 1;
-      }
-      return sum;
-    }, 0);
-    widgets.push(choice(i, poll.choices[i], votes, totalVotes, state));
+    const section = {
+      'widgets': [
+        choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state),
+      ],
+    };
+    if (poll.votes[i].length > 0) {
+      section.collapsible = true;
+      section.uncollapsibleWidgetsCount = 1;
+      section.widgets.push({
+        'textParagraph': {
+          'text': poll.votes[i].map(u => u.name).join(', '),
+        },
+      });
+    }
+
+    sections.push(section);
   }
 
   const cardsV2 =
@@ -104,7 +96,7 @@ function buildVoteCard(poll) {
         'cardId': 'unique-card-id',
         'card': {
           header: header(poll.topic, poll.author.displayName),
-          sections: [{widgets}],
+          sections,
         },
       };
   console.log('cardsV2', JSON.stringify(cardsV2));
