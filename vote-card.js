@@ -1,43 +1,5 @@
-const {progressBarText} = require('./helpers/vote');
+const {progressBarText, choiceSection} = require('./helpers/vote');
 
-/**
- * Builds a line in the card for a single choice, including
- * the current totals and voting action.
- *
- * @param {number} index - Index to identify the choice
- * @param {string|undefined} value - Text of the choice
- * @param {number} voteCount - Current number of votes cast for this item
- * @param {number} totalVotes - Total votes cast in poll
- * @param {string} state - Serialized state to send in events
- * @returns {object} card widget
- */
-function choice(index, text, voteCount, totalVotes, state) {
-  const progressBar = progressBarText(voteCount, totalVotes);
-  return {
-    decoratedText: {
-      bottomLabel: `${progressBar} ${voteCount}`,
-      text: text,
-      button: {
-        text: 'vote',
-        onClick: {
-          action: {
-            function: 'vote',
-            parameters: [
-              {
-                key: 'state',
-                value: state,
-              },
-              {
-                key: 'index',
-                value: index.toString(10),
-              },
-            ],
-          },
-        },
-      },
-    },
-  };
-}
 
 /**
  * Builds the card header including the question and author details.
@@ -64,6 +26,7 @@ function header(topic, author) {
  * @param {string} poll.topic - Topic of poll
  * @param {string[]} poll.choices - Text of choices to display to users
  * @param {object} poll.votes - Map of cast votes keyed by choice index
+ * @param {boolean} poll.anon - Is anonymous?(will save voter name or not)
  * @returns {object} card
  */
 function buildVoteCard(poll) {
@@ -73,20 +36,7 @@ function buildVoteCard(poll) {
     return sum + vote.length;
   }, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
-    const section = {
-      'widgets': [
-        choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state),
-      ],
-    };
-    if (poll.votes[i].length > 0) {
-      section.collapsible = true;
-      section.uncollapsibleWidgetsCount = 1;
-      section.widgets.push({
-        'textParagraph': {
-          'text': poll.votes[i].map(u => u.name).join(', '),
-        },
-      });
-    }
+    const section = choiceSection(i, poll, totalVotes, state)
 
     sections.push(section);
   }

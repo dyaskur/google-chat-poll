@@ -1,6 +1,8 @@
 {
   "sections": [
     {
+      "collapsible": true,
+      "uncollapsibleWidgetsCount": 6,
       "widgets": [
         {
           "textParagraph": {
@@ -56,20 +58,74 @@
           }
         },
         {
-          "buttonList": {
-            "buttons": [
-              {
-                "text": "Submit",
-                "onClick": {
-                  "action": {
-                    "function": "start_poll"
-                  }
-                }
-              }
-            ]
+          "textInput": {
+            "label": "Option 6",
+            "type": "SINGLE_LINE",
+            "name": "option5",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 7",
+            "type": "SINGLE_LINE",
+            "name": "option6",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 8",
+            "type": "SINGLE_LINE",
+            "name": "option7",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 9",
+            "type": "SINGLE_LINE",
+            "name": "option8",
+            "value": ""
+          }
+        },
+        {
+          "textInput": {
+            "label": "Option 10",
+            "type": "SINGLE_LINE",
+            "name": "option9",
+            "value": ""
           }
         }
       ]
+    },
+    {
+      "widgets": [
+        {
+          "decoratedText": {
+            "bottomLabel": "If this checked the voters name will be not shown",
+            "text": "Anonymous voter",
+            "switchControl": {
+              "controlType": "SWITCH",
+              "name": "is_anonymous",
+              "value": "1",
+              "selected": true
+            }
+          },
+          "horizontalAlignment": "CENTER"
+        }
+      ]
     }
-  ]
+  ],
+  "fixedFooter": {
+    "primaryButton": {
+      "text": "Submit",
+      "onClick": {
+        "action": {
+          "function": "start_poll"
+        }
+      }
+    }
+  }
 }
+

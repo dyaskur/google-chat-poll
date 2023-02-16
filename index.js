@@ -8,7 +8,7 @@ const {saveVotes} = require('./helpers/vote');
  */
 exports.app = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
-      res.status(400).send('')
+    res.status(400).send('');
   }
   console.log('the request body:', JSON.stringify(req.body));
   const event = req.body;
@@ -22,12 +22,16 @@ exports.app = async (req, res) => {
   } else if (event.type === 'CARD_CLICKED') {
     // todo: remove actionMethodName
     // this is only used to support old message(Cardv1)
-    const action = event.common?.invokedFunction ?? event.action?.actionMethodName;
+    const action = event.common?.invokedFunction ??
+        event.action?.actionMethodName;
     if (action === 'start_poll') {
       reply = await startPoll(event);
     } else if (action === 'vote') {
-        reply = recordVote(event);
+      reply = recordVote(event);
     }
+    // else if (event.common?.invokedFunction === "openDialog") {
+    //   reply = openDialog(event);
+    // }
   }
   res.json(reply);
 };
@@ -67,6 +71,8 @@ async function startPoll(event) {
   // Get the form values
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
+  const is_anonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
+      '1';
   const choices = [];
   const votes = {};
 
@@ -103,6 +109,7 @@ async function startPoll(event) {
     author: event.user,
     choices: choices,
     votes: votes,
+    anon: is_anonymous,
   });
   const message = {
     cardsV2: [pollCard],
@@ -152,7 +159,7 @@ function recordVote(event) {
   const state = JSON.parse(parameters['state']);
 
   // Add or update the user's selected option
-  state.votes = saveVotes(choice, voter, state.votes)
+  state.votes = saveVotes(choice, voter, state.votes, state.anon);
 
   const card = buildVoteCard(state);
   return {
@@ -164,3 +171,77 @@ function recordVote(event) {
   };
 }
 
+// /**
+//  * Opens and starts a dialog that allows users to add details about a contact.
+//  *
+//  * @param {object} event the event object from Google Chat.
+//  *
+//  * @return {object} open a dialog.
+//  */
+// function openDialog(event) {
+//   return {
+//     "action_response": {
+//         "type": "DIALOG",
+//         "dialog_action": {
+//           "dialog": {
+//             "body": {
+//               "sections": [
+//                 {
+//                   "header": "Add new contact",
+//                   "widgets": [
+//                     {
+//                       "textInput": {
+//                         "label": "Name",
+//                         "type": "SINGLE_LINE",
+//                         "name": "name"
+//                       }
+//                     },
+//                     {
+//                       "textInput": {
+//                         "label": "Address",
+//                         "type": "MULTIPLE_LINE",
+//                         "name": "address"
+//                       }
+//                     },
+//                     {
+//                       "decoratedText": {
+//                         "text": "Add to favorites",
+//                         "switchControl": {
+//                           "controlType": "SWITCH",
+//                           "name": "saveFavorite"
+//                         }
+//                       }
+//                     },
+//                     {
+//                       "decoratedText": {
+//                         "text": "Merge with existing contacts",
+//                         "switchControl": {
+//                           "controlType": "SWITCH",
+//                           "name": "mergeContact",
+//                           "selected": true
+//                         }
+//                       }
+//                     },
+//                     {
+//                       "buttonList": {
+//                         "buttons": [
+//                           {
+//                             "text": "Next",
+//                             "onClick": {
+//                               "action": {
+//                                 "function": "openSequentialDialog"
+//                               }
+//                             }
+//                           }
+//                         ]
+//                       }
+//                     }
+//                   ]
+//                 }
+//               ]
+//             }
+//           }
+//         }
+//     }
+//   };
+// };

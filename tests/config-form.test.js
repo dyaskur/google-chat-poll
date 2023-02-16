@@ -5,7 +5,6 @@ test('build configuration form', () => {
     topic: "Who is the most handsome AI?",
     choices: [],
   });
-  console.log(JSON.stringify(dialog))
   const json = require('./json/configuration_form.json')
   expect(dialog).toStrictEqual(json);
 });

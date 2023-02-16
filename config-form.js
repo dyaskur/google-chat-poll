@@ -1,5 +1,5 @@
 /** Upper bounds on number of choices to present. */
-const MAX_NUM_OF_OPTIONS = 5;
+const MAX_NUM_OF_OPTIONS = 10;
 
 /**
  * Build widget with instructions on how to use form.
@@ -54,19 +54,15 @@ function topicInput(topic) {
  *
  * @returns {object} card widget
  */
-function buttons() {
+function fixedFooter() {
   return {
-    buttonList: {
-      buttons: [
-        {
-          text: 'Submit',
-          onClick: {
-            action: {
-              function: 'start_poll',
-            },
-          },
+    'primaryButton': {
+      'text': 'Submit',
+      'onClick': {
+        'action': {
+          'function': 'start_poll',
         },
-      ],
+      },
     },
   };
 }
@@ -87,15 +83,34 @@ function buildConfigurationForm(options) {
     const choice = options?.choices?.[i];
     widgets.push(optionInput(i, choice));
   }
-  widgets.push(buttons());
 
   // Assemble the card
   return {
-    sections: [
+    'sections': [
       {
+        'collapsible': true,
+        'uncollapsibleWidgetsCount': 6,
         widgets,
       },
+      {
+        'widgets': [
+          {
+            'decoratedText': {
+              'bottomLabel': 'If this checked the voters name will be not shown',
+              'text': 'Anonymous voter',
+              'switchControl': {
+                'controlType': 'SWITCH',
+                'name': 'is_anonymous',
+                'value': '1',
+                'selected': true,
+              },
+            },
+            'horizontalAlignment': 'CENTER',
+          },
+        ],
+      },
     ],
+    'fixedFooter': fixedFooter(),
   };
 }
 

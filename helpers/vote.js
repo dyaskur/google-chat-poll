@@ -5,9 +5,10 @@
  * @param {number} choice - The choice index
  * @param {object} voter - The voter
  * @param {object} votes - Total votes cast in the poll
+ * @param {boolean} isAnonymous - save name or not
  * @returns {object} Map of cast votes keyed by choice index
  */
-function saveVotes(choice, voter, votes) {
+function saveVotes(choice, voter, votes, isAnonymous = false) {
 
   Object.keys(votes).forEach(function(choice_index) {
     if (votes[choice_index]) {
@@ -18,6 +19,9 @@ function saveVotes(choice, voter, votes) {
     }
 
   });
+  if (isAnonymous) {
+    delete voter.name;
+  }
   votes[choice].push(voter);
 
   return votes;
@@ -38,9 +42,77 @@ function progressBarText(voteCount, totalVotes) {
 
   // For progress bar, calculate share of votes and scale it
   const percentage = (voteCount * 100) / totalVotes;
-  const progress = Math.round((percentage / 100) * 30);
+  const progress = Math.round((percentage / 100) * 35);
   return '▀'.repeat(progress);
 }
 
-exports.saveVoter = saveVotes;
+/**
+ * Builds a line in the card for a single choice, including
+ * the current totals and voting action.
+ *
+ * @param {number} i - Index to identify the choice
+ * @param {object} poll - Text of the choice
+ * @param {number} totalVotes - Total votes cast in poll
+ * @param {string} state - Serialized state to send in events
+ * @returns {object} card section
+ */
+function choiceSection(i, poll, totalVotes, state) {
+  const section = {
+    'widgets': [
+      choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state),
+    ],
+  };
+  if (poll.votes[i].length > 0 && !poll.anon) {
+    section.collapsible = true;
+    section.uncollapsibleWidgetsCount = 1;
+    section.widgets.push({
+      'textParagraph': {
+        'text': poll.votes[i].map(u => u.name).join(', '),
+      },
+    });
+  }
+  return section;
+}
+
+/**
+ * Builds a line in the card for a single choice, including
+ * the current totals and voting action.
+ *
+ * @param {number} index - Index to identify the choice
+ * @param {string|undefined} text - Text of the choice
+ * @param {number} voteCount - Current number of votes cast for this item
+ * @param {number} totalVotes - Total votes cast in poll
+ * @param {string} state - Serialized state to send in events
+ * @returns {object} card widget
+ */
+function choice(index, text, voteCount, totalVotes, state) {
+  const progressBar = progressBarText(voteCount, totalVotes);
+  return {
+    decoratedText: {
+      bottomLabel: `${progressBar} ${voteCount}`,
+      text: text,
+      button: {
+        text: 'vote',
+        onClick: {
+          action: {
+            function: 'vote',
+            parameters: [
+              {
+                key: 'state',
+                value: state,
+              },
+              {
+                key: 'index',
+                value: index.toString(10),
+              },
+            ],
+          },
+        },
+      },
+    },
+  };
+}
+
+exports.saveVotes = saveVotes;
 exports.progressBarText = progressBarText;
+exports.choiceSection = choiceSection;
