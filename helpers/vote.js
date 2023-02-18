@@ -22,7 +22,10 @@ function saveVotes(choice, voter, votes, isAnonymous = false) {
   if (isAnonymous) {
     delete voter.name;
   }
-  votes[choice].push(voter);
+  if (votes[choice])
+    votes[choice].push(voter);
+  else
+    votes[choice] = [voter]
 
   return votes;
 }
@@ -57,6 +60,9 @@ function progressBarText(voteCount, totalVotes) {
  * @returns {object} card section
  */
 function choiceSection(i, poll, totalVotes, state) {
+  if(poll.votes[i] === undefined){
+    poll.votes[i] = []
+  }
   const section = {
     'widgets': [
       choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state),

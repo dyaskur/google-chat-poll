@@ -1,5 +1,4 @@
-const {progressBarText, choiceSection} = require('./helpers/vote');
-
+const {choiceSection} = require('./helpers/vote');
 
 /**
  * Builds the card header including the question and author details.
@@ -36,21 +35,39 @@ function buildVoteCard(poll) {
     return sum + vote.length;
   }, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
-    const section = choiceSection(i, poll, totalVotes, state)
+    const section = choiceSection(i, poll, totalVotes, state);
 
     sections.push(section);
   }
-
-  const cardsV2 =
+  sections.push(
       {
-        'cardId': 'unique-card-id',
-        'card': {
-          header: header(poll.topic, poll.author.displayName),
-          sections,
-        },
-      };
-  console.log('cardsV2', JSON.stringify(cardsV2));
-  return cardsV2;
+        'widgets': [
+          {
+            'buttonList': {
+              'buttons': [
+                {
+                  'text': 'Add Option',
+                  'onClick': {
+                    'action': {
+                      'function': 'add_option_form',
+                      'interaction': 'OPEN_DIALOG',
+                      'parameters': [],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+
+  return {
+    'cardId': 'unique-card-id',
+    'card': {
+      header: header(poll.topic, poll.author.displayName),
+      sections,
+    },
+  };
 }
 
 exports.buildVoteCard = buildVoteCard;

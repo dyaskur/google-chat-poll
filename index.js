@@ -1,7 +1,8 @@
 const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./config-form');
 const {buildVoteCard} = require('./vote-card');
-const {google} = require('googleapis');
 const {saveVotes} = require('./helpers/vote');
+const {buildAddOptionForm} = require('./add-option-form');
+const {callMessageApi} = require('./helpers/api');
 
 /**
  * App entry point.
@@ -28,11 +29,13 @@ exports.app = async (req, res) => {
       reply = await startPoll(event);
     } else if (action === 'vote') {
       reply = recordVote(event);
+    } else if (action === 'add_option_form') {
+      reply = addOptionForm(event);
+    } else if (action === 'add_option') {
+      reply = await saveOption(event);
     }
-    // else if (event.common?.invokedFunction === "openDialog") {
-    //   reply = openDialog(event);
-    // }
   }
+  console.log('the response body', JSON.stringify(reply));
   res.json(reply);
 };
 
@@ -118,15 +121,7 @@ async function startPoll(event) {
     parent: event.space.name,
     requestBody: message,
   };
-  // Use default credentials (service account)
-  const credentials = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/chat.bot'],
-  });
-  const chatApi = google.chat({
-    version: 'v1',
-    auth: credentials,
-  });
-  await chatApi.spaces.messages.create(request);
+  await callMessageApi('create', request);
 
   // Close dialog
   return {
@@ -171,77 +166,81 @@ function recordVote(event) {
   };
 }
 
-// /**
-//  * Opens and starts a dialog that allows users to add details about a contact.
-//  *
-//  * @param {object} event the event object from Google Chat.
-//  *
-//  * @return {object} open a dialog.
-//  */
-// function openDialog(event) {
-//   return {
-//     "action_response": {
-//         "type": "DIALOG",
-//         "dialog_action": {
-//           "dialog": {
-//             "body": {
-//               "sections": [
-//                 {
-//                   "header": "Add new contact",
-//                   "widgets": [
-//                     {
-//                       "textInput": {
-//                         "label": "Name",
-//                         "type": "SINGLE_LINE",
-//                         "name": "name"
-//                       }
-//                     },
-//                     {
-//                       "textInput": {
-//                         "label": "Address",
-//                         "type": "MULTIPLE_LINE",
-//                         "name": "address"
-//                       }
-//                     },
-//                     {
-//                       "decoratedText": {
-//                         "text": "Add to favorites",
-//                         "switchControl": {
-//                           "controlType": "SWITCH",
-//                           "name": "saveFavorite"
-//                         }
-//                       }
-//                     },
-//                     {
-//                       "decoratedText": {
-//                         "text": "Merge with existing contacts",
-//                         "switchControl": {
-//                           "controlType": "SWITCH",
-//                           "name": "mergeContact",
-//                           "selected": true
-//                         }
-//                       }
-//                     },
-//                     {
-//                       "buttonList": {
-//                         "buttons": [
-//                           {
-//                             "text": "Next",
-//                             "onClick": {
-//                               "action": {
-//                                 "function": "openSequentialDialog"
-//                               }
-//                             }
-//                           }
-//                         ]
-//                       }
-//                     }
-//                   ]
-//                 }
-//               ]
-//             }
-//           }
-//         }
-//     }
-//   };
-// };
+/**
+ * Opens and starts a dialog that allows users to add details about a contact.
+ *
+ * @param {object} event the event object from Google Chat.
+ *
+ * @return {object} open a dialog.
+ */
+function addOptionForm(event) {
+
+  const stateJson = event.message.cardsV2[0].card.sections[0].widgets[0].decoratedText.button.onClick.action.parameters[0].value;
+  const state = JSON.parse(stateJson);
+  const dialog = buildAddOptionForm(state, event.message.thread);
+  return {
+    actionResponse: {
+      type: 'DIALOG',
+      dialogAction: {
+        dialog: {
+          body: dialog,
+        },
+      },
+    },
+  };
+}
+;
+
+/**
+ * Handle the custom vote action. Updates the state to record
+ * the user's vote then rerenders the card.
+ *
+ * @param {object} event - chat event
+ * @returns {object} Response to send back to Chat
+ */
+async function saveOption(event) {
+  const userId = event.user.name;
+  const userName = event.user.displayName;
+  const user = {uid: userId, name: userName};
+
+  const parameters = event.common?.parameters;
+  const state = JSON.parse(parameters['state']);
+  const thread = JSON.parse(parameters['thread']);
+
+  console.log('thread', thread, event.message.thread);
+  const formValues = event.common?.formInputs;
+  const optionValue = formValues?.['value']?.stringInputs.value[0]?.trim();
+  state.choices.push(optionValue);
+
+  const card = buildVoteCard(state);
+  const message = {
+    cardsV2: [card],
+  };
+  const request = {
+    name: event.message.name,
+    requestBody: message,
+    updateMask: 'cardsV2',
+  };
+  await callMessageApi('update', request);
+  // Close dialog
+  return {
+    actionResponse: {
+      type: 'DIALOG',
+      dialogAction: {
+        actionStatus: {
+          statusCode: 'OK',
+          userFacingMessage: 'Option is added',
+        },
+      },
+    },
+  };
+
+  // return {
+  //   thread: thread,
+  //   name: event.message.name,
+  //   actionResponse: {
+  //     type: 'UPDATE_MESSAGE',
+  //   },
+  //   cardsV2: [card],
+  // };
+}

@@ -159,6 +159,26 @@
           }
         }
       ]
+    },
+    {
+      "widgets": [
+        {
+          "buttonList": {
+            "buttons": [
+              {
+                "text": "Add Option",
+                "onClick": {
+                  "action": {
+                    "function": "add_option_form",
+                    "interaction": "OPEN_DIALOG",
+                    "parameters": []
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }

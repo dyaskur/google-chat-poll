@@ -1,5 +1,5 @@
 const {buildVoteCard} = require('../vote-card');
-const voteCardJson = require('./json/vote-card.json');
+const voteCardJson = require('./json/vote_card.json');
 const {dummyPoll} = require('./dummy');
 const {saveVotes, choiceSection, progressBarText} = require('../helpers/vote');
 

@@ -1,0 +1,38 @@
+{
+  "header": {
+    "title": "Add a new option/choice",
+    "subtitle": "Q:Who is the most handsome AI?"
+  },
+  "sections": [
+    {
+      "widgets": [
+        {
+          "textInput": {
+            "label": "Option Name",
+            "type": "SINGLE_LINE",
+            "name": "value",
+            "hintText": "",
+            "value": ""
+          },
+          "horizontalAlignment": "START"
+        }
+      ]
+    }
+  ],
+  "fixedFooter": {
+    "primaryButton": {
+      "text": "Add option",
+      "onClick": {
+        "action": {
+          "function": "add_option",
+          "parameters": [
+            {
+              "key": "state",
+              "value": "{\"topic\":\"Who is the most handsome AI?\"}"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
