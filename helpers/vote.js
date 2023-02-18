@@ -25,7 +25,7 @@ function saveVotes(choice, voter, votes, isAnonymous = false) {
   if (votes[choice])
     votes[choice].push(voter);
   else
-    votes[choice] = [voter]
+    votes[choice] = [voter];
 
   return votes;
 }
@@ -57,16 +57,18 @@ function progressBarText(voteCount, totalVotes) {
  * @param {object} poll - Text of the choice
  * @param {number} totalVotes - Total votes cast in poll
  * @param {string} state - Serialized state to send in events
+ * @param {string} creator - creator of the option
  * @returns {object} card section
  */
-function choiceSection(i, poll, totalVotes, state) {
-  if(poll.votes[i] === undefined){
-    poll.votes[i] = []
+function choiceSection(i, poll, totalVotes, state, creator = '') {
+  if (poll.votes[i] === undefined) {
+    poll.votes[i] = [];
   }
+  const choiceTag = choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state);
+  if(creator)
+    choiceTag.decoratedText.topLabel = 'Added by '+creator
   const section = {
-    'widgets': [
-      choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state),
-    ],
+    'widgets': [choiceTag],
   };
   if (poll.votes[i].length > 0 && !poll.anon) {
     section.collapsible = true;

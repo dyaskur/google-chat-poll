@@ -3,6 +3,7 @@ const {buildVoteCard} = require('./vote-card');
 const {saveVotes} = require('./helpers/vote');
 const {buildAddOptionForm} = require('./add-option-form');
 const {callMessageApi} = require('./helpers/api');
+const {addOptionToState} = require('./helpers/option');
 
 /**
  * App entry point.
@@ -189,16 +190,13 @@ function addOptionForm(event) {
  * @returns {object} Response to send back to Chat
  */
 async function saveOption(event) {
-  const userId = event.user.name;
   const userName = event.user.displayName;
-  const user = {uid: userId, name: userName};
 
   const parameters = event.common?.parameters;
   const state = JSON.parse(parameters['state']);
   const formValues = event.common?.formInputs;
   const optionValue = formValues?.['value']?.stringInputs.value[0]?.trim();
-
-  state.choices.push(optionValue);
+  addOptionToState(optionValue, state, userName);
 
   const card = buildVoteCard(state);
   const message = {

@@ -81,7 +81,7 @@ test('build progress bar text', () => {
 
 test('build choice section ', () => {
   const state = JSON.stringify(dummyPoll);
-  const normalChoice = choiceSection(2, dummyPoll, 4, state);
+  const normalChoice = choiceSection(2, dummyPoll, 4, state, 'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
       toStrictEqual({
@@ -90,6 +90,7 @@ test('build choice section ', () => {
         'widgets': [
           {
             'decoratedText': {
+              'topLabel': "Added by Muhammad Dyas Yaskur",
               'bottomLabel': progressBarText(2, 4) + ' 2',
               'button': {
                 'onClick': {
@@ -111,8 +112,7 @@ test('build choice section ', () => {
   dummyPoll.anon = true;
   const anonymousChoice = choiceSection(2, dummyPoll, 4,
       JSON.stringify(dummyPoll));
-  expect(anonymousChoice).
-      toStrictEqual({
+  expect(anonymousChoice).toStrictEqual({
         'widgets': [
           {
             'decoratedText': {
