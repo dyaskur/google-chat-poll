@@ -37,7 +37,6 @@ function buildVoteCard(poll) {
   for (let i = 0; i < poll.choices.length; ++i) {
     const creator = poll.choiceCreator?.[i]
     const section = choiceSection(i, poll, totalVotes, state, creator);
-    console.log(creator,'creator')
     sections.push(section);
   }
   sections.push(

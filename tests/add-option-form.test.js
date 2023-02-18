@@ -12,10 +12,10 @@ test('build add option form', () => {
 });
 
 test('add a new option to state', () => {
-  // clone object, will replace with `structuredClone` after nodejs upgraded
-  const state = JSON.parse(JSON.stringify(dummyPoll));
+  // clone object
+  const state = structuredClone(dummyPoll);
   addOptionToState('Unspecific Worm', state, 'Yaskur');
-  expect(state.choices).toStrictEqual([
+  expect(state.choices).toEqual([
     'Feather Duster Worm',
     'Christmas Tree Worm',
     'Coco Worm',
