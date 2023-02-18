@@ -124,17 +124,7 @@ async function startPoll(event) {
   await callMessageApi('create', request);
 
   // Close dialog
-  return {
-    actionResponse: {
-      type: 'DIALOG',
-      dialogAction: {
-        actionStatus: {
-          statusCode: 'OK',
-          userFacingMessage: 'Poll started.',
-        },
-      },
-    },
-  };
+  return buildActionResponse('Poll started.', 'OK');
 }
 
 /**
@@ -205,11 +195,9 @@ async function saveOption(event) {
 
   const parameters = event.common?.parameters;
   const state = JSON.parse(parameters['state']);
-  const thread = JSON.parse(parameters['thread']);
-
-  console.log('thread', thread, event.message.thread);
   const formValues = event.common?.formInputs;
   const optionValue = formValues?.['value']?.stringInputs.value[0]?.trim();
+
   state.choices.push(optionValue);
 
   const card = buildVoteCard(state);
@@ -223,17 +211,7 @@ async function saveOption(event) {
   };
   await callMessageApi('update', request);
   // Close dialog
-  return {
-    actionResponse: {
-      type: 'DIALOG',
-      dialogAction: {
-        actionStatus: {
-          statusCode: 'OK',
-          userFacingMessage: 'Option is added',
-        },
-      },
-    },
-  };
+  return buildActionResponse('Option is added', 'OK');
 
   // return {
   //   thread: thread,
