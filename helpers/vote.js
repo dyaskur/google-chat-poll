@@ -9,23 +9,22 @@
  * @returns {object} Map of cast votes keyed by choice index
  */
 function saveVotes(choice, voter, votes, isAnonymous = false) {
-
-  Object.keys(votes).forEach(function(choice_index) {
-    if (votes[choice_index]) {
-      const existed = votes[choice_index].findIndex(x => x.uid === voter.uid);
+  Object.keys(votes).forEach(function(choiceIndex) {
+    if (votes[choiceIndex]) {
+      const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
       if (existed > -1) {
-        votes[choice_index].splice(existed, 1);
+        votes[choiceIndex].splice(existed, 1);
       }
     }
-
   });
   if (isAnonymous) {
     delete voter.name;
   }
-  if (votes[choice])
+  if (votes[choice]) {
     votes[choice].push(voter);
-  else
+  } else {
     votes[choice] = [voter];
+  }
 
   return votes;
 }
@@ -65,8 +64,9 @@ function choiceSection(i, poll, totalVotes, state, creator = '') {
     poll.votes[i] = [];
   }
   const choiceTag = choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state);
-  if(creator)
-    choiceTag.decoratedText.topLabel = 'Added by '+creator
+  if (creator) {
+    choiceTag.decoratedText.topLabel = 'Added by '+creator;
+  }
   const section = {
     'widgets': [choiceTag],
   };
@@ -75,7 +75,7 @@ function choiceSection(i, poll, totalVotes, state, creator = '') {
     section.uncollapsibleWidgetsCount = 1;
     section.widgets.push({
       'textParagraph': {
-        'text': poll.votes[i].map(u => u.name).join(', '),
+        'text': poll.votes[i].map((u) => u.name).join(', '),
       },
     });
   }

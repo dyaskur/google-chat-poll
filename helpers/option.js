@@ -12,7 +12,6 @@ function addOptionToState(option, state, creator = '') {
   if (state.choiceCreator === undefined) {
     state.choiceCreator = {[choiceLength]: creator};
   }
-
 }
 
 exports.addOptionToState = addOptionToState;

@@ -1,12 +1,16 @@
-const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./config-form');
-const {buildVoteCard} = require('./vote-card');
+const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./src/config-form');
+const {buildVoteCard} = require('./src/vote-card');
 const {saveVotes} = require('./helpers/vote');
-const {buildAddOptionForm} = require('./add-option-form');
+const {buildAddOptionForm} = require('./src/add-option-form');
 const {callMessageApi} = require('./helpers/api');
 const {addOptionToState} = require('./helpers/option');
+const {buildActionResponse} = require('./helpers/response');
 
 /**
  * App entry point.
+ * @param {object} req - chat event
+ * @param {object} res - chat event
+ * @returns {void}
  */
 exports.app = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
@@ -75,7 +79,7 @@ async function startPoll(event) {
   // Get the form values
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
-  const is_anonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
+  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
       '1';
   const choices = [];
   const votes = {};
@@ -113,7 +117,7 @@ async function startPoll(event) {
     author: event.user,
     choices: choices,
     votes: votes,
-    anon: is_anonymous,
+    anon: isAnonymous,
   });
   const message = {
     cardsV2: [pollCard],
@@ -162,13 +166,13 @@ function recordVote(event) {
  *
  * @param {object} event the event object from Google Chat.
  *
- * @return {object} open a dialog.
+ * @returns {object} open a dialog.
  */
 function addOptionForm(event) {
-
-  const stateJson = event.message.cardsV2[0].card.sections[0].widgets[0].decoratedText.button.onClick.action.parameters[0].value;
+  const card = event.message.cardsV2[0].card;
+  const stateJson = card.sections[0].widgets[0].decoratedText.button.onClick.action.parameters[0].value;
   const state = JSON.parse(stateJson);
-  const dialog = buildAddOptionForm(state, event.message.thread);
+  const dialog = buildAddOptionForm(state);
   return {
     actionResponse: {
       type: 'DIALOG',

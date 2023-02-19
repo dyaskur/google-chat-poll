@@ -21,3 +21,5 @@ function buildActionResponse(message, status = 'OK') {
     },
   };
 }
+
+exports.buildActionResponse = buildActionResponse;

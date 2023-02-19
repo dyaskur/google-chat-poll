@@ -36,8 +36,7 @@ function buildAddOptionForm(state) {
               {
                 key: 'state',
                 value: JSON.stringify(state),
-              }
-              ],
+              }],
           },
         },
       },

@@ -1,5 +1,10 @@
 const {google} = require('googleapis');
 
+/**
+ * Create google api credentials
+ *
+ * @returns {object} google.chat
+ */
 function gAuth() {
   // Use default credentials (service account)
   const credentials = new google.auth.GoogleAuth({
@@ -22,13 +27,13 @@ async function callMessageApi(action, request) {
   const chatApi = gAuth();
   console.log('gapi request', JSON.stringify(request));
   let response;
-  if (action === 'create')
+  if (action === 'create') {
     response = await chatApi.spaces.messages.create(request);
-  else if (action === 'update')
+  } else if (action === 'update') {
     response = await chatApi.spaces.messages.update(request);
-  else if (action === 'get')
+  } else if (action === 'get') {
     response = await chatApi.spaces.messages.get(request);
-
+  }
   console.log('gapi response', JSON.stringify(response));
   return response;
 }

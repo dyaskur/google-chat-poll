@@ -24,7 +24,7 @@ const poll = {
   author: author,
   choices: choices,
   votes: votes,
-  anon: false
+  anon: false,
 };
 
 exports.dummyPoll = poll;

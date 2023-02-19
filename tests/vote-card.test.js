@@ -1,4 +1,4 @@
-const {buildVoteCard} = require('../vote-card');
+const {buildVoteCard} = require('../src/vote-card');
 const voteCardJson = require('./json/vote_card.json');
 const {dummyPoll} = require('./dummy');
 const {saveVotes, choiceSection, progressBarText} = require('../helpers/vote');
@@ -33,7 +33,7 @@ test('test save voter', () => {
 
   expect(voterResult2).toStrictEqual({
     '0': [],
-    '1': [{uid: 'users/103846892623842357554', name: 'Muhammad'},],
+    '1': [{uid: 'users/103846892623842357554', name: 'Muhammad'}],
     '2': [
       {uid: 'users/118239915905237561078', name: 'Yaskur'},
     ],
@@ -42,7 +42,6 @@ test('test save voter', () => {
       {uid: 'users/222423423523532523532', name: 'Ammar'},
     ],
   });
-
 });
 test('test save voter anonymously', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -70,7 +69,6 @@ test('test save voter anonymously', () => {
     '2': [],
     '3': [],
   });
-
 });
 
 test('build progress bar text', () => {
@@ -81,7 +79,8 @@ test('build progress bar text', () => {
 
 test('build choice section ', () => {
   const state = JSON.stringify(dummyPoll);
-  const normalChoice = choiceSection(2, dummyPoll, 4, state, 'Muhammad Dyas Yaskur');
+  const normalChoice = choiceSection(2, dummyPoll, 4, state,
+      'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
       toStrictEqual({
@@ -90,7 +89,7 @@ test('build choice section ', () => {
         'widgets': [
           {
             'decoratedText': {
-              'topLabel': "Added by Muhammad Dyas Yaskur",
+              'topLabel': 'Added by Muhammad Dyas Yaskur',
               'bottomLabel': progressBarText(2, 4) + ' 2',
               'button': {
                 'onClick': {
@@ -113,26 +112,26 @@ test('build choice section ', () => {
   const anonymousChoice = choiceSection(2, dummyPoll, 4,
       JSON.stringify(dummyPoll));
   expect(anonymousChoice).toStrictEqual({
-        'widgets': [
-          {
-            'decoratedText': {
-              'bottomLabel': progressBarText(2, 4) + ' 2',
-              'button': {
-                'onClick': {
-                  'action': {
-                    'function': 'vote',
-                    'parameters': [
-                      {
-                        'key': 'state',
-                        'value': JSON.stringify(dummyPoll),
-                      }, {'key': 'index', 'value': '2'}],
-                  },
-                }, 'text': 'vote',
+    'widgets': [
+      {
+        'decoratedText': {
+          'bottomLabel': progressBarText(2, 4) + ' 2',
+          'button': {
+            'onClick': {
+              'action': {
+                'function': 'vote',
+                'parameters': [
+                  {
+                    'key': 'state',
+                    'value': JSON.stringify(dummyPoll),
+                  }, {'key': 'index', 'value': '2'}],
               },
-              'text': 'Coco Worm',
-            },
-          }],
-      });
+            }, 'text': 'vote',
+          },
+          'text': 'Coco Worm',
+        },
+      }],
+  });
   dummyPoll.anon = false;
 });
 

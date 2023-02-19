@@ -1,4 +1,4 @@
-const {choiceSection} = require('./helpers/vote');
+const {choiceSection} = require('../helpers/vote');
 
 /**
  * Builds the card header including the question and author details.
@@ -35,7 +35,7 @@ function buildVoteCard(poll) {
     return sum + vote.length;
   }, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
-    const creator = poll.choiceCreator?.[i]
+    const creator = poll.choiceCreator?.[i];
     const section = choiceSection(i, poll, totalVotes, state, creator);
     sections.push(section);
   }

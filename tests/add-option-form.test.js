@@ -1,4 +1,4 @@
-const {buildAddOptionForm} = require('../add-option-form');
+const {buildAddOptionForm} = require('../src/add-option-form');
 const {addOptionToState} = require('../helpers/option');
 const {dummyPoll} = require('./dummy');
 const json = require('./json/add_option_form.json');
@@ -7,7 +7,6 @@ test('build add option form', () => {
   const dialog = buildAddOptionForm({
     topic: 'Who is the most handsome AI?',
   });
-  const json = require('./json/add_option_form.json');
   expect(dialog).toStrictEqual(json);
 });
 
