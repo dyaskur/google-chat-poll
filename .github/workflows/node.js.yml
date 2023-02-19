@@ -28,3 +28,5 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm test
+    - name: Run ESLint
+      run: eslint
