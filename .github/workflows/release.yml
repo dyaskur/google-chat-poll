@@ -2,7 +2,7 @@ name: "tagged-release"
 
 on:
   push:
-    tags:
+    branches:
       - "v*"
 
 jobs:
@@ -11,6 +11,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
+      - permissions: write-all
       - uses: actions/checkout@v2
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.1
