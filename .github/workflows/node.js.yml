@@ -30,3 +30,7 @@ jobs:
     - run: yarn test
     - name: Run ESLint
       run: yarn eslint .
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
