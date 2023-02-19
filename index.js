@@ -79,8 +79,8 @@ async function startPoll(event) {
   // Get the form values
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
-  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
-      '1';
+  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] === '1';
+  const allowAddOption = formValues?.['allow_add_option']?.stringInputs.value[0] === '1';
   const choices = [];
   const votes = {};
 
@@ -118,6 +118,7 @@ async function startPoll(event) {
     choices: choices,
     votes: votes,
     anon: isAnonymous,
+    optionable: allowAddOption,
   });
   const message = {
     cardsV2: [pollCard],

@@ -25,7 +25,9 @@ function header(topic, author) {
  * @param {string} poll.topic - Topic of poll
  * @param {string[]} poll.choices - Text of choices to display to users
  * @param {object} poll.votes - Map of cast votes keyed by choice index
+ * @param {object} poll.choiceCreator - Map of cast votes keyed by choice index
  * @param {boolean} poll.anon - Is anonymous?(will save voter name or not)
+ * @param {boolean} poll.optionable - Can other user add other option?
  * @returns {object} card
  */
 function buildVoteCard(poll) {
@@ -39,28 +41,29 @@ function buildVoteCard(poll) {
     const section = choiceSection(i, poll, totalVotes, state, creator);
     sections.push(section);
   }
-  sections.push(
-      {
-        'widgets': [
-          {
-            'buttonList': {
-              'buttons': [
-                {
-                  'text': 'Add Option',
-                  'onClick': {
-                    'action': {
-                      'function': 'add_option_form',
-                      'interaction': 'OPEN_DIALOG',
-                      'parameters': [],
+  if (poll.optionable) {
+    sections.push(
+        {
+          'widgets': [
+            {
+              'buttonList': {
+                'buttons': [
+                  {
+                    'text': 'Add Option',
+                    'onClick': {
+                      'action': {
+                        'function': 'add_option_form',
+                        'interaction': 'OPEN_DIALOG',
+                        'parameters': [],
+                      },
                     },
                   },
-                },
-              ],
+                ],
+              },
             },
-          },
-        ],
-      });
-
+          ],
+        });
+  }
   return {
     'cardId': 'unique-card-id',
     'card': {

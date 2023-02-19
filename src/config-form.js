@@ -107,6 +107,19 @@ function buildConfigurationForm(options) {
             },
             'horizontalAlignment': 'CENTER',
           },
+          {
+            'decoratedText': {
+              'bottomLabel': 'After the poll is created, other member can add more option',
+              'text': 'Allow to add more option(s)',
+              'switchControl': {
+                'controlType': 'SWITCH',
+                'name': 'allow_add_option',
+                'value': '1',
+                'selected': true,
+              },
+            },
+            'horizontalAlignment': 'CENTER',
+          },
         ],
       },
     ],
