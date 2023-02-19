@@ -1,6 +1,10 @@
 # Google Chat Poll Bot
 #### An interactive poll app for google chat with Node.js (originally from [Google codelabs](https://codelabs.developers.google.com/codelabs/google-chat-poll-bot))
 
+[![StyleCI](https://github.styleci.io/repos/600267700/shield?branch=master)](https://styleci.io/repos/600267700)
+[![Github Action](https://github.com/dyaskur/google-chat-poll/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/dyaskur/google-chat-poll/actions) 
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/dyaskur/google-chat-poll/badges/quality-score.png?s=4023c984fc1163a44f4220cd7d57406643ced9f2)](https://scrutinizer-ci.com/g/dyaskur/google-chat-poll/)
+
 
 This is just a bunch of code that I use to learn more about serverless and also google chat apps using note JS.
 
@@ -19,7 +23,6 @@ What I updated are:
 
 Todo:
 
- - Use Linter (ESLint)
  - Close the poll
  - Max vote(expired) time
  - Multiple choice vote(1 user can vote on more than 1 choice)
@@ -39,6 +42,6 @@ Tips: You can test the json file on **tests/json** folder to https://gw-card-bui
 
 <sub>
 Again, this code just my learning code. That's why I don't directly migrate to TypeScript or Golang in early stage. 
-I want to start learning nodejs again after I haven't had a project like this in a long time.
+I just want to learning nodejs and google chat apps.
 Feel free if you have suggestion or advice for this apps and codes.
 </sub>
