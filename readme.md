@@ -4,7 +4,7 @@
 [![StyleCI](https://github.styleci.io/repos/600267700/shield?branch=master)](https://styleci.io/repos/600267700)
 [![Github Action](https://github.com/dyaskur/google-chat-poll/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/dyaskur/google-chat-poll/actions) 
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/dyaskur/google-chat-poll/badges/quality-score.png?s=4023c984fc1163a44f4220cd7d57406643ced9f2)](https://scrutinizer-ci.com/g/dyaskur/google-chat-poll/)
-
+[![Coverage Status](https://coveralls.io/repos/github/dyaskur/google-chat-poll/badge.svg?branch=master)](https://coveralls.io/github/dyaskur/google-chat-poll)
 
 This is just a bunch of code that I use to learn more about serverless and also google chat apps using note JS.
 
