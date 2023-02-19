@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm test
+    - run: yarn install --frozen-lockfile
+    - run: yarn test
     - name: Run ESLint
-      run: eslint
+      run: eslint .
