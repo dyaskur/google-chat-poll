@@ -32,7 +32,7 @@ jobs:
       run: yarn eslint .
 
     - name: Coverage
-      run: yarn coverage
+      run: jest --coverage && coveralls < coverage/lcov.info
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
