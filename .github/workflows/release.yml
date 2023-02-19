@@ -2,8 +2,10 @@ name: "tagged-release"
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
 permissions: write-all
 jobs:
   tagged-release:
@@ -11,7 +13,17 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloud-functions@v1'
+        with:
+          name: 'app'
+          runtime: 'nodejs18'
+          region: 'asia-southeast1'
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.1
         with:
