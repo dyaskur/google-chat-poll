@@ -17,7 +17,7 @@ jobs:
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
       - id: 'deploy'
         uses: 'google-github-actions/deploy-cloud-functions@v1'
         with:
