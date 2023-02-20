@@ -79,8 +79,7 @@ test('build progress bar text', () => {
 
 test('build choice section ', () => {
   const state = JSON.stringify(dummyPoll);
-  const normalChoice = choiceSection(2, dummyPoll, 4, state,
-      'Muhammad Dyas Yaskur');
+  const normalChoice = choiceSection(2, dummyPoll, 4, state, 'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
       toStrictEqual({
