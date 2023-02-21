@@ -26,10 +26,7 @@ exports.app = async (req, res) => {
       reply = showConfigurationForm(event);
     }
   } else if (event.type === 'CARD_CLICKED') {
-    // todo: remove actionMethodName
-    // this is only used to support old message(Cardv1)
-    const action = event.common?.invokedFunction ??
-        event.action?.actionMethodName;
+    const action = event.common?.invokedFunction;
     if (action === 'start_poll') {
       reply = await startPoll(event);
     } else if (action === 'vote') {
@@ -127,10 +124,12 @@ async function startPoll(event) {
     parent: event.space.name,
     requestBody: message,
   };
-  await callMessageApi('create', request);
-
-  // Close dialog
-  return buildActionResponse('Poll started.', 'OK');
+  const apiResponse = await callMessageApi('create', request);
+  if (apiResponse) {
+    return buildActionResponse('Poll started.', 'OK');
+  } else {
+    return buildActionResponse('Failed to start poll.', 'UNKNOWN');
+  }
 }
 
 /**
@@ -212,16 +211,10 @@ async function saveOption(event) {
     requestBody: message,
     updateMask: 'cardsV2',
   };
-  await callMessageApi('update', request);
-  // Close dialog
-  return buildActionResponse('Option is added', 'OK');
-
-  // return {
-  //   thread: thread,
-  //   name: event.message.name,
-  //   actionResponse: {
-  //     type: 'UPDATE_MESSAGE',
-  //   },
-  //   cardsV2: [card],
-  // };
+  const apiResponse = await callMessageApi('update', request);
+  if (apiResponse) {
+    return buildActionResponse('Option is added', 'OK');
+  } else {
+    return buildActionResponse('Failed to add option.', 'UNKNOWN');
+  }
 }
