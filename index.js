@@ -1,10 +1,10 @@
 const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./src/config-form');
 const {buildVoteCard} = require('./src/vote-card');
-const {saveVotes} = require('./helpers/vote');
+const {saveVotes} = require('./src/helpers/vote');
 const {buildAddOptionForm} = require('./src/add-option-form');
-const {callMessageApi} = require('./helpers/api');
-const {addOptionToState} = require('./helpers/option');
-const {buildActionResponse} = require('./helpers/response');
+const {callMessageApi} = require('./src/helpers/api');
+const {addOptionToState} = require('./src/helpers/option');
+const {buildActionResponse} = require('./src/helpers/response');
 
 /**
  * App entry point.

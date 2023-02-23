@@ -1,7 +1,7 @@
 const {buildVoteCard} = require('../src/vote-card');
 const voteCardJson = require('./json/vote_card.json');
 const {dummyPoll} = require('./dummy');
-const {saveVotes, choiceSection, progressBarText} = require('../helpers/vote');
+const {saveVotes, choiceSection, progressBarText} = require('../src/helpers/vote');
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};

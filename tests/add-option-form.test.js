@@ -1,5 +1,5 @@
 const {buildAddOptionForm} = require('../src/add-option-form');
-const {addOptionToState} = require('../helpers/option');
+const {addOptionToState} = require('../src/helpers/option');
 const {dummyPoll} = require('./dummy');
 const json = require('./json/add_option_form.json');
 

@@ -1,4 +1,4 @@
-const {choiceSection} = require('../helpers/vote');
+const {choiceSection} = require('./helpers/vote');
 
 /**
  * Builds the card header including the question and author details.
