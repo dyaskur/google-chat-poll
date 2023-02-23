@@ -1,4 +1,4 @@
-const {buildConfigurationForm, MAX_NUM_OF_OPTIONS} = require('./src/config-form');
+const {buildConfigurationForm, MAX_NUM_OF_OPTIONS, buildOptionsFromMessage} = require('./src/config-form');
 const {buildVoteCard} = require('./src/vote-card');
 const {saveVotes} = require('./src/helpers/vote');
 const {buildAddOptionForm} = require('./src/add-option-form');
@@ -49,11 +49,9 @@ exports.app = async (req, res) => {
  */
 function showConfigurationForm(event) {
   // Seed the topic with any text after the slash command
-  const topic = event.message?.argumentText?.trim();
-  const dialog = buildConfigurationForm({
-    topic,
-    choices: [],
-  });
+  const message = event.message?.argumentText?.trim();
+  const options = buildOptionsFromMessage(message);
+  const dialog = buildConfigurationForm(options);
   return {
     actionResponse: {
       type: 'DIALOG',

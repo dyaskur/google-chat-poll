@@ -1,3 +1,4 @@
+const {splitMessage} = require('./helpers/utils');
 /** Upper bounds on number of choices to present. */
 const MAX_NUM_OF_OPTIONS = 10;
 
@@ -127,5 +128,25 @@ function buildConfigurationForm(options) {
   };
 }
 
+
+/**
+ * Build poll options from message sent by user.
+ *
+ * @param {string} message - message or text after poll command
+ * @returns {object} option
+ */
+function buildOptionsFromMessage(message) {
+  const explodedMesage = splitMessage(message);
+  const topic = explodedMesage[0] || '';
+  if (explodedMesage.length > 0) {
+    explodedMesage.shift();
+  }
+  return {
+    topic,
+    choices: explodedMesage,
+  };
+}
+
 exports.MAX_NUM_OF_OPTIONS = MAX_NUM_OF_OPTIONS;
 exports.buildConfigurationForm = buildConfigurationForm;
+exports.buildOptionsFromMessage = buildOptionsFromMessage;
