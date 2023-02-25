@@ -12,7 +12,7 @@ function header(topic, author) {
     title: topic,
     subtitle: `Posted by ${author}`,
     imageUrl:
-        'https://raw.githubusercontent.com/google/material-design-icons/master/png/social/poll/materialicons/24dp/2x/baseline_poll_black_24dp.png',
+        'https://raw.githubusercontent.com/dyaskur/google-chat-poll/master/assets/logo48x48.png',
     imageType: 'CIRCLE',
   };
 }
