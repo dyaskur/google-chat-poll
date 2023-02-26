@@ -29,3 +29,12 @@ test('build options from empty message', () => {
   };
   expect(options).toStrictEqual(expected);
 });
+
+test('build options from undefined message', () => {
+  const options = buildOptionsFromMessage(undefined);
+  const expected = {
+    topic: '',
+    choices: [],
+  };
+  expect(options).toStrictEqual(expected);
+});
