@@ -10,7 +10,7 @@ const MAX_NUM_OF_OPTIONS = 10;
 function helpText() {
   return {
     textParagraph: {
-      text: 'Enter the poll topic and up to 5 choices in the poll. Blank options will be omitted.',
+      text: 'Enter the poll topic and up to 10 choices in the poll. Blank options will be omitted.',
     },
   };
 }
