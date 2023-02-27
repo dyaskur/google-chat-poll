@@ -136,7 +136,7 @@ function buildConfigurationForm(options) {
  */
 function buildOptionsFromMessage(message) {
   const explodedMesage = splitMessage(message);
-  const topic = explodedMesage[0] !== 'undefined' ? explodedMesage[0] : '';
+  const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ? explodedMesage[0] : '';
   if (explodedMesage.length > 0) {
     explodedMesage.shift();
   }

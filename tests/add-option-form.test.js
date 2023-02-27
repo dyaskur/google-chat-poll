@@ -13,7 +13,7 @@ test('build add option form', () => {
 test('add a new option to state', () => {
   // clone object
   const state = structuredClone(dummyPoll);
-  addOptionToState('Unspecific Worm', state, 'Yaskur');
+  addOptionToState('Unspecific Worm', state);
   expect(state.choices).toEqual([
     'Feather Duster Worm',
     'Christmas Tree Worm',
@@ -22,7 +22,7 @@ test('add a new option to state', () => {
     'Giant Tube Worm',
     'Unspecific Worm',
   ]);
-  expect(state.choiceCreator).toStrictEqual({'5': 'Yaskur'});
+  expect(state.choiceCreator).toStrictEqual({'5': ''});
   addOptionToState('Another Unspecific Worm', state, 'Dyas');
   expect(state.choices).toEqual([
     'Feather Duster Worm',
@@ -33,6 +33,6 @@ test('add a new option to state', () => {
     'Unspecific Worm',
     'Another Unspecific Worm',
   ]);
-  expect(state.choiceCreator).toStrictEqual({'5': 'Yaskur', '6': 'Dyas'});
+  expect(state.choiceCreator).toStrictEqual({'5': '', '6': 'Dyas'});
 });
 
