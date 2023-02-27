@@ -18,3 +18,5 @@ readme.md
 node_modules
 .idea
 tests
+assets
+*.md
