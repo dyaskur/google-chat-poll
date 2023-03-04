@@ -16,7 +16,50 @@ exports.app = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
     res.status(400).send('');
   }
-  console.log('the request body:', JSON.stringify(req.body));
+  const buttonCard = {
+    'cardId': 'welcome-card',
+    'card': {
+      'sections': [
+        {
+          'widgets': [
+            {
+              'buttonList': {
+                'buttons': [
+                  {
+                    'text': 'Create Poll',
+                    'onClick': {
+                      'action': {
+                        'function': 'show_form',
+                        'interaction': 'OPEN_DIALOG',
+                        'parameters': [],
+                      },
+                    },
+                  },
+                  // {
+                  //   'text': 'Help',
+                  //   'onClick': {
+                  //     'action': {
+                  //       'function': 'show_help',
+                  //       'parameters': [],
+                  //     },
+                  //   },
+                  // },
+                  {
+                    'text': 'Contact Us',
+                    'onClick': {
+                      'openLink': {
+                        'url': 'https://absolute-poll.yaskur.com/contact-us',
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
   const event = req.body;
   let reply = {};
   // Dispatch slash and action events
@@ -24,6 +67,46 @@ exports.app = async (req, res) => {
     const message = event.message;
     if (message.slashCommand?.commandId === '1') {
       reply = showConfigurationForm(event);
+    } else if (message.slashCommand?.commandId === '2') {
+      reply = {
+        thread: event.message.thread,
+        actionResponse: {
+          type: 'NEW_MESSAGE',
+        },
+        text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
+            'in decision-making using Google Chat™.\n' +
+            '\n' +
+            'Below is an example commands:\n' +
+            '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
+            '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
+            '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
+            '\n' +
+            'We hope you find our service useful and please don\'t hesitate to contact us ' +
+            'if you have any questions or concerns.',
+      };
+    } else if (message.text) {
+      const argument = event.message?.argumentText?.trim().toLowerCase();
+
+      reply = {
+        thread: event.message.thread,
+        actionResponse: {
+          type: 'NEW_MESSAGE',
+        },
+        text: 'Hi! To create a poll, you can use the */poll* command',
+      };
+      if (argument === 'help') {
+        reply.text = 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
+            'in decision-making using Google Chat™.\n' +
+            '\n' +
+            'Below is an example commands:\n' +
+            '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
+            '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
+            '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
+            '\n' +
+            'We hope you find our service useful and please don\'t hesitate to contact us ' +
+            'if you have any questions or concerns.';
+        // reply.cardsV2 = buttonCard;
+      }
     }
   } else if (event.type === 'CARD_CLICKED') {
     const action = event.common?.invokedFunction;
@@ -35,9 +118,45 @@ exports.app = async (req, res) => {
       reply = addOptionForm(event);
     } else if (action === 'add_option') {
       reply = await saveOption(event);
+    } else if (action === 'show_form') {
+      reply = showConfigurationForm(event, true);
+    }
+  } else if (event.type === 'ADDED_TO_SPACE') {
+    const message = {};
+    const spaceType = event.space.type;
+    if (spaceType === 'ROOM') {
+      message.text = 'Hi there! I\'d be happy to assist you in creating polls to improve collaboration and ' +
+          'decision-making efficiency on Google Chat™.\n' +
+          '\n' +
+          'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
+          'You can also test our app in a direct message if you prefer.\n' +
+          '\n' +
+          'We hope you find our service useful and please don\'t hesitate to contact us ' +
+          'if you have any questions or concerns.';
+    } else if (spaceType === 'DM') {
+      message.text = 'Hey there! ' +
+          'Before creating a poll in a group space, you can test it out here in a direct message.\n' +
+          '\n' +
+          'To create a poll, you can use the */poll* command or click on the "Create Poll" button below.\n' +
+          '\n' +
+          'Thank you for using our bot. We hope that it will prove to be a valuable tool for you and your team.\n' +
+          '\n' +
+          'Don\'t hesitate to reach out if you have any questions or concerns in the future.' +
+          ' We are always here to help you and your team';
+    }
+
+    message.cardsV2 = buttonCard;
+    const request = {
+      parent: event.space.name,
+      requestBody: message,
+    };
+    const apiResponse = await callMessageApi('create', request);
+    if (apiResponse) {
+      reply = buildActionResponse('Thanks for installing our app', 'OK');
+    } else {
+      reply = buildActionResponse('Failed to send welcome.', 'UNKNOWN');
     }
   }
-  console.log('the response body', JSON.stringify(reply));
   res.json(reply);
 };
 
@@ -45,11 +164,12 @@ exports.app = async (req, res) => {
  * Handles the slash command to display the config form.
  *
  * @param {object} event - chat event
+ * @param {boolean} isBlank - fill with text from message or note
  * @returns {object} Response to send back to Chat
  */
-function showConfigurationForm(event) {
+function showConfigurationForm(event, isBlank = false) {
   // Seed the topic with any text after the slash command
-  const message = event.message?.argumentText?.trim();
+  const message = isBlank ? '' : event.message?.argumentText?.trim();
   const options = buildOptionsFromMessage(message);
   const dialog = buildConfigurationForm(options);
   return {
