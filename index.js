@@ -35,15 +35,14 @@ exports.app = async (req, res) => {
                       },
                     },
                   },
-                  // {
-                  //   'text': 'Help',
-                  //   'onClick': {
-                  //     'action': {
-                  //       'function': 'show_help',
-                  //       'parameters': [],
-                  //     },
-                  //   },
-                  // },
+                  {
+                    'text': 'Terms and Conditions',
+                    'onClick': {
+                      'openLink': {
+                        'url': 'https://absolute-poll.yaskur.com/terms-and-condition',
+                      },
+                    },
+                  },
                   {
                     'text': 'Contact Us',
                     'onClick': {

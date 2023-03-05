@@ -1,5 +1,7 @@
 const {google} = require('googleapis');
 
+// const path = require('path');
+
 /**
  * Create google api credentials
  *
@@ -8,6 +10,7 @@ const {google} = require('googleapis');
 function gAuth() {
   // Use default credentials (service account)
   const credentials = new google.auth.GoogleAuth({
+    // keyFile: path.join(__dirname, '../../tests/creds.json'), // <---- WHAT GOES IN path.join()
     scopes: ['https://www.googleapis.com/auth/chat.bot'],
   });
   return google.chat({
@@ -25,16 +28,20 @@ function gAuth() {
  */
 async function callMessageApi(action, request) {
   const chatApi = gAuth();
-  console.log('gapi request', JSON.stringify(request));
   let response;
-  if (action === 'create') {
-    response = await chatApi.spaces.messages.create(request);
-  } else if (action === 'update') {
-    response = await chatApi.spaces.messages.update(request);
-  } else if (action === 'get') {
-    response = await chatApi.spaces.messages.get(request);
+
+  try {
+    if (action === 'create') {
+      response = await chatApi.spaces.messages.create(request);
+    } else if (action === 'update') {
+      response = await chatApi.spaces.messages.update(request);
+    } else if (action === 'get') {
+      response = await chatApi.spaces.messages.get(request);
+    }
+  } catch (error) {
+    console.error(error, action, JSON.stringify(request), response);
   }
-  console.log('gapi response', JSON.stringify(response));
+
   return response;
 }
 
