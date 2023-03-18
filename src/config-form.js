@@ -1,6 +1,6 @@
 const {splitMessage} = require('./helpers/utils');
+const {MAX_NUM_OF_OPTIONS} = require('./config/default');
 /** Upper bounds on number of choices to present. */
-const MAX_NUM_OF_OPTIONS = 10;
 
 /**
  * Build widget with instructions on how to use form.
@@ -103,7 +103,7 @@ function buildConfigurationForm(options) {
                 'controlType': 'SWITCH',
                 'name': 'is_anonymous',
                 'value': '1',
-                'selected': true,
+                'selected': false,
               },
             },
             'horizontalAlignment': 'CENTER',
@@ -146,6 +146,5 @@ function buildOptionsFromMessage(message) {
   };
 }
 
-exports.MAX_NUM_OF_OPTIONS = MAX_NUM_OF_OPTIONS;
 exports.buildConfigurationForm = buildConfigurationForm;
 exports.buildOptionsFromMessage = buildOptionsFromMessage;

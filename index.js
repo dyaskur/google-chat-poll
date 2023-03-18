@@ -1,10 +1,11 @@
-const {buildConfigurationForm, MAX_NUM_OF_OPTIONS, buildOptionsFromMessage} = require('./src/config-form');
+const {buildConfigurationForm, buildOptionsFromMessage} = require('./src/config-form');
 const {buildVoteCard} = require('./src/vote-card');
 const {saveVotes} = require('./src/helpers/vote');
 const {buildAddOptionForm} = require('./src/add-option-form');
 const {callMessageApi} = require('./src/helpers/api');
 const {addOptionToState} = require('./src/helpers/option');
 const {buildActionResponse} = require('./src/helpers/response');
+const {MAX_NUM_OF_OPTIONS} = require('./src/config/default');
 
 /**
  * App entry point.
@@ -60,6 +61,9 @@ exports.app = async (req, res) => {
     },
   };
   const event = req.body;
+  console.log(event.type,
+      event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
+      event.user.displayName, event.user.email, event.space.type, event.space.name);
   let reply = {};
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
@@ -105,6 +109,8 @@ exports.app = async (req, res) => {
             'We hope you find our service useful and please don\'t hesitate to contact us ' +
             'if you have any questions or concerns.';
         // reply.cardsV2 = buttonCard;
+      } else if (argument === 'test') {
+        reply.text = 'test search on <a href=\'http://www.google.com\'>google</a> (https://google.com)[https://google.com]';
       }
     }
   } else if (event.type === 'CARD_CLICKED') {

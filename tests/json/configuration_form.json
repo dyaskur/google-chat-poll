@@ -109,7 +109,7 @@
               "controlType": "SWITCH",
               "name": "is_anonymous",
               "value": "1",
-              "selected": true
+              "selected": false
             }
           },
           "horizontalAlignment": "CENTER"
