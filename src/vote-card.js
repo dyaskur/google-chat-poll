@@ -1,4 +1,5 @@
 const {choiceSection} = require('./helpers/vote');
+const {ICON_URL_48X48} = require('./config/default');
 
 /**
  * Builds the card header including the question and author details.
@@ -7,13 +8,38 @@ const {choiceSection} = require('./helpers/vote');
  * @param {string} author - Display name of user that created the poll
  * @returns {object} card widget
  */
-function header(topic, author) {
+function cardHeader(topic, author) {
   return {
     title: topic,
     subtitle: `Posted by ${author}`,
-    imageUrl:
-        'https://raw.githubusercontent.com/dyaskur/google-chat-poll/master/assets/logo48x48.png',
+    imageUrl: ICON_URL_48X48,
     imageType: 'CIRCLE',
+  };
+}
+
+/**
+ * Builds the section header if the topic is too long
+ *
+ * @param {string} topic - Topic of the poll
+ * @param {string} author - Display name of user that created the poll
+ * @returns {object} card section
+ */
+function sectionHeader(topic, author) {
+  return {
+    widgets: [
+      {
+        'decoratedText': {
+          'text': topic,
+          'wrapText': true,
+          'bottomLabel': `Posted by ${author}`,
+          'startIcon': {
+            'altText': 'Absolute Poll',
+            'iconUrl': ICON_URL_48X48,
+            'imageType': 'SQUARE',
+          },
+        },
+      },
+    ],
   };
 }
 
@@ -64,13 +90,19 @@ function buildVoteCard(poll) {
           ],
         });
   }
-  return {
+  const card = {
     'cardId': 'unique-card-id',
     'card': {
-      header: header(poll.topic, poll.author.displayName),
       sections,
     },
   };
+  if (poll.topic.length > 40) {
+    const widgetHeader = sectionHeader(poll.topic, poll.author.displayName);
+    card.card.sections = [widgetHeader, ...sections];
+  } else {
+    card.card.header = cardHeader(poll.topic, poll.author.displayName);
+  }
+  return card;
 }
 
 exports.buildVoteCard = buildVoteCard;

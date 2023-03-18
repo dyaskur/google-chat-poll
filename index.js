@@ -293,7 +293,8 @@ function recordVote(event) {
  */
 function addOptionForm(event) {
   const card = event.message.cardsV2[0].card;
-  const stateJson = card.sections[0].widgets[0].decoratedText.button.onClick.action.parameters[0].value;
+  const stateJson = card.sections[0].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value ||
+      card.sections[1].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value;
   const state = JSON.parse(stateJson);
   const dialog = buildAddOptionForm(state);
   return {

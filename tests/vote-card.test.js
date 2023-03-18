@@ -139,3 +139,11 @@ test('build vote card', () => {
 
   expect(pollCard.card).toStrictEqual(voteCardJson);
 });
+
+test('build vote card with long topic', () => {
+  dummyPoll.topic = '12345678901234567890123456789012345678901234567890';
+  const pollCard = buildVoteCard(dummyPoll);
+
+  expect(pollCard.card.header).toBeUndefined();
+  expect(pollCard.card.sections[0].widgets[0].decoratedText.text).toBe(dummyPoll.topic);
+});
