@@ -4,8 +4,8 @@
 * For more info, see https://www.jetbrains.com/help/space/automation.html
 */
 
-job("Run npm test and publish") {
-    container(displayName = "Run publish script", image = "node:14-alpine") {
+job("Run npm test ") {
+    container(displayName = "Run test script", image = "node:18-alpine") {
         env["REGISTRY"] = "https://npm.pkg.jetbrains.space/mycompany/p/projectkey/mynpm"
         shellScript {
             interpreter = "/bin/sh"
