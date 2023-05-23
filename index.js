@@ -151,16 +151,13 @@ exports.app = async (req, res) => {
     }
 
     message.cardsV2 = buttonCard;
-    const request = {
-      parent: event.space.name,
-      requestBody: message,
+
+    reply = {
+      actionResponse: {
+        type: 'NEW_MESSAGE',
+      },
+      ...message,
     };
-    const apiResponse = await callMessageApi('create', request);
-    if (apiResponse) {
-      reply = buildActionResponse('Thanks for installing our app', 'OK');
-    } else {
-      reply = buildActionResponse('Failed to send welcome.', 'UNKNOWN');
-    }
   }
   res.json(reply);
 };
