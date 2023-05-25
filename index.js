@@ -6,6 +6,7 @@ const {callMessageApi} = require('./src/helpers/api');
 const {addOptionToState} = require('./src/helpers/option');
 const {buildActionResponse} = require('./src/helpers/response');
 const {MAX_NUM_OF_OPTIONS} = require('./src/config/default');
+const {splitMessage} = require('./src/helpers/utils');
 
 /**
  * App entry point.
@@ -95,8 +96,32 @@ exports.app = async (req, res) => {
         actionResponse: {
           type: 'NEW_MESSAGE',
         },
-        text: 'Hi! To create a poll, you can use the */poll* command',
+        text: 'Hi! To create a poll, you can use the */poll* command. \n \n' +
+            'Alternatively, you can create poll by mentioning me with question and answers. ' +
+            'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
       };
+      const choices = splitMessage(argument);
+      if (choices.length > 2) {
+        const pollCard = buildVoteCard({
+          topic: choices.shift(),
+          author: event.user,
+          choices: choices,
+          votes: {},
+          anon: false,
+          optionable: true,
+        });
+        const message = {
+          cardsV2: [pollCard],
+        };
+        reply = {
+          thread: event.message.thread,
+          actionResponse: {
+            type: 'NEW_MESSAGE',
+          },
+          ...message,
+        };
+      }
+
       if (argument === 'help') {
         reply.text = 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
             'in decision-making using Google Chat™.\n' +
@@ -134,6 +159,9 @@ exports.app = async (req, res) => {
           'decision-making efficiency on Google Chat™.\n' +
           '\n' +
           'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
+          'You can also test our app in a direct message if you prefer.\n' +
+          '\n' +
+          'Alternatively, you can ' +
           'You can also test our app in a direct message if you prefer.\n' +
           '\n' +
           'We hope you find our service useful and please don\'t hesitate to contact us ' +
