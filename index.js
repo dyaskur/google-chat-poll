@@ -1,12 +1,15 @@
-const {buildConfigurationForm, buildOptionsFromMessage} = require('./src/config-form');
-const {buildVoteCard} = require('./src/vote-card');
-const {saveVotes} = require('./src/helpers/vote');
-const {buildAddOptionForm} = require('./src/add-option-form');
-const {callMessageApi} = require('./src/helpers/api');
-const {addOptionToState} = require('./src/helpers/option');
-const {buildActionResponse} = require('./src/helpers/response');
-const {MAX_NUM_OF_OPTIONS} = require('./src/config/default');
-const {splitMessage} = require('./src/helpers/utils');
+import {
+  buildConfigurationForm,
+  buildOptionsFromMessage,
+} from './src/config-form.js';
+import {buildVoteCard} from './src/vote-card.js';
+import {saveVotes} from './src/helpers/vote.js';
+import {buildAddOptionForm} from './src/add-option-form.js';
+import {callMessageApi} from './src/helpers/api.js';
+import {addOptionToState} from './src/helpers/option.js';
+import {buildActionResponse} from './src/helpers/response.js';
+import {MAX_NUM_OF_OPTIONS} from './src/config/default.js';
+import {splitMessage} from './src/helpers/utils.js';
 
 /**
  * App entry point.
@@ -14,7 +17,7 @@ const {splitMessage} = require('./src/helpers/utils');
  * @param {object} res - chat event
  * @returns {void}
  */
-exports.app = async (req, res) => {
+export async function app(req, res) {
   if (!(req.method === 'POST' && req.body)) {
     res.status(400).send('');
   }
@@ -63,8 +66,10 @@ exports.app = async (req, res) => {
   };
   const event = req.body;
   console.log(event.type,
-      event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
-      event.user.displayName, event.user.email, event.space.type, event.space.name);
+      event.common?.invokedFunction || event.message?.slashCommand?.commandId ||
+      event.message?.argumentText,
+      event.user.displayName, event.user.email, event.space.type,
+      event.space.name);
   let reply = {};
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
@@ -188,7 +193,7 @@ exports.app = async (req, res) => {
     };
   }
   res.json(reply);
-};
+}
 
 /**
  * Handles the slash command to display the config form.
@@ -224,8 +229,10 @@ async function startPoll(event) {
   // Get the form values
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
-  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] === '1';
-  const allowAddOption = formValues?.['allow_add_option']?.stringInputs.value[0] === '1';
+  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
+      '1';
+  const allowAddOption = formValues?.['allow_add_option']?.stringInputs.value[0] ===
+      '1';
   const choices = [];
   const votes = {};
 

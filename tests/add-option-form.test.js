@@ -1,13 +1,14 @@
-const {buildAddOptionForm} = require('../src/add-option-form');
-const {addOptionToState} = require('../src/helpers/option');
-const {dummyPoll} = require('./dummy');
-const json = require('./json/add_option_form.json');
+import {default as json} from './json/add_option_form.json';
+import {addOptionToState} from '../src/helpers/option.js';
+import {buildAddOptionForm} from '../src/add-option-form.js';
+
+import {dummyPoll} from './dummy.js';
 
 test('build add option form', () => {
   const dialog = buildAddOptionForm({
     topic: 'Who is the most handsome AI?',
   });
-  expect(dialog).toStrictEqual(json);
+  expect(dialog).toEqual(json);
 });
 
 test('add a new option to state', () => {

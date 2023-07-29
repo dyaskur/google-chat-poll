@@ -1,7 +1,7 @@
-const {buildVoteCard} = require('../src/vote-card');
-const voteCardJson = require('./json/vote_card.json');
-const {dummyPoll} = require('./dummy');
-const {saveVotes, choiceSection, progressBarText} = require('../src/helpers/vote');
+import {dummyPoll} from './dummy.js';
+import {buildVoteCard} from '../src/vote-card';
+import voteCardJson from './json/vote_card.json';
+import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -74,7 +74,7 @@ test('test save voter anonymously', () => {
 test('build progress bar text', () => {
   const progressBar = progressBarText(2, 4);
 
-  expect(progressBar).toBe('▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀');
+  expect(progressBar).toBe('██████████████████');
 });
 
 test('build choice section ', () => {

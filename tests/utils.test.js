@@ -1,4 +1,4 @@
-const {splitMessage} = require('../src/helpers/utils');
+import {splitMessage} from '../src/helpers/utils';
 
 test('Split message', () => {
   const message = '"Yay or Nay?" Yay Nay';

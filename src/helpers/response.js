@@ -8,7 +8,7 @@
  * @param {string} status - Status of
  * @returns {object} - ActionResponse
  */
-function buildActionResponse(message, status = 'OK') {
+export function buildActionResponse(message, status = 'OK') {
   return {
     actionResponse: {
       type: 'DIALOG',
@@ -22,4 +22,3 @@ function buildActionResponse(message, status = 'OK') {
   };
 }
 
-exports.buildActionResponse = buildActionResponse;

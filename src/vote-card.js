@@ -1,6 +1,5 @@
-const {choiceSection} = require('./helpers/vote');
-const {ICON_URL_48X48} = require('./config/default');
-
+import {choiceSection} from './helpers/vote.js';
+import {ICON_URL_48X48} from './config/default.js';
 /**
  * Builds the card header including the question and author details.
  *
@@ -56,7 +55,7 @@ function sectionHeader(topic, author) {
  * @param {boolean} poll.optionable - Can other user add other option?
  * @returns {object} card
  */
-function buildVoteCard(poll) {
+export function buildVoteCard(poll) {
   const sections = [];
   const state = JSON.stringify(poll);
   const totalVotes = Object.values(poll.votes).reduce((sum, vote) => {
@@ -104,5 +103,3 @@ function buildVoteCard(poll) {
   }
   return card;
 }
-
-exports.buildVoteCard = buildVoteCard;

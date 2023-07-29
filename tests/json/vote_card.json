@@ -68,7 +68,7 @@
       "widgets": [
         {
           "decoratedText": {
-            "bottomLabel": "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 2",
+            "bottomLabel": "██████████████████ 2",
             "text": "Coco Worm",
             "button": {
               "text": "vote",
@@ -103,7 +103,7 @@
       "widgets": [
         {
           "decoratedText": {
-            "bottomLabel": "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 2",
+            "bottomLabel": "██████████████████ 2",
             "text": "Bearded Fireworm",
             "button": {
               "text": "vote",

@@ -19,7 +19,7 @@ const votes = {
   ],
   '4': [],
 };
-const poll = {
+export const dummyPoll = {
   topic: topic,
   author: author,
   choices: choices,
@@ -27,5 +27,3 @@ const poll = {
   anon: false,
   optionable: true,
 };
-
-exports.dummyPoll = poll;

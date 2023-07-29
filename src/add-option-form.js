@@ -4,7 +4,7 @@
  * @param {object} state - the current message state
  * @returns {object} card
  */
-function buildAddOptionForm(state) {
+export function buildAddOptionForm(state) {
   return {
     'header': {
       'title': 'Add a new option/choice',
@@ -43,5 +43,3 @@ function buildAddOptionForm(state) {
     },
   };
 }
-
-exports.buildAddOptionForm = buildAddOptionForm;

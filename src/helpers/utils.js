@@ -5,7 +5,7 @@
  * @param {string} message - the new option name
  * @returns {array} card
  */
-function splitMessage(message) {
+export function splitMessage(message) {
   const expression = /[^\s"]+|"([^"]*)"/gi;
   const result = [];
   let match;
@@ -18,6 +18,3 @@ function splitMessage(message) {
 
   return result;
 }
-
-
-exports.splitMessage = splitMessage;

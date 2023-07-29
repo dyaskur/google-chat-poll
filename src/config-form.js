@@ -1,5 +1,6 @@
-const {splitMessage} = require('./helpers/utils');
-const {MAX_NUM_OF_OPTIONS} = require('./config/default');
+import {splitMessage} from './helpers/utils.js';
+import {MAX_NUM_OF_OPTIONS} from './config/default.js';
+
 /** Upper bounds on number of choices to present. */
 
 /**
@@ -76,7 +77,7 @@ function fixedFooter() {
  * @param {string[]|undefined} options.choices - Text of choices to display to users (optional)
  * @returns {object} card
  */
-function buildConfigurationForm(options) {
+export function buildConfigurationForm(options) {
   const widgets = [];
   widgets.push(helpText());
   widgets.push(topicInput(options.topic));
@@ -134,7 +135,7 @@ function buildConfigurationForm(options) {
  * @param {string} message - message or text after poll command
  * @returns {object} option
  */
-function buildOptionsFromMessage(message) {
+export function buildOptionsFromMessage(message) {
   const explodedMesage = splitMessage(message);
   const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ? explodedMesage[0] : '';
   if (explodedMesage.length > 0) {
@@ -145,6 +146,3 @@ function buildOptionsFromMessage(message) {
     choices: explodedMesage,
   };
 }
-
-exports.buildConfigurationForm = buildConfigurationForm;
-exports.buildOptionsFromMessage = buildOptionsFromMessage;

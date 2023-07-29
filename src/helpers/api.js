@@ -1,6 +1,4 @@
-const {google} = require('googleapis');
-
-// const path = require('path');
+import {google} from 'googleapis';
 
 /**
  * Create google api credentials
@@ -26,7 +24,7 @@ function gAuth() {
  * @param {object} request - request body
  * @returns {object} Response from google api
  */
-async function callMessageApi(action, request) {
+export async function callMessageApi(action, request) {
   const chatApi = gAuth();
   let response;
 
@@ -39,10 +37,9 @@ async function callMessageApi(action, request) {
       response = await chatApi.spaces.messages.get(request);
     }
   } catch (error) {
-    console.error(error, action, JSON.stringify(request), response);
+    console.error('Error:', action, JSON.stringify(request), response);
+    throw new Error(error.toString());
   }
 
   return response;
 }
-
-exports.callMessageApi = callMessageApi;

@@ -8,7 +8,7 @@
  * @param {boolean} isAnonymous - save name or not
  * @returns {object} Map of cast votes keyed by choice index
  */
-function saveVotes(choice, voter, votes, isAnonymous = false) {
+export function saveVotes(choice, voter, votes, isAnonymous = false) {
   Object.keys(votes).forEach(function(choiceIndex) {
     if (votes[choiceIndex]) {
       const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
@@ -37,7 +37,7 @@ function saveVotes(choice, voter, votes, isAnonymous = false) {
  * @param {number} totalVotes - Total votes cast in the poll
  * @returns {string} Text snippet with bar and vote totals
  */
-function progressBarText(voteCount, totalVotes) {
+export function progressBarText(voteCount, totalVotes) {
   if (voteCount === 0 || totalVotes === 0) {
     return '';
   }
@@ -59,7 +59,7 @@ function progressBarText(voteCount, totalVotes) {
  * @param {string} creator - creator of the option
  * @returns {object} card section
  */
-function choiceSection(i, poll, totalVotes, state, creator = '') {
+export function choiceSection(i, poll, totalVotes, state, creator = '') {
   if (poll.votes[i] === undefined) {
     poll.votes[i] = [];
   }
@@ -120,7 +120,3 @@ function choice(index, text, voteCount, totalVotes, state) {
     },
   };
 }
-
-exports.saveVotes = saveVotes;
-exports.progressBarText = progressBarText;
-exports.choiceSection = choiceSection;
