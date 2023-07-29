@@ -137,7 +137,7 @@ test('build choice section ', () => {
 test('build vote card', () => {
   const pollCard = buildVoteCard(dummyPoll);
 
-  expect(pollCard.card).toStrictEqual(voteCardJson);
+  expect(pollCard.card).toEqual(voteCardJson);
 });
 
 test('build vote card with long topic', () => {

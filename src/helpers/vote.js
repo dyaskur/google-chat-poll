@@ -45,7 +45,7 @@ export function progressBarText(voteCount, totalVotes) {
   // For progress bar, calculate share of votes and scale it
   const percentage = (voteCount * 100) / totalVotes;
   const progress = Math.round((percentage / 100) * 35);
-  return '▀'.repeat(progress);
+  return '█'.repeat(progress);
 }
 
 /**
