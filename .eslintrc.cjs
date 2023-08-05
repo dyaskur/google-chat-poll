@@ -4,8 +4,14 @@ module.exports = {
     'node': true,
     'es2021': true,
   },
-  'extends': 'google',
+  // 'extends': 'google',
+    extends: ['google', 'plugin:@typescript-eslint/recommended'],
+
   'overrides': [],
+  'plugins': [
+    '@typescript-eslint',
+  ],
+  'parser': '@typescript-eslint/parser',
   'parserOptions': {
     'ecmaVersion': 'latest',
     'sourceType': 'module',

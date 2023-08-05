@@ -1,3 +1,4 @@
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 /**
  * Creates a small progress bar to show percent of votes for an option. Since
  * width is limited, the percentage is scaled to 20 steps (5% increments).
@@ -63,11 +64,12 @@ export function choiceSection(i, poll, totalVotes, state, creator = '') {
   if (poll.votes[i] === undefined) {
     poll.votes[i] = [];
   }
-  const choiceTag = choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state);
+  const voteCount = poll.votes[i].length;
+  const choiceTag: chatV1.Schema$GoogleAppsCardV1Widget = choice(i, poll.choices[i], voteCount, totalVotes, state);
   if (creator) {
     choiceTag.decoratedText.topLabel = 'Added by '+creator;
   }
-  const section = {
+  const section: chatV1.Schema$GoogleAppsCardV1Section = {
     'widgets': [choiceTag],
   };
   if (poll.votes[i].length > 0 && !poll.anon) {

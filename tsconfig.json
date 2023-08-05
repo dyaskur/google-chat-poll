@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "dist",
+    "allowJs": true,
+    "exactOptionalPropertyTypes": false,
+    "strictBindCallApply": false,
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "strictNullChecks": false
+  },
+  "include": [
+    "src/**/*",
+    "tests/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

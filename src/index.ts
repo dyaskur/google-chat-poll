@@ -1,23 +1,20 @@
+// @#ts-nocheck
+import {HttpFunction} from '@google-cloud/functions-framework/build/src/functions';
+
 import {
   buildConfigurationForm,
   buildOptionsFromMessage,
-} from './src/config-form.js';
-import {buildVoteCard} from './src/vote-card.js';
-import {saveVotes} from './src/helpers/vote.js';
-import {buildAddOptionForm} from './src/add-option-form.js';
-import {callMessageApi} from './src/helpers/api.js';
-import {addOptionToState} from './src/helpers/option.js';
-import {buildActionResponse} from './src/helpers/response.js';
-import {MAX_NUM_OF_OPTIONS} from './src/config/default.js';
-import {splitMessage} from './src/helpers/utils.js';
-
-/**
- * App entry point.
- * @param {object} req - chat event
- * @param {object} res - chat event
- * @returns {void}
- */
-export async function app(req, res) {
+} from './config-form';
+import {buildVoteCard} from './vote-card';
+import {saveVotes} from './helpers/vote';
+import {buildAddOptionForm} from './add-option-form';
+import {callMessageApi} from './helpers/api';
+import {addOptionToState} from './helpers/option';
+import {buildActionResponse} from './helpers/response';
+import {MAX_NUM_OF_OPTIONS} from './config/default';
+import {splitMessage} from './helpers/utils';
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
     res.status(400).send('');
   }
@@ -70,7 +67,7 @@ export async function app(req, res) {
       event.message?.argumentText,
       event.user.displayName, event.user.email, event.space.type,
       event.space.name);
-  let reply = {};
+  let reply: chatV1.Schema$Message;
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
     const message = event.message;
@@ -108,6 +105,7 @@ export async function app(req, res) {
       const choices = splitMessage(argument);
       if (choices.length > 2) {
         const pollCard = buildVoteCard({
+          choiceCreator: undefined,
           topic: choices.shift(),
           author: event.user,
           choices: choices,
@@ -157,7 +155,10 @@ export async function app(req, res) {
       reply = showConfigurationForm(event, true);
     }
   } else if (event.type === 'ADDED_TO_SPACE') {
-    const message = {};
+    const message = {
+      text: undefined,
+      cardsV2: undefined,
+    };
     const spaceType = event.space.type;
     if (spaceType === 'ROOM') {
       message.text = 'Hi there! I\'d be happy to assist you in creating polls to improve collaboration and ' +
@@ -193,7 +194,8 @@ export async function app(req, res) {
     };
   }
   res.json(reply);
-}
+};
+
 
 /**
  * Handles the slash command to display the config form.
@@ -265,7 +267,7 @@ async function startPoll(event) {
   // Valid configuration, build the voting card to display
   // in the space
   const pollCard = buildVoteCard({
-    topic: topic,
+    topic: topic, choiceCreator: undefined,
     author: event.user,
     choices: choices,
     votes: votes,

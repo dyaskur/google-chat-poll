@@ -1,5 +1,5 @@
-import {splitMessage} from './helpers/utils.js';
-import {MAX_NUM_OF_OPTIONS} from './config/default.js';
+import {splitMessage} from './helpers/utils';
+import {MAX_NUM_OF_OPTIONS} from './config/default';
 
 /** Upper bounds on number of choices to present. */
 

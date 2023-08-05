@@ -1,5 +1,7 @@
-import {choiceSection} from './helpers/vote.js';
-import {ICON_URL_48X48} from './config/default.js';
+import {choiceSection} from './helpers/vote';
+import {ICON_URL_48X48} from './config/default';
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+
 /**
  * Builds the card header including the question and author details.
  *
@@ -58,9 +60,9 @@ function sectionHeader(topic, author) {
 export function buildVoteCard(poll) {
   const sections = [];
   const state = JSON.stringify(poll);
-  const totalVotes = Object.values(poll.votes).reduce((sum, vote) => {
-    return sum + vote.length;
-  }, 0);
+
+  const votes: Array<Array<object>> = Object.values(poll.votes);
+  const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
     const creator = poll.choiceCreator?.[i];
     const section = choiceSection(i, poll, totalVotes, state, creator);
@@ -89,7 +91,7 @@ export function buildVoteCard(poll) {
           ],
         });
   }
-  const card = {
+  const card: chatV1.Schema$CardWithId = {
     'cardId': 'unique-card-id',
     'card': {
       sections,

@@ -6,7 +6,7 @@ const choices = [
   'Bearded Fireworm',
   'Giant Tube Worm'];
 const author = {user: 'user/11111', displayName: 'Dyas Yaskur'};
-const votes = {
+const votes: object = {
   '0': [],
   '1': [],
   '2': [

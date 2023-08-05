@@ -1,4 +1,4 @@
-import {buildConfigurationForm, buildOptionsFromMessage} from '../src/config-form.js';
+import {buildConfigurationForm, buildOptionsFromMessage} from '../src/config-form';
 import {default as json} from './json/configuration_form.json';
 
 test('build configuration form', () => {
@@ -23,7 +23,7 @@ test('build options  from message', () => {
 test('build options from empty message', () => {
   const message = '';
   const options = buildOptionsFromMessage(message);
-  const expected = {
+  const expected: object = {
     topic: '',
     choices: [],
   };
@@ -32,7 +32,7 @@ test('build options from empty message', () => {
 
 test('build options from undefined message', () => {
   const options = buildOptionsFromMessage(undefined);
-  const expected = {
+  const expected: object = {
     topic: '',
     choices: [],
   };
