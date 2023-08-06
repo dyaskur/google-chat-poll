@@ -7,6 +7,7 @@ import {dummyPoll} from './dummy';
 test('build add option form', () => {
   const dialog = buildAddOptionForm({
     topic: 'Who is the most handsome AI?',
+    choices: [],
   });
   expect(dialog).toEqual(json);
 });

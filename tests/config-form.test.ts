@@ -9,7 +9,7 @@ test('build configuration form', () => {
   expect(dialog).toEqual(json);
 });
 
-test('build options  from message', () => {
+test('build options from message', () => {
   const message = '"How much your average sleep time?" "5 hours" "6 hours" "7 hours" "8 hours" "9 hours"';
   const options = buildOptionsFromMessage(message);
   const expected = {

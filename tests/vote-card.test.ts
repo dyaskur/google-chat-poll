@@ -2,10 +2,11 @@ import {dummyPoll} from './dummy';
 import {buildVoteCard} from '../src/vote-card';
 import voteCardJson from './json/vote_card.json';
 import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
+import {Votes} from '../src/helpers/interfaces';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
-  const votes: object = {
+  const votes: Votes = {
     '0': [],
     '1': [],
     '2': [{uid: 'users/118239915905237561078', name: 'Yaskur'}],
@@ -45,7 +46,7 @@ test('test save voter', () => {
 });
 test('test save voter anonymously', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
-  const votes: object = {
+  const votes: Votes = {
     '0': [],
     '1': [],
     '2': [],
