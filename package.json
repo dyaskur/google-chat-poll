@@ -8,8 +8,8 @@
     "coverage": "coveralls < coverage/lcov.info",
     "build": "tsc",
     "start": "functions-framework --target=app",
-    "prestart": "npm run build",
-    "gcp-build": "npm run build"
+    "prestart": "yarn build",
+    "gcp-build": "yarn build"
   },
   "keywords": [],
   "author": "",

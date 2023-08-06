@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2022",
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -15,8 +15,7 @@
     "strictNullChecks": false
   },
   "include": [
-    "src/**/*",
-    "tests/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules"
