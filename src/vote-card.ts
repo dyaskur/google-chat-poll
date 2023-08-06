@@ -1,16 +1,16 @@
 import {choiceSection} from './helpers/vote';
 import {ICON_URL_48X48} from './config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
-import {PollProperties, Voter} from './helpers/interfaces';
+import {PollState, Voter} from './helpers/interfaces';
 
 /**
  * Builds the card header including the question and author details.
  *
  * @param {string} topic - Topic of the poll
  * @param {string} author - Display name of user that created the poll
- * @returns {object} card widget
+ * @returns {chatV1.Schema$GoogleAppsCardV1CardHeader} card header
  */
-function cardHeader(topic: string, author: string) {
+function cardHeader(topic: string, author: string): chatV1.Schema$GoogleAppsCardV1CardHeader {
   return {
     title: topic,
     subtitle: `Posted by ${author}`,
@@ -20,14 +20,13 @@ function cardHeader(topic: string, author: string) {
 }
 
 /**
- * Builds the section header if the topic is too long
+ * Builds the section header using decoratedText instead of card header if the topic title is too long
  *
  * @param {string} topic - Topic of the poll
  * @param {string} author - Display name of user that created the poll
- * @returns {object} card section
+ * @returns {chatV1.Schema$GoogleAppsCardV1Section} card section
  */
-function sectionHeader(
-    topic: string, author: string): chatV1.Schema$GoogleAppsCardV1Section {
+function sectionHeader(topic: string, author: string): chatV1.Schema$GoogleAppsCardV1Section {
   return {
     widgets: [
       {
@@ -49,28 +48,28 @@ function sectionHeader(
 /**
  * Builds the configuration form.
  *
- * @param {object} poll - Current state of poll
- * @param {object} poll.author - User that submitted the poll
- * @param {string} poll.topic - Topic of poll
- * @param {string[]} poll.choices - Text of choices to display to users
- * @param {object} poll.votes - Map of cast votes keyed by choice index
- * @param {object} poll.choiceCreator - Map of cast votes keyed by choice index
- * @param {boolean} poll.anon - Is anonymous?(will save voter name or not)
- * @param {boolean} poll.optionable - Can other user add other option?
+ * @param {object} state - Current state of poll
+ * @param {object} state.author - User that submitted the poll
+ * @param {string} state.topic - Topic of poll
+ * @param {string[]} state.choices - Text of choices to display to users
+ * @param {object} state.votes - Map of cast votes keyed by choice index
+ * @param {object} state.choiceCreator - Map of cast votes keyed by choice index
+ * @param {boolean} state.anon - Is anonymous?(will save voter name or not)
+ * @param {boolean} state.optionable - Can other user add other option?
  * @returns {object} card
  */
-export function buildVoteCard(poll: PollProperties) {
+export function buildVoteCard(state: PollState) {
   const sections = [];
-  const state = JSON.stringify(poll);
+  const stateString = JSON.stringify(state);
 
-  const votes: Array<Array<Voter>> = Object.values(poll.votes);
+  const votes: Array<Array<Voter>> = Object.values(state.votes);
   const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
-  for (let i = 0; i < poll.choices.length; ++i) {
-    const creator = poll.choiceCreator?.[i];
-    const section = choiceSection(i, poll, totalVotes, state, creator);
+  for (let i = 0; i < state.choices.length; ++i) {
+    const creator = state.choiceCreator?.[i];
+    const section = choiceSection(i, state, totalVotes, stateString, creator);
     sections.push(section);
   }
-  if (poll.optionable) {
+  if (state.optionable) {
     sections.push(
         {
           'widgets': [
@@ -99,11 +98,11 @@ export function buildVoteCard(poll: PollProperties) {
       sections,
     },
   };
-  if (poll.topic.length > 40) {
-    const widgetHeader = sectionHeader(poll.topic, poll.author.displayName);
+  if (state.topic.length > 40) {
+    const widgetHeader = sectionHeader(state.topic, state.author.displayName);
     card.card.sections = [widgetHeader, ...sections];
   } else {
-    card.card.header = cardHeader(poll.topic, poll.author.displayName);
+    card.card.header = cardHeader(state.topic, state.author.displayName);
   }
   return card;
 }
