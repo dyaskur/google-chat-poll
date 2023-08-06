@@ -14,11 +14,12 @@ import {buildActionResponse} from './helpers/response';
 import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {splitMessage} from './helpers/utils';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {Voter, Votes} from './helpers/interfaces';
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
     res.status(400).send('');
   }
-  const buttonCard = {
+  const buttonCard: chatV1.Schema$CardWithId = {
     'cardId': 'welcome-card',
     'card': {
       'sections': [
@@ -155,7 +156,7 @@ export const app: HttpFunction = async (req, res) => {
       reply = showConfigurationForm(event, true);
     }
   } else if (event.type === 'ADDED_TO_SPACE') {
-    const message = {
+    const message: chatV1.Schema$Message = {
       text: undefined,
       cardsV2: undefined,
     };
@@ -184,7 +185,7 @@ export const app: HttpFunction = async (req, res) => {
           ' We are always here to help you and your team';
     }
 
-    message.cardsV2 = buttonCard;
+    message.cardsV2 = [buttonCard];
 
     reply = {
       actionResponse: {
@@ -204,7 +205,7 @@ export const app: HttpFunction = async (req, res) => {
  * @param {boolean} isBlank - fill with text from message or note
  * @returns {object} Response to send back to Chat
  */
-function showConfigurationForm(event, isBlank = false) {
+function showConfigurationForm(event: chatV1.Schema$DeprecatedEvent, isBlank = false) {
   // Seed the topic with any text after the slash command
   const message = isBlank ? '' : event.message?.argumentText?.trim();
   const options = buildOptionsFromMessage(message);
@@ -227,7 +228,7 @@ function showConfigurationForm(event, isBlank = false) {
  * @param {object} event - chat event
  * @returns {object} Response to send back to Chat
  */
-async function startPoll(event) {
+async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
   // Get the form values
   const formValues = event.common?.formInputs;
   const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
@@ -236,7 +237,7 @@ async function startPoll(event) {
   const allowAddOption = formValues?.['allow_add_option']?.stringInputs.value[0] ===
       '1';
   const choices = [];
-  const votes = {};
+  const votes: Votes = {};
 
   for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
     const choice = formValues?.[`option${i}`]?.stringInputs.value[0]?.trim();
@@ -296,13 +297,13 @@ async function startPoll(event) {
  * @param {object} event - chat event
  * @returns {object} Response to send back to Chat
  */
-function recordVote(event) {
+function recordVote(event: chatV1.Schema$DeprecatedEvent) {
   const parameters = event.common?.parameters;
 
   const choice = parseInt(parameters['index']);
   const userId = event.user.name;
   const userName = event.user.displayName;
-  const voter = {uid: userId, name: userName};
+  const voter: Voter = {uid: userId, name: userName};
   const state = JSON.parse(parameters['state']);
 
   // Add or update the user's selected option
@@ -325,7 +326,7 @@ function recordVote(event) {
  *
  * @returns {object} open a dialog.
  */
-function addOptionForm(event) {
+function addOptionForm(event: chatV1.Schema$DeprecatedEvent) {
   const card = event.message.cardsV2[0].card;
   const stateJson = card.sections[0].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value ||
       card.sections[1].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value;
@@ -351,7 +352,7 @@ function addOptionForm(event) {
  * @param {object} event - chat event
  * @returns {object} Response to send back to Chat
  */
-async function saveOption(event) {
+async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
   const userName = event.user.displayName;
 
   const parameters = event.common?.parameters;

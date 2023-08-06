@@ -1,4 +1,5 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {PollProperties, Voter, Votes} from './interfaces';
 /**
  * Creates a small progress bar to show percent of votes for an option. Since
  * width is limited, the percentage is scaled to 20 steps (5% increments).
@@ -9,7 +10,7 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
  * @param {boolean} isAnonymous - save name or not
  * @returns {object} Map of cast votes keyed by choice index
  */
-export function saveVotes(choice, voter, votes, isAnonymous = false) {
+export function saveVotes(choice: number, voter: Voter, votes: Votes, isAnonymous = false) {
   Object.keys(votes).forEach(function(choiceIndex) {
     if (votes[choiceIndex]) {
       const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
@@ -38,7 +39,7 @@ export function saveVotes(choice, voter, votes, isAnonymous = false) {
  * @param {number} totalVotes - Total votes cast in the poll
  * @returns {string} Text snippet with bar and vote totals
  */
-export function progressBarText(voteCount, totalVotes) {
+export function progressBarText(voteCount: number, totalVotes:number) {
   if (voteCount === 0 || totalVotes === 0) {
     return '';
   }
@@ -60,7 +61,7 @@ export function progressBarText(voteCount, totalVotes) {
  * @param {string} creator - creator of the option
  * @returns {object} card section
  */
-export function choiceSection(i, poll, totalVotes, state, creator = '') {
+export function choiceSection(i: number, poll: PollProperties, totalVotes: number, state: string, creator = '') {
   if (poll.votes[i] === undefined) {
     poll.votes[i] = [];
   }
@@ -95,7 +96,7 @@ export function choiceSection(i, poll, totalVotes, state, creator = '') {
  * @param {string} state - Serialized state to send in events
  * @returns {object} card widget
  */
-function choice(index, text, voteCount, totalVotes, state) {
+function choice(index: number, text: string, voteCount: number, totalVotes: number, state: string) {
   const progressBar = progressBarText(voteCount, totalVotes);
   return {
     decoratedText: {

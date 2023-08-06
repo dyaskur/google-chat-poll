@@ -1,10 +1,13 @@
+import {PollProperties} from './helpers/interfaces';
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+
 /**
  * Build the add option form.
  *
  * @param {object} state - the current message state
  * @returns {object} card
  */
-export function buildAddOptionForm(state) {
+export function buildAddOptionForm(state: PollProperties): chatV1.Schema$GoogleAppsCardV1Card {
   return {
     'header': {
       'title': 'Add a new option/choice',

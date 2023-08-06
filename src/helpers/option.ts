@@ -1,3 +1,5 @@
+import {PollProperties} from './interfaces';
+
 /**
  * Add a new option to the state(like DB)
  *
@@ -6,7 +8,7 @@
  * @param {string} creator - who add the new option
  * @returns {void} card
  */
-export function addOptionToState(option, state, creator = '') {
+export function addOptionToState(option: string, state: PollProperties, creator = '') {
   const choiceLength = state.choices.length;
   state.choices.push(option);
   if (state.choiceCreator === undefined) {

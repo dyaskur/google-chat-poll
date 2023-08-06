@@ -9,7 +9,7 @@
     "allowJs": true,
     "exactOptionalPropertyTypes": false,
     "strictBindCallApply": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "resolveJsonModule": true,
     "downlevelIteration": true,
     "strictNullChecks": false

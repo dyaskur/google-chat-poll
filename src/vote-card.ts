@@ -1,6 +1,7 @@
 import {choiceSection} from './helpers/vote';
 import {ICON_URL_48X48} from './config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {PollProperties, Voter} from './helpers/interfaces';
 
 /**
  * Builds the card header including the question and author details.
@@ -9,7 +10,7 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
  * @param {string} author - Display name of user that created the poll
  * @returns {object} card widget
  */
-function cardHeader(topic, author) {
+function cardHeader(topic: string, author: string) {
   return {
     title: topic,
     subtitle: `Posted by ${author}`,
@@ -25,7 +26,8 @@ function cardHeader(topic, author) {
  * @param {string} author - Display name of user that created the poll
  * @returns {object} card section
  */
-function sectionHeader(topic, author) {
+function sectionHeader(
+    topic: string, author: string): chatV1.Schema$GoogleAppsCardV1Section {
   return {
     widgets: [
       {
@@ -57,11 +59,11 @@ function sectionHeader(topic, author) {
  * @param {boolean} poll.optionable - Can other user add other option?
  * @returns {object} card
  */
-export function buildVoteCard(poll) {
+export function buildVoteCard(poll: PollProperties) {
   const sections = [];
   const state = JSON.stringify(poll);
 
-  const votes: Array<Array<object>> = Object.values(poll.votes);
+  const votes: Array<Array<Voter>> = Object.values(poll.votes);
   const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
   for (let i = 0; i < poll.choices.length; ++i) {
     const creator = poll.choiceCreator?.[i];
