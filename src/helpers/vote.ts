@@ -63,20 +63,25 @@ export function progressBarText(voteCount: number, totalVotes: number) {
  * @returns {chatV1.Schema$GoogleAppsCardV1Section} card section
  */
 export function choiceSection(i: number, state: PollState, totalVotes: number, serializedState: string, creator = '') {
+  if (state.votes === undefined) {
+    state.votes = {};
+  }
+
   if (state.votes[i] === undefined) {
     state.votes[i] = [];
   }
   const voteCount = state.votes[i].length;
   const choiceTag = choice(i, state.choices[i], voteCount, totalVotes, serializedState);
   if (creator) {
-    choiceTag.decoratedText.topLabel = 'Added by ' + creator;
+    choiceTag.decoratedText!.topLabel = 'Added by ' + creator;
   }
   const section: chatV1.Schema$GoogleAppsCardV1Section = {
-    'widgets': [choiceTag],
+    widgets: [choiceTag],
   };
   if (state.votes[i].length > 0 && !state.anon) {
     section.collapsible = true;
     section.uncollapsibleWidgetsCount = 1;
+    // @ts-ignore: already defined above
     section.widgets.push({
       'textParagraph': {
         'text': state.votes[i].map((u) => u.name).join(', '),
@@ -98,8 +103,8 @@ export function choiceSection(i: number, state: PollState, totalVotes: number, s
  * @returns {chatV1.Schema$GoogleAppsCardV1Widget} card widget
  */
 function choice(
-    index: number, text: string, voteCount: number, totalVotes: number,
-    state: string): chatV1.Schema$GoogleAppsCardV1Widget {
+  index: number, text: string, voteCount: number, totalVotes: number,
+  state: string): chatV1.Schema$GoogleAppsCardV1Widget {
   const progressBar = progressBarText(voteCount, totalVotes);
   return {
     decoratedText: {

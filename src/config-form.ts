@@ -26,7 +26,7 @@ function helpText() {
  * @returns {object} card widget
  */
 function optionInput(
-    index: number, value: string): chatV1.Schema$GoogleAppsCardV1Widget {
+  index: number, value: string): chatV1.Schema$GoogleAppsCardV1Widget {
   return {
     textInput: {
       label: `Option ${index + 1}`,
@@ -141,8 +141,8 @@ export function buildConfigurationForm(options: PollState): chatV1.Schema$Google
 export function buildOptionsFromMessage(message: string): PollState {
   const explodedMesage = splitMessage(message);
   const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ?
-      explodedMesage[0] :
-      '';
+    explodedMesage[0] :
+    '';
   if (explodedMesage.length > 0) {
     explodedMesage.shift();
   }

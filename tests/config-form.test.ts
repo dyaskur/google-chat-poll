@@ -31,7 +31,7 @@ test('build options from empty message', () => {
 });
 
 test('build options from undefined message', () => {
-  const options = buildOptionsFromMessage(undefined);
+  const options = buildOptionsFromMessage('');
   const expected: object = {
     topic: '',
     choices: [],

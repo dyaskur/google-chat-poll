@@ -83,34 +83,34 @@ test('build choice section ', () => {
   const normalChoice = choiceSection(2, dummyPoll, 4, state, 'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
-      toStrictEqual({
-        'collapsible': true,
-        'uncollapsibleWidgetsCount': 1,
-        'widgets': [
-          {
-            'decoratedText': {
-              'topLabel': 'Added by Muhammad Dyas Yaskur',
-              'bottomLabel': progressBarText(2, 4) + ' 2',
-              'button': {
-                'onClick': {
-                  'action': {
-                    'function': 'vote',
-                    'parameters': [
-                      {
-                        'key': 'state',
-                        'value': JSON.stringify(dummyPoll),
-                      }, {'key': 'index', 'value': '2'}],
-                  },
-                }, 'text': 'vote',
-              },
-              'text': 'Coco Worm',
+    toStrictEqual({
+      'collapsible': true,
+      'uncollapsibleWidgetsCount': 1,
+      'widgets': [
+        {
+          'decoratedText': {
+            'topLabel': 'Added by Muhammad Dyas Yaskur',
+            'bottomLabel': progressBarText(2, 4) + ' 2',
+            'button': {
+              'onClick': {
+                'action': {
+                  'function': 'vote',
+                  'parameters': [
+                    {
+                      'key': 'state',
+                      'value': JSON.stringify(dummyPoll),
+                    }, {'key': 'index', 'value': '2'}],
+                },
+              }, 'text': 'vote',
             },
-          }, {'textParagraph': {'text': 'Isa bin Maryam, Musa bin Imran'}}],
-      });
+            'text': 'Coco Worm',
+          },
+        }, {'textParagraph': {'text': 'Isa bin Maryam, Musa bin Imran'}}],
+    });
 
   dummyPoll.anon = true;
   const anonymousChoice = choiceSection(2, dummyPoll, 4,
-      JSON.stringify(dummyPoll));
+    JSON.stringify(dummyPoll));
   expect(anonymousChoice).toStrictEqual({
     'widgets': [
       {
@@ -145,6 +145,7 @@ test('build vote card with long topic', () => {
   dummyPoll.topic = '12345678901234567890123456789012345678901234567890';
   const pollCard = buildVoteCard(dummyPoll);
 
-  expect(pollCard.card.header).toBeUndefined();
+  expect(pollCard.card?.header).toBeUndefined();
+  // @ts-ignore: should not error
   expect(pollCard.card.sections[0].widgets[0].decoratedText.text).toBe(dummyPoll.topic);
 });
