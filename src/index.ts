@@ -15,6 +15,7 @@ import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {splitMessage} from './helpers/utils';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {Voter, Votes} from './helpers/interfaces';
+
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
     res.status(400).send('');
@@ -64,11 +65,19 @@ export const app: HttpFunction = async (req, res) => {
   };
   const event = req.body;
   console.log(event.type,
-      event.common?.invokedFunction || event.message?.slashCommand?.commandId ||
-      event.message?.argumentText,
-      event.user.displayName, event.user.email, event.space.type,
-      event.space.name);
-  let reply: chatV1.Schema$Message;
+    event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
+    event.user.displayName, event.user.email, event.space.type, event.space.name);
+  console.log(JSON.stringify(event.message.cardsV2));
+  console.log(JSON.stringify(event.user));
+  let reply: chatV1.Schema$Message = {
+    thread: event.message.thread,
+    actionResponse: {
+      type: 'NEW_MESSAGE',
+    },
+    text: 'Hi! To create a poll, you can use the */poll* command. \n \n' +
+      'Alternatively, you can create poll by mentioning me with question and answers. ' +
+      'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
+  };
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
     const message = event.message;
@@ -81,15 +90,15 @@ export const app: HttpFunction = async (req, res) => {
           type: 'NEW_MESSAGE',
         },
         text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-            'in decision-making using Google Chat™.\n' +
-            '\n' +
-            'Below is an example commands:\n' +
-            '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-            '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-            '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-            '\n' +
-            'We hope you find our service useful and please don\'t hesitate to contact us ' +
-            'if you have any questions or concerns.',
+          'in decision-making using Google Chat™.\n' +
+          '\n' +
+          'Below is an example commands:\n' +
+          '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
+          '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
+          '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
+          '\n' +
+          'We hope you find our service useful and please don\'t hesitate to contact us ' +
+          'if you have any questions or concerns.',
       };
     } else if (message.text) {
       const argument = event.message?.argumentText?.trim().toLowerCase();
@@ -100,14 +109,14 @@ export const app: HttpFunction = async (req, res) => {
           type: 'NEW_MESSAGE',
         },
         text: 'Hi! To create a poll, you can use the */poll* command. \n \n' +
-            'Alternatively, you can create poll by mentioning me with question and answers. ' +
-            'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
+          'Alternatively, you can create poll by mentioning me with question and answers. ' +
+          'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
       };
       const choices = splitMessage(argument);
       if (choices.length > 2) {
         const pollCard = buildVoteCard({
           choiceCreator: undefined,
-          topic: choices.shift(),
+          topic: choices.shift() ?? '',
           author: event.user,
           choices: choices,
           votes: {},
@@ -128,15 +137,15 @@ export const app: HttpFunction = async (req, res) => {
 
       if (argument === 'help') {
         reply.text = 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-            'in decision-making using Google Chat™.\n' +
-            '\n' +
-            'Below is an example commands:\n' +
-            '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-            '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-            '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-            '\n' +
-            'We hope you find our service useful and please don\'t hesitate to contact us ' +
-            'if you have any questions or concerns.';
+          'in decision-making using Google Chat™.\n' +
+          '\n' +
+          'Below is an example commands:\n' +
+          '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
+          '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
+          '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
+          '\n' +
+          'We hope you find our service useful and please don\'t hesitate to contact us ' +
+          'if you have any questions or concerns.';
         // reply.cardsV2 = buttonCard;
       } else if (argument === 'test') {
         reply.text = 'test search on <a href=\'http://www.google.com\'>google</a> (https://google.com)[https://google.com]';
@@ -163,26 +172,26 @@ export const app: HttpFunction = async (req, res) => {
     const spaceType = event.space.type;
     if (spaceType === 'ROOM') {
       message.text = 'Hi there! I\'d be happy to assist you in creating polls to improve collaboration and ' +
-          'decision-making efficiency on Google Chat™.\n' +
-          '\n' +
-          'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
-          'You can also test our app in a direct message if you prefer.\n' +
-          '\n' +
-          'Alternatively, you can ' +
-          'You can also test our app in a direct message if you prefer.\n' +
-          '\n' +
-          'We hope you find our service useful and please don\'t hesitate to contact us ' +
-          'if you have any questions or concerns.';
+        'decision-making efficiency on Google Chat™.\n' +
+        '\n' +
+        'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
+        'You can also test our app in a direct message if you prefer.\n' +
+        '\n' +
+        'Alternatively, you can ' +
+        'You can also test our app in a direct message if you prefer.\n' +
+        '\n' +
+        'We hope you find our service useful and please don\'t hesitate to contact us ' +
+        'if you have any questions or concerns.';
     } else if (spaceType === 'DM') {
       message.text = 'Hey there! ' +
-          'Before creating a poll in a group space, you can test it out here in a direct message.\n' +
-          '\n' +
-          'To create a poll, you can use the */poll* command or click on the "Create Poll" button below.\n' +
-          '\n' +
-          'Thank you for using our bot. We hope that it will prove to be a valuable tool for you and your team.\n' +
-          '\n' +
-          'Don\'t hesitate to reach out if you have any questions or concerns in the future.' +
-          ' We are always here to help you and your team';
+        'Before creating a poll in a group space, you can test it out here in a direct message.\n' +
+        '\n' +
+        'To create a poll, you can use the */poll* command or click on the "Create Poll" button below.\n' +
+        '\n' +
+        'Thank you for using our bot. We hope that it will prove to be a valuable tool for you and your team.\n' +
+        '\n' +
+        'Don\'t hesitate to reach out if you have any questions or concerns in the future.' +
+        ' We are always here to help you and your team';
     }
 
     message.cardsV2 = [buttonCard];
@@ -197,7 +206,6 @@ export const app: HttpFunction = async (req, res) => {
   res.json(reply);
 };
 
-
 /**
  * Handles the slash command to display the config form.
  *
@@ -207,7 +215,7 @@ export const app: HttpFunction = async (req, res) => {
  */
 function showConfigurationForm(event: chatV1.Schema$DeprecatedEvent, isBlank = false) {
   // Seed the topic with any text after the slash command
-  const message = isBlank ? '' : event.message?.argumentText?.trim();
+  const message = isBlank ? '' : event.message?.argumentText?.trim() ?? '';
   const options = buildOptionsFromMessage(message);
   const dialog = buildConfigurationForm(options);
   return {
@@ -231,16 +239,14 @@ function showConfigurationForm(event: chatV1.Schema$DeprecatedEvent, isBlank = f
 async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
   // Get the form values
   const formValues = event.common?.formInputs;
-  const topic = formValues?.['topic']?.stringInputs.value[0]?.trim();
-  const isAnonymous = formValues?.['is_anonymous']?.stringInputs.value[0] ===
-      '1';
-  const allowAddOption = formValues?.['allow_add_option']?.stringInputs.value[0] ===
-      '1';
+  const topic = formValues?.['topic']?.stringInputs?.value?.[0]?.trim() ?? '';
+  const isAnonymous = formValues?.['is_anonymous']?.stringInputs?.value?.[0] === '1';
+  const allowAddOption = formValues?.['allow_add_option']?.stringInputs?.value?.[0] === '1';
   const choices = [];
   const votes: Votes = {};
 
   for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
-    const choice = formValues?.[`option${i}`]?.stringInputs.value[0]?.trim();
+    const choice = formValues?.[`option${i}`]?.stringInputs?.value?.[0]?.trim();
     if (choice) {
       choices.push(choice);
       votes[i] = [];
@@ -264,9 +270,6 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
       },
     };
   }
-
-  // Valid configuration, build the voting card to display
-  // in the space
   const pollCard = buildVoteCard({
     topic: topic, choiceCreator: undefined,
     author: event.user,
@@ -275,11 +278,12 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
     anon: isAnonymous,
     optionable: allowAddOption,
   });
+  // Valid configuration, build the voting card to display in the space
   const message = {
     cardsV2: [pollCard],
   };
   const request = {
-    parent: event.space.name,
+    parent: event.space?.name,
     requestBody: message,
   };
   const apiResponse = await callMessageApi('create', request);
@@ -299,10 +303,12 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
  */
 function recordVote(event: chatV1.Schema$DeprecatedEvent) {
   const parameters = event.common?.parameters;
-
+  if (!(parameters?.['index'])) {
+    throw new Error('Index Out of Bounds');
+  }
   const choice = parseInt(parameters['index']);
-  const userId = event.user.name;
-  const userName = event.user.displayName;
+  const userId = event.user?.name ?? '';
+  const userName = event.user?.displayName ?? '';
   const voter: Voter = {uid: userId, name: userName};
   const state = JSON.parse(parameters['state']);
 
@@ -311,7 +317,7 @@ function recordVote(event: chatV1.Schema$DeprecatedEvent) {
 
   const card = buildVoteCard(state);
   return {
-    thread: event.message.thread,
+    thread: event.message?.thread,
     actionResponse: {
       type: 'UPDATE_MESSAGE',
     },
@@ -327,9 +333,9 @@ function recordVote(event: chatV1.Schema$DeprecatedEvent) {
  * @returns {object} open a dialog.
  */
 function addOptionForm(event: chatV1.Schema$DeprecatedEvent) {
-  const card = event.message.cardsV2[0].card;
-  const stateJson = card.sections[0].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value ||
-      card.sections[1].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value;
+  const card = event.message!.cardsV2?.[0]?.card;
+  // @ts-ignore: because too long
+  const stateJson = (card.sections[0].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value || card.sections[1].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value) ?? '';
   const state = JSON.parse(stateJson);
   const dialog = buildAddOptionForm(state);
   return {
@@ -349,16 +355,14 @@ function addOptionForm(event: chatV1.Schema$DeprecatedEvent) {
  * Handle the custom vote action. Updates the state to record
  * the user's vote then rerenders the card.
  *
- * @param {object} event - chat event
+ * @param {chatV1.Schema$DeprecatedEvent} event - chat event
  * @returns {object} Response to send back to Chat
  */
 async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
-  const userName = event.user.displayName;
-
-  const parameters = event.common?.parameters;
-  const state = JSON.parse(parameters['state']);
+  const userName = event.user?.displayName ?? '';
+  const state = getEventPollState(event);
   const formValues = event.common?.formInputs;
-  const optionValue = formValues?.['value']?.stringInputs.value[0]?.trim();
+  const optionValue = formValues?.['value']?.stringInputs?.value?.[0]?.trim() || '';
   addOptionToState(optionValue, state, userName);
 
   const card = buildVoteCard(state);
@@ -366,7 +370,7 @@ async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
     cardsV2: [card],
   };
   const request = {
-    name: event.message.name,
+    name: event!.message!.name,
     requestBody: message,
     updateMask: 'cardsV2',
   };
@@ -376,4 +380,13 @@ async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
   } else {
     return buildActionResponse('Failed to add option.', 'UNKNOWN');
   }
+}
+
+function getEventPollState(event: chatV1.Schema$DeprecatedEvent) {
+  const parameters = event.common?.parameters;
+  const state = parameters?.['state'];
+  if (!state) {
+    throw new ReferenceError('no valid state in the event');
+  }
+  return JSON.parse(state);
 }

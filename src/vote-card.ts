@@ -56,41 +56,57 @@ function sectionHeader(topic: string, author: string): chatV1.Schema$GoogleAppsC
  * @param {object} state.choiceCreator - Map of cast votes keyed by choice index
  * @param {boolean} state.anon - Is anonymous?(will save voter name or not)
  * @param {boolean} state.optionable - Can other user add other option?
- * @returns {object} card
+ * @returns {chatV1.Schema$CardWithId} card
  */
 export function buildVoteCard(state: PollState) {
   const sections = [];
   const stateString = JSON.stringify(state);
 
-  const votes: Array<Array<Voter>> = Object.values(state.votes);
+  const votes: Array<Array<Voter>> = Object.values(state.votes!);
   const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
   for (let i = 0; i < state.choices.length; ++i) {
     const creator = state.choiceCreator?.[i];
     const section = choiceSection(i, state, totalVotes, stateString, creator);
     sections.push(section);
   }
+  const buttons = [];
   if (state.optionable) {
+    buttons.push({
+      'text': 'Add Option',
+      'onClick': {
+        'action': {
+          'function': 'add_option_form',
+          'interaction': 'OPEN_DIALOG',
+          'parameters': [],
+        },
+      },
+    });
+  }
+  if (state.closable) {
+    buttons.push(
+      {
+        'text': 'Close Poll',
+        'onClick': {
+          'action': {
+            'function': 'close_poll_form',
+            'interaction': 'OPEN_DIALOG',
+            'parameters': [],
+          },
+        },
+      });
+  }
+
+  if (buttons.length > 0) {
     sections.push(
-        {
-          'widgets': [
-            {
-              'buttonList': {
-                'buttons': [
-                  {
-                    'text': 'Add Option',
-                    'onClick': {
-                      'action': {
-                        'function': 'add_option_form',
-                        'interaction': 'OPEN_DIALOG',
-                        'parameters': [],
-                      },
-                    },
-                  },
-                ],
-              },
+      {
+        'widgets': [
+          {
+            'buttonList': {
+              buttons,
             },
-          ],
-        });
+          },
+        ],
+      });
   }
   const card: chatV1.Schema$CardWithId = {
     'cardId': 'unique-card-id',
@@ -98,11 +114,12 @@ export function buildVoteCard(state: PollState) {
       sections,
     },
   };
+  const authorName = state.author?.displayName ?? '';
   if (state.topic.length > 40) {
-    const widgetHeader = sectionHeader(state.topic, state.author.displayName);
-    card.card.sections = [widgetHeader, ...sections];
+    const widgetHeader = sectionHeader(state.topic, authorName);
+    card.card!.sections = [widgetHeader, ...sections];
   } else {
-    card.card.header = cardHeader(state.topic, state.author.displayName);
+    card.card!.header = cardHeader(state.topic, authorName);
   }
   return card;
 }

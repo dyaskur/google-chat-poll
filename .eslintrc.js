@@ -4,15 +4,14 @@ module.exports = {
     'node': true,
     'es2021': true,
   },
-  // 'extends': 'google',
-    extends: ['google', 'plugin:@typescript-eslint/recommended'],
+  'extends': ['google', 'plugin:@typescript-eslint/recommended'],
 
   'overrides': [],
   'plugins': [
     '@typescript-eslint',
   ],
-  'parser': '@typescript-eslint/parser',
   'parserOptions': {
+    'parser': '@typescript-eslint/parser',
     'ecmaVersion': 'latest',
     'sourceType': 'module',
   },
@@ -24,5 +23,24 @@ module.exports = {
       2, {
         'prefer': {'return': 'returns'},
       }],
+    'require-jsdoc': 0,
+    '@typescript-eslint/ban-ts-comment': [
+      'error', {'ts-ignore': 'allow-with-description'},
+    ],
+    'indent': [
+      'error',
+      2,
+      {
+        'SwitchCase': 1,
+      },
+    ],
+    'linebreak-style': [
+      'error',
+      'unix',
+    ],
+    'quotes': [
+      'error',
+      'single',
+    ],
   },
 };
