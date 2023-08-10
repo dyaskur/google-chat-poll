@@ -1,5 +1,4 @@
 # Google Chat Poll Bot
-#### An interactive poll app for google chat with Node.js (originally from [Google codelabs](https://codelabs.developers.google.com/codelabs/google-chat-poll-bot))
 
 [![StyleCI](https://github.styleci.io/repos/600267700/shield?branch=master)](https://styleci.io/repos/600267700)
 [![Github Action](https://github.com/dyaskur/google-chat-poll/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/dyaskur/google-chat-poll/actions) 
@@ -16,6 +15,13 @@
 
 This is just a bunch of code that I use to learn more about serverless and also google chat apps using note JS.
 
+
+For anyone who is interested, you can install my application using the following URL:
+https://workspace.google.com/marketplace/app/absolute_poll/687007803052
+
+I also have a landing page for the application, although I must admit it was created more out of necessity for Google's review requirements rather than as a serious component:
+https://absolute-poll.yaskur.com/
+
 Original Feature:
 - Create poll
 - Record vote
@@ -28,17 +34,18 @@ What I updated are:
 - Save voter names
 - Anonymous vote
 - Add more option after poll is created
+- Migrated to Typescript
 
 Todo:
 
  - Close the poll
  - Max vote(expired) time
  - Multiple choice vote(1 user can vote on more than 1 choice)
+ - Duplicate Poll
  - Save state to database
+ - Schedule poll
  - Other features (suggest me please...)
  - Deno or Cloudflare worker support (hopefully can)
- - Migrate to ES6 implementation
- - Migrate to Typescript
  - Migrate to Golang (will create another repo)
 
 
