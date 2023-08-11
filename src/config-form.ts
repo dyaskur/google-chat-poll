@@ -1,5 +1,7 @@
-import {splitMessage} from './helpers/utils.js';
-import {MAX_NUM_OF_OPTIONS} from './config/default.js';
+import {splitMessage} from './helpers/utils';
+import {MAX_NUM_OF_OPTIONS} from './config/default';
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {PollState} from './helpers/interfaces';
 
 /** Upper bounds on number of choices to present. */
 
@@ -23,7 +25,8 @@ function helpText() {
  * @param {string|undefined} value - Initial value to render (optional)
  * @returns {object} card widget
  */
-function optionInput(index, value) {
+function optionInput(
+  index: number, value: string): chatV1.Schema$GoogleAppsCardV1Widget {
   return {
     textInput: {
       label: `Option ${index + 1}`,
@@ -40,13 +43,13 @@ function optionInput(index, value) {
  * @param {string|undefined} topic - Initial value to render (optional)
  * @returns {object} card widget
  */
-function topicInput(topic) {
+function topicInput(topic: string) {
   return {
     textInput: {
       label: 'Topic',
       type: 'MULTIPLE_LINE',
       name: 'topic',
-      value: topic || '',
+      value: topic,
     },
   };
 }
@@ -77,7 +80,7 @@ function fixedFooter() {
  * @param {string[]|undefined} options.choices - Text of choices to display to users (optional)
  * @returns {object} card
  */
-export function buildConfigurationForm(options) {
+export function buildConfigurationForm(options: PollState): chatV1.Schema$GoogleAppsCardV1Card {
   const widgets = [];
   widgets.push(helpText());
   widgets.push(topicInput(options.topic));
@@ -135,9 +138,11 @@ export function buildConfigurationForm(options) {
  * @param {string} message - message or text after poll command
  * @returns {object} option
  */
-export function buildOptionsFromMessage(message) {
+export function buildOptionsFromMessage(message: string): PollState {
   const explodedMesage = splitMessage(message);
-  const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ? explodedMesage[0] : '';
+  const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ?
+    explodedMesage[0] :
+    '';
   if (explodedMesage.length > 0) {
     explodedMesage.shift();
   }

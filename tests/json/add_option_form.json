@@ -28,7 +28,7 @@
           "parameters": [
             {
               "key": "state",
-              "value": "{\"topic\":\"Who is the most handsome AI?\"}"
+              "value": "{\"topic\":\"Who is the most handsome AI?\",\"choices\":[]}"
             }
           ]
         }

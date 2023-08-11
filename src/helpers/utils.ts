@@ -5,7 +5,7 @@
  * @param {string} message - the new option name
  * @returns {array} card
  */
-export function splitMessage(message) {
+export function splitMessage(message: string) {
   const expression = /[^\s"]+|"([^"]*)"/gi;
   const result = [];
   let match;

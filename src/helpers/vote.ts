@@ -1,3 +1,6 @@
+import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {PollState, Voter, Votes} from './interfaces';
+
 /**
  * Creates a small progress bar to show percent of votes for an option. Since
  * width is limited, the percentage is scaled to 20 steps (5% increments).
@@ -6,9 +9,9 @@
  * @param {object} voter - The voter
  * @param {object} votes - Total votes cast in the poll
  * @param {boolean} isAnonymous - save name or not
- * @returns {object} Map of cast votes keyed by choice index
+ * @returns {Votes} Map of cast votes keyed by choice index
  */
-export function saveVotes(choice, voter, votes, isAnonymous = false) {
+export function saveVotes(choice: number, voter: Voter, votes: Votes, isAnonymous = false) {
   Object.keys(votes).forEach(function(choiceIndex) {
     if (votes[choiceIndex]) {
       const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
@@ -37,7 +40,7 @@ export function saveVotes(choice, voter, votes, isAnonymous = false) {
  * @param {number} totalVotes - Total votes cast in the poll
  * @returns {string} Text snippet with bar and vote totals
  */
-export function progressBarText(voteCount, totalVotes) {
+export function progressBarText(voteCount: number, totalVotes: number) {
   if (voteCount === 0 || totalVotes === 0) {
     return '';
   }
@@ -53,29 +56,35 @@ export function progressBarText(voteCount, totalVotes) {
  * the current totals and voting action.
  *
  * @param {number} i - Index to identify the choice
- * @param {object} poll - Text of the choice
- * @param {number} totalVotes - Total votes cast in poll
- * @param {string} state - Serialized state to send in events
+ * @param {object} state - Text of the choice
+ * @param {number} totalVotes - Total votes cast in poll state
+ * @param {string} serializedState - Serialized poll state to send in events
  * @param {string} creator - creator of the option
- * @returns {object} card section
+ * @returns {chatV1.Schema$GoogleAppsCardV1Section} card section
  */
-export function choiceSection(i, poll, totalVotes, state, creator = '') {
-  if (poll.votes[i] === undefined) {
-    poll.votes[i] = [];
+export function choiceSection(i: number, state: PollState, totalVotes: number, serializedState: string, creator = '') {
+  if (state.votes === undefined) {
+    state.votes = {};
   }
-  const choiceTag = choice(i, poll.choices[i], poll.votes[i].length, totalVotes, state);
+
+  if (state.votes[i] === undefined) {
+    state.votes[i] = [];
+  }
+  const voteCount = state.votes[i].length;
+  const choiceTag = choice(i, state.choices[i], voteCount, totalVotes, serializedState);
   if (creator) {
-    choiceTag.decoratedText.topLabel = 'Added by '+creator;
+    choiceTag.decoratedText!.topLabel = 'Added by ' + creator;
   }
-  const section = {
-    'widgets': [choiceTag],
+  const section: chatV1.Schema$GoogleAppsCardV1Section = {
+    widgets: [choiceTag],
   };
-  if (poll.votes[i].length > 0 && !poll.anon) {
+  if (state.votes[i].length > 0 && !state.anon) {
     section.collapsible = true;
     section.uncollapsibleWidgetsCount = 1;
+    // @ts-ignore: already defined above
     section.widgets.push({
       'textParagraph': {
-        'text': poll.votes[i].map((u) => u.name).join(', '),
+        'text': state.votes[i].map((u) => u.name).join(', '),
       },
     });
   }
@@ -91,9 +100,11 @@ export function choiceSection(i, poll, totalVotes, state, creator = '') {
  * @param {number} voteCount - Current number of votes cast for this item
  * @param {number} totalVotes - Total votes cast in poll
  * @param {string} state - Serialized state to send in events
- * @returns {object} card widget
+ * @returns {chatV1.Schema$GoogleAppsCardV1Widget} card widget
  */
-function choice(index, text, voteCount, totalVotes, state) {
+function choice(
+  index: number, text: string, voteCount: number, totalVotes: number,
+  state: string): chatV1.Schema$GoogleAppsCardV1Widget {
   const progressBar = progressBarText(voteCount, totalVotes);
   return {
     decoratedText: {

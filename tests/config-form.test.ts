@@ -1,4 +1,4 @@
-import {buildConfigurationForm, buildOptionsFromMessage} from '../src/config-form.js';
+import {buildConfigurationForm, buildOptionsFromMessage} from '../src/config-form';
 import {default as json} from './json/configuration_form.json';
 
 test('build configuration form', () => {
@@ -9,7 +9,7 @@ test('build configuration form', () => {
   expect(dialog).toEqual(json);
 });
 
-test('build options  from message', () => {
+test('build options from message', () => {
   const message = '"How much your average sleep time?" "5 hours" "6 hours" "7 hours" "8 hours" "9 hours"';
   const options = buildOptionsFromMessage(message);
   const expected = {
@@ -23,7 +23,7 @@ test('build options  from message', () => {
 test('build options from empty message', () => {
   const message = '';
   const options = buildOptionsFromMessage(message);
-  const expected = {
+  const expected: object = {
     topic: '',
     choices: [],
   };
@@ -31,8 +31,8 @@ test('build options from empty message', () => {
 });
 
 test('build options from undefined message', () => {
-  const options = buildOptionsFromMessage(undefined);
-  const expected = {
+  const options = buildOptionsFromMessage('');
+  const expected: object = {
     topic: '',
     choices: [],
   };

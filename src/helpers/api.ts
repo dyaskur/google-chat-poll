@@ -8,7 +8,7 @@ import {google} from 'googleapis';
 function gAuth() {
   // Use default credentials (service account)
   const credentials = new google.auth.GoogleAuth({
-    // keyFile: path.join(__dirname, '../../tests/creds.json'), // <---- WHAT GOES IN path.join()
+    // keyFile: path.join(__dirname, '../../tests/creds.json'),
     scopes: ['https://www.googleapis.com/auth/chat.bot'],
   });
   return google.chat({
@@ -24,7 +24,7 @@ function gAuth() {
  * @param {object} request - request body
  * @returns {object} Response from google api
  */
-export async function callMessageApi(action, request) {
+export async function callMessageApi(action: string, request: object) {
   const chatApi = gAuth();
   let response;
 

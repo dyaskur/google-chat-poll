@@ -1,12 +1,13 @@
 import {default as json} from './json/add_option_form.json';
-import {addOptionToState} from '../src/helpers/option.js';
-import {buildAddOptionForm} from '../src/add-option-form.js';
+import {addOptionToState} from '../src/helpers/option';
+import {buildAddOptionForm} from '../src/add-option-form';
 
-import {dummyPoll} from './dummy.js';
+import {dummyPoll} from './dummy';
 
 test('build add option form', () => {
   const dialog = buildAddOptionForm({
     topic: 'Who is the most handsome AI?',
+    choices: [],
   });
   expect(dialog).toEqual(json);
 });

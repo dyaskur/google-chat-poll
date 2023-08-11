@@ -1,3 +1,5 @@
+import {PollState, Votes} from '../src/helpers/interfaces';
+
 const topic = 'What is the most beautiful worms?';
 const choices = [
   'Feather Duster Worm',
@@ -6,7 +8,7 @@ const choices = [
   'Bearded Fireworm',
   'Giant Tube Worm'];
 const author = {user: 'user/11111', displayName: 'Dyas Yaskur'};
-const votes = {
+const votes: Votes = {
   '0': [],
   '1': [],
   '2': [
@@ -19,7 +21,7 @@ const votes = {
   ],
   '4': [],
 };
-export const dummyPoll = {
+export const dummyPoll: PollState = {
   topic: topic,
   author: author,
   choices: choices,
