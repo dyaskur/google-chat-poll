@@ -146,7 +146,7 @@ export const app: HttpFunction = async (req, res) => {
           '\n' +
           'We hope you find our service useful and please don\'t hesitate to contact us ' +
           'if you have any questions or concerns.';
-        // reply.cardsV2 = buttonCard;
+        reply.cardsV2 = [buttonCard];
       } else if (argument === 'test') {
         reply.text = 'test search on <a href=\'http://www.google.com\'>google</a> (https://google.com)[https://google.com]';
       }
@@ -370,7 +370,7 @@ async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
     cardsV2: [card],
   };
   const request = {
-    name: event!.message!.name,
+    name: event.message!.name,
     requestBody: message,
     updateMask: 'cardsV2',
   };
