@@ -69,40 +69,24 @@ export function buildVoteCard(state: PollState) {
     const section = choiceSection(i, state, totalVotes, stateString, creator);
     sections.push(section);
   }
-  const buttons = [];
   if (state.optionable) {
-    buttons.push({
-      'text': 'Add Option',
-      'onClick': {
-        'action': {
-          'function': 'add_option_form',
-          'interaction': 'OPEN_DIALOG',
-          'parameters': [],
-        },
-      },
-    });
-  }
-  if (state.closable) {
-    buttons.push(
-      {
-        'text': 'Close Poll',
-        'onClick': {
-          'action': {
-            'function': 'close_poll_form',
-            'interaction': 'OPEN_DIALOG',
-            'parameters': [],
-          },
-        },
-      });
-  }
-
-  if (buttons.length > 0) {
     sections.push(
       {
         'widgets': [
           {
             'buttonList': {
-              buttons,
+              'buttons': [
+                {
+                  'text': 'Add Option',
+                  'onClick': {
+                    'action': {
+                      'function': 'add_option_form',
+                      'interaction': 'OPEN_DIALOG',
+                      'parameters': [],
+                    },
+                  },
+                },
+              ],
             },
           },
         ],

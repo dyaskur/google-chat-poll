@@ -49,7 +49,7 @@ function topicInput(topic: string) {
       label: 'Topic',
       type: 'MULTIPLE_LINE',
       name: 'topic',
-      value: topic || '',
+      value: topic,
     },
   };
 }

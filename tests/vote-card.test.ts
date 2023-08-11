@@ -62,13 +62,14 @@ test('test save voter anonymously', () => {
     '3': [],
   });
 
-  const voterResult2 = saveVotes(1, voter, votes, true);
+  const voterResult2 = saveVotes(4, voter, votes, true);
 
   expect(voterResult2).toStrictEqual({
     '0': [],
-    '1': [{uid: 'users/103846892623842357554'}],
+    '1': [],
     '2': [],
     '3': [],
+    '4': [{uid: 'users/103846892623842357554'}],
   });
 });
 
