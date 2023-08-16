@@ -1,40 +1,26 @@
-import {buildConfigurationForm, buildOptionsFromMessage} from '../src/config-form';
+// @ts-ignore: it should be fine
 import {default as json} from './json/configuration_form.json';
+import {NewPollFormCard} from '../src/cards/NewPollFormCard';
+import {PollConfig} from '../src/helpers/interfaces';
 
-test('build configuration form', () => {
-  const dialog = buildConfigurationForm({
+test('make configuration form', () => {
+  const dialog = new NewPollFormCard({
     topic: 'Who is the most handsome AI?',
     choices: [],
-  });
+  }).make().card;
   expect(dialog).toEqual(json);
 });
 
-test('build options from message', () => {
-  const message = '"How much your average sleep time?" "5 hours" "6 hours" "7 hours" "8 hours" "9 hours"';
-  const options = buildOptionsFromMessage(message);
-  const expected = {
-    topic: 'How much your average sleep time?',
-    choices: ['5 hours', '6 hours', '7 hours', '8 hours', '9 hours'],
+test('should build a card with the correct topic and options values', () => {
+  const config: PollConfig = {
+    topic: 'Favorite Color',
+    choices: ['Red', 'Blue', 'Green'],
   };
-  expect(options).toEqual(expected);
-});
-
-
-test('build options from empty message', () => {
-  const message = '';
-  const options = buildOptionsFromMessage(message);
-  const expected: object = {
-    topic: '',
-    choices: [],
-  };
-  expect(options).toStrictEqual(expected);
-});
-
-test('build options from undefined message', () => {
-  const options = buildOptionsFromMessage('');
-  const expected: object = {
-    topic: '',
-    choices: [],
-  };
-  expect(options).toStrictEqual(expected);
+  const newPollFormCard = new NewPollFormCard(config);
+  const sections = newPollFormCard.buildMessage().cardsV2[0].card.sections;
+  const topicInputSection = sections[0];
+  expect(topicInputSection.widgets[1].textInput.value).toBe('Favorite Color');
+  expect(topicInputSection.widgets[2].textInput.value).toBe('Red');
+  expect(topicInputSection.widgets[3].textInput.value).toBe('Blue');
+  expect(topicInputSection.widgets[4].textInput.value).toBe('Green');
 });
