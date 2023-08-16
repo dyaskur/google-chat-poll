@@ -10,11 +10,12 @@ import {saveVotes} from './helpers/vote';
 import {buildAddOptionForm} from './add-option-form';
 import {callMessageApi} from './helpers/api';
 import {addOptionToState} from './helpers/option';
-import {buildActionResponse} from './helpers/response';
+import {buildActionResponseStatus} from './helpers/response';
 import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {splitMessage} from './helpers/utils';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {Voter, Votes} from './helpers/interfaces';
+import {CommandHandler} from './handlers/CommandHandler';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
@@ -150,6 +151,9 @@ export const app: HttpFunction = async (req, res) => {
       } else if (argument === 'test') {
         reply.text = 'test search on <a href=\'http://www.google.com\'>google</a> (https://google.com)[https://google.com]';
       }
+    }
+    if (message.slashCommand?.commandId) {
+      reply = new CommandHandler(event).process();
     }
   } else if (event.type === 'CARD_CLICKED') {
     const action = event.common?.invokedFunction;
@@ -288,9 +292,9 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
   };
   const apiResponse = await callMessageApi('create', request);
   if (apiResponse) {
-    return buildActionResponse('Poll started.', 'OK');
+    return buildActionResponseStatus('Poll started.', 'OK');
   } else {
-    return buildActionResponse('Failed to start poll.', 'UNKNOWN');
+    return buildActionResponseStatus('Failed to start poll.', 'UNKNOWN');
   }
 }
 
@@ -376,9 +380,9 @@ async function saveOption(event: chatV1.Schema$DeprecatedEvent) {
   };
   const apiResponse = await callMessageApi('update', request);
   if (apiResponse) {
-    return buildActionResponse('Option is added', 'OK');
+    return buildActionResponseStatus('Option is added', 'OK');
   } else {
-    return buildActionResponse('Failed to add option.', 'UNKNOWN');
+    return buildActionResponseStatus('Failed to add option.', 'UNKNOWN');
   }
 }
 

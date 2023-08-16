@@ -14,14 +14,16 @@ interface ChoiceCreator {
 export interface Votes {
   [key: string]: Voter[];
 }
-
-export interface PollState {
-  choiceCreator?: ChoiceCreator,
+export interface PollConfig {
   topic: string,
-  author?: chatV1.Schema$User,
   choices: string[],
-  votes?: Votes,
   anon?: boolean,
   optionable?: boolean,
   closable?: boolean,
+}
+export interface PollState extends PollConfig{
+  choiceCreator?: ChoiceCreator,
+  author?: chatV1.Schema$User,
+  choices: string[],
+  votes?: Votes,
 }
