@@ -1,9 +1,7 @@
-// @#ts-nocheck
 import {HttpFunction} from '@google-cloud/functions-framework/build/src/functions';
 
 import {
   buildConfigurationForm,
-  buildOptionsFromMessage,
 } from './config-form';
 import {buildVoteCard} from './vote-card';
 import {saveVotes} from './helpers/vote';
@@ -15,7 +13,9 @@ import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {splitMessage} from './helpers/utils';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {Voter, Votes} from './helpers/interfaces';
+import {PollCard} from './cards/PollCard';
 import {CommandHandler} from './handlers/CommandHandler';
+import {MessageHandler} from './handlers/MessageHandler';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
@@ -82,26 +82,7 @@ export const app: HttpFunction = async (req, res) => {
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
     const message = event.message;
-    if (message.slashCommand?.commandId === '1') {
-      reply = showConfigurationForm(event);
-    } else if (message.slashCommand?.commandId === '2') {
-      reply = {
-        thread: event.message.thread,
-        actionResponse: {
-          type: 'NEW_MESSAGE',
-        },
-        text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-          'in decision-making using Google Chat™.\n' +
-          '\n' +
-          'Below is an example commands:\n' +
-          '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-          '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-          '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-          '\n' +
-          'We hope you find our service useful and please don\'t hesitate to contact us ' +
-          'if you have any questions or concerns.',
-      };
-    } else if (message.text) {
+    if (message.text) {
       const argument = event.message?.argumentText?.trim().toLowerCase();
 
       reply = {
@@ -166,7 +147,7 @@ export const app: HttpFunction = async (req, res) => {
     } else if (action === 'add_option') {
       reply = await saveOption(event);
     } else if (action === 'show_form') {
-      reply = showConfigurationForm(event, true);
+      // todo: show form using new card generator
     }
   } else if (event.type === 'ADDED_TO_SPACE') {
     const message: chatV1.Schema$Message = {
@@ -210,29 +191,6 @@ export const app: HttpFunction = async (req, res) => {
   res.json(reply);
 };
 
-/**
- * Handles the slash command to display the config form.
- *
- * @param {object} event - chat event
- * @param {boolean} isBlank - fill with text from message or note
- * @returns {object} Response to send back to Chat
- */
-function showConfigurationForm(event: chatV1.Schema$DeprecatedEvent, isBlank = false) {
-  // Seed the topic with any text after the slash command
-  const message = isBlank ? '' : event.message?.argumentText?.trim() ?? '';
-  const options = buildOptionsFromMessage(message);
-  const dialog = buildConfigurationForm(options);
-  return {
-    actionResponse: {
-      type: 'DIALOG',
-      dialogAction: {
-        dialog: {
-          body: dialog,
-        },
-      },
-    },
-  };
-}
 
 /**
  * Handle the custom start_poll action.
@@ -274,15 +232,15 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
       },
     };
   }
-  const pollCard = buildVoteCard({
+  const pollCard = new PollCard({
     topic: topic, choiceCreator: undefined,
     author: event.user,
     choices: choices,
     votes: votes,
     anon: isAnonymous,
     optionable: allowAddOption,
-  });
-  // Valid configuration, build the voting card to display in the space
+  }).make();
+  // Valid configuration, make the voting card to display in the space
   const message = {
     cardsV2: [pollCard],
   };

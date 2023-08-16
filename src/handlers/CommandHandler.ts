@@ -1,7 +1,7 @@
 import {NewPollFormCard} from '../cards/NewPollFormCard';
-import {buildOptionsFromMessage} from '../config-form';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {BaseHandler} from './BaseHandler';
+import {buildOptionsFromMessage} from '../helpers/utils';
 
 export class CommandHandler extends BaseHandler {
   private slashCommand: chatV1.Schema$SlashCommandMetadata | undefined;
@@ -33,7 +33,7 @@ export class CommandHandler extends BaseHandler {
             type: 'DIALOG',
             dialogAction: {
               dialog: {
-                body: new NewPollFormCard(options).build().card,
+                body: new NewPollFormCard(options).make().card,
               },
             },
           },

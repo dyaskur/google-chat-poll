@@ -26,7 +26,7 @@ export class NewPollFormCard extends BaseCard {
       const choice = this.config?.choices?.[i];
       widgets.push(this.optionInput(i, choice));
     }
-    this.card.sections.push({
+    this.card.sections!.push({
       'collapsible': true,
       'uncollapsibleWidgetsCount': 6,
       widgets,
@@ -34,7 +34,7 @@ export class NewPollFormCard extends BaseCard {
   }
 
   buildOptionSwitchSection() {
-    this.card.sections.push({
+    this.card.sections!.push({
       'widgets': [
         {
           'decoratedText': {

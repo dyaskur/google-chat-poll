@@ -1,4 +1,3 @@
-import {splitMessage} from './helpers/utils';
 import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {PollState} from './helpers/interfaces';
@@ -129,25 +128,5 @@ export function buildConfigurationForm(options: PollState): chatV1.Schema$Google
       },
     ],
     'fixedFooter': fixedFooter(),
-  };
-}
-
-/**
- * Build poll options from message sent by user.
- *
- * @param {string} message - message or text after poll command
- * @returns {object} option
- */
-export function buildOptionsFromMessage(message: string): PollState {
-  const explodedMesage = splitMessage(message);
-  const topic = explodedMesage[0] !== 'undefined' && explodedMesage[0] ?
-    explodedMesage[0] :
-    '';
-  if (explodedMesage.length > 0) {
-    explodedMesage.shift();
-  }
-  return {
-    topic,
-    choices: explodedMesage,
   };
 }
