@@ -9,7 +9,11 @@ interface Card {
 
   buildFooter?(): void;
 
-  make(): chatV1.Schema$CardWithId;
+  create(): chatV1.Schema$GoogleAppsCardV1Card;
+
+  createCardWithId(): chatV1.Schema$CardWithId;
+
+  createMessage(): chatV1.Schema$Message;
 }
 
 export abstract class BaseCard implements Card {
@@ -22,14 +26,16 @@ export abstract class BaseCard implements Card {
 
   abstract buildSections(): void;
 
-  make(): chatV1.Schema$CardWithId {
+  abstract create(): chatV1.Schema$GoogleAppsCardV1Card;
+
+  createCardWithId(): chatV1.Schema$CardWithId {
     return {
       'cardId': this.id,
-      'card': this.card,
+      'card': this.create(),
     };
   }
 
-  buildMessage(): chatV1.Schema$Message {
-    return {cardsV2: [this.make()]};
+  createMessage(): chatV1.Schema$Message {
+    return {cardsV2: [this.createCardWithId()]};
   }
 }

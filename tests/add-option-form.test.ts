@@ -1,3 +1,4 @@
+// @ts-ignore: unreasonable ts error
 import {default as json} from './json/add_option_form.json';
 import {addOptionToState} from '../src/helpers/option';
 import {buildAddOptionForm} from '../src/add-option-form';

@@ -24,8 +24,9 @@ export class CommandHandler extends BaseHandler {
   }
 
   process(): chatV1.Schema$Message {
+    console.log('command:', this.slashCommand!.commandName);
     switch (this.slashCommand!.commandName) {
-      case 'poll':
+      case '/poll':
         const argumentText = this.event.message?.argumentText?.trim() ?? '';
         const options = buildOptionsFromMessage(argumentText);
         return {
@@ -33,7 +34,7 @@ export class CommandHandler extends BaseHandler {
             type: 'DIALOG',
             dialogAction: {
               dialog: {
-                body: new NewPollFormCard(options).make().card,
+                body: new NewPollFormCard(options).create(),
               },
             },
           },

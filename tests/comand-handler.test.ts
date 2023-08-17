@@ -23,7 +23,7 @@ describe('process command from google chat message event', () => {
       expect(result.actionResponse.dialogAction.dialog.body).toEqual(new NewPollFormCard({
         topic: 'Which is the best country to visit',
         choices: ['Indonesia', 'Thailand'],
-      }).make().card);
+      }).create());
     });
 
   it('should return a message with a new message action and welcome text when the slash command is not recognized',
@@ -74,7 +74,7 @@ describe('process command from google chat message event', () => {
     expect(result.actionResponse.dialogAction.dialog.body).toEqual(new NewPollFormCard({
       topic: '',
       choices: [],
-    }).make().card);
+    }).createCardWithId().card);
   });
 
   it('should make a new poll form card with the correct options when the argument text is provided', () => {
@@ -96,7 +96,7 @@ describe('process command from google chat message event', () => {
     const expectedCard = new NewPollFormCard({
       topic: 'Which is the best country to visit',
       choices: ['Indonesia', 'Thailand'],
-    }).make().card;
+    }).create();
     expect(result.actionResponse.dialogAction.dialog.body).toEqual(expectedCard);
   });
 
@@ -119,7 +119,7 @@ describe('process command from google chat message event', () => {
     const expectedCard = new NewPollFormCard({
       topic: 'Which is the best country to visit',
       choices: ['Indonesia', 'Thailand'],
-    }).make().card;
+    }).create();
     expect(expectedCard).toEqual(result.actionResponse.dialogAction.dialog.body);
     expect(expectedCard.fixedFooter.primaryButton.text).toEqual('Submit');
     expect(expectedCard.sections.length).toEqual(2);
@@ -144,7 +144,7 @@ describe('process command from google chat message event', () => {
     const card = new NewPollFormCard({
       topic: 'Which is the best country to visit',
       choices: ['Indonesia', 'Thailand', 'Vietnam', 'USA', 'Canada', 'Mexico', 'Brazil', 'Argentina', 'Chile', 'Peru'],
-    }).make().card;
+    }).createCardWithId().card;
     expect(result.actionResponse.type).toEqual('DIALOG');
     expect(result.actionResponse.dialogAction.dialog.body).toEqual(card);
   });
@@ -168,7 +168,7 @@ describe('process command from google chat message event', () => {
     const card = new NewPollFormCard({
       topic: 'Which is the best country to visit',
       choices: ['Indonesia', 'Thailand'],
-    }).make().card;
+    }).createCardWithId().card;
     expect(result.actionResponse.type).toEqual('DIALOG');
     expect(result.actionResponse.dialogAction.dialog.body).toEqual(card);
   });

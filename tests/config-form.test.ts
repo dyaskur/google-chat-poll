@@ -7,7 +7,7 @@ test('make configuration form', () => {
   const dialog = new NewPollFormCard({
     topic: 'Who is the most handsome AI?',
     choices: [],
-  }).make().card;
+  }).createCardWithId().card;
   expect(dialog).toEqual(json);
 });
 
@@ -17,7 +17,7 @@ test('should build a card with the correct topic and options values', () => {
     choices: ['Red', 'Blue', 'Green'],
   };
   const newPollFormCard = new NewPollFormCard(config);
-  const sections = newPollFormCard.buildMessage().cardsV2[0].card.sections;
+  const sections = newPollFormCard.createMessage().cardsV2[0].card.sections;
   const topicInputSection = sections[0];
   expect(topicInputSection.widgets[1].textInput.value).toBe('Favorite Color');
   expect(topicInputSection.widgets[2].textInput.value).toBe('Red');

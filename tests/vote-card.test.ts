@@ -1,5 +1,6 @@
 import {dummyPoll} from './dummy';
 import {buildVoteCard} from '../src/vote-card';
+// @ts-ignore: unreasonable error
 import voteCardJson from './json/vote_card.json';
 import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
 import {Votes} from '../src/helpers/interfaces';

@@ -9,10 +9,13 @@ export class NewPollFormCard extends BaseCard {
   constructor(config: PollConfig) {
     super();
     this.config = config;
-    this.buildSections();
-    this.buildFooter();
   }
 
+  create() {
+    this.buildSections();
+    this.buildFooter();
+    return this.card;
+  }
   buildSections() {
     this.buildTopicInputSection();
     this.buildOptionSwitchSection();
