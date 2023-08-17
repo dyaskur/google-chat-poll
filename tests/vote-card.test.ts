@@ -4,6 +4,7 @@ import {buildVoteCard} from '../src/vote-card';
 import voteCardJson from './json/vote_card.json';
 import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
 import {Votes} from '../src/helpers/interfaces';
+import {PollCard} from '../src/cards/PollCard';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -138,8 +139,8 @@ test('build choice section ', () => {
 });
 
 test('build vote card', () => {
-  const pollCard = buildVoteCard(dummyPoll);
-
+  // const pollCard = buildVoteCard(dummyPoll);
+  const pollCard = new PollCard(dummyPoll).createCardWithId();
   expect(pollCard.card).toEqual(voteCardJson);
 });
 

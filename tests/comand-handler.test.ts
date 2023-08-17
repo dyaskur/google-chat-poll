@@ -10,7 +10,7 @@ describe('process command from google chat message event', () => {
             {
               type: 'SLASH_COMMAND',
               slashCommand: {
-                commandName: 'poll',
+                commandName: '/poll',
               },
             },
           ],
@@ -34,7 +34,7 @@ describe('process command from google chat message event', () => {
             {
               type: 'SLASH_COMMAND',
               slashCommand: {
-                commandName: 'unknown',
+                commandName: '/unknown',
               },
             },
           ],
@@ -62,7 +62,7 @@ describe('process command from google chat message event', () => {
           {
             type: 'SLASH_COMMAND',
             slashCommand: {
-              commandName: 'poll',
+              commandName: '/poll',
             },
           },
         ],
@@ -84,7 +84,7 @@ describe('process command from google chat message event', () => {
           {
             type: 'SLASH_COMMAND',
             slashCommand: {
-              commandName: 'poll',
+              commandName: '/poll',
             },
           },
         ],
@@ -107,7 +107,7 @@ describe('process command from google chat message event', () => {
           {
             type: 'SLASH_COMMAND',
             slashCommand: {
-              commandName: 'poll',
+              commandName: '/poll',
             },
           },
         ],
@@ -132,7 +132,7 @@ describe('process command from google chat message event', () => {
           {
             type: 'SLASH_COMMAND',
             slashCommand: {
-              commandName: 'poll',
+              commandName: '/poll',
             },
           },
         ],
@@ -156,7 +156,7 @@ describe('process command from google chat message event', () => {
           {
             type: 'SLASH_COMMAND',
             slashCommand: {
-              commandName: 'poll',
+              commandName: '/poll',
             },
           },
         ],

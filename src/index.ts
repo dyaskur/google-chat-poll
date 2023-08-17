@@ -82,59 +82,10 @@ export const app: HttpFunction = async (req, res) => {
   // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
     const message = event.message;
-    if (message.text) {
-      const argument = event.message?.argumentText?.trim().toLowerCase();
-
-      reply = {
-        thread: event.message.thread,
-        actionResponse: {
-          type: 'NEW_MESSAGE',
-        },
-        text: 'Hi! To create a poll, you can use the */poll* command. \n \n' +
-          'Alternatively, you can create poll by mentioning me with question and answers. ' +
-          'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
-      };
-      const choices = splitMessage(argument);
-      if (choices.length > 2) {
-        const pollCard = buildVoteCard({
-          choiceCreator: undefined,
-          topic: choices.shift() ?? '',
-          author: event.user,
-          choices: choices,
-          votes: {},
-          anon: false,
-          optionable: true,
-        });
-        const message = {
-          cardsV2: [pollCard],
-        };
-        reply = {
-          thread: event.message.thread,
-          actionResponse: {
-            type: 'NEW_MESSAGE',
-          },
-          ...message,
-        };
-      }
-
-      if (argument === 'help') {
-        reply.text = 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-          'in decision-making using Google Chat™.\n' +
-          '\n' +
-          'Below is an example commands:\n' +
-          '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-          '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-          '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-          '\n' +
-          'We hope you find our service useful and please don\'t hesitate to contact us ' +
-          'if you have any questions or concerns.';
-        reply.cardsV2 = [buttonCard];
-      } else if (argument === 'test') {
-        reply.text = 'test search on <a href=\'http://www.google.com\'>google</a> (https://google.com)[https://google.com]';
-      }
-    }
     if (message.slashCommand?.commandId) {
       reply = new CommandHandler(event).process();
+    } else if (message.text) {
+      reply = new MessageHandler(event).process();
     }
   } else if (event.type === 'CARD_CLICKED') {
     const action = event.common?.invokedFunction;
@@ -239,7 +190,7 @@ async function startPoll(event: chatV1.Schema$DeprecatedEvent) {
     votes: votes,
     anon: isAnonymous,
     optionable: allowAddOption,
-  }).make();
+  }).createCardWithId();
   // Valid configuration, make the voting card to display in the space
   const message = {
     cardsV2: [pollCard],
@@ -277,13 +228,13 @@ function recordVote(event: chatV1.Schema$DeprecatedEvent) {
   // Add or update the user's selected option
   state.votes = saveVotes(choice, voter, state.votes, state.anon);
 
-  const card = buildVoteCard(state);
+  const card = new PollCard(state);
   return {
     thread: event.message?.thread,
     actionResponse: {
       type: 'UPDATE_MESSAGE',
     },
-    cardsV2: [card],
+    cardsV2: [card.createCardWithId()],
   };
 }
 

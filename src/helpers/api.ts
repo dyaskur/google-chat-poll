@@ -38,6 +38,7 @@ export async function callMessageApi(action: string, request: object) {
     }
   } catch (error) {
     console.error('Error:', action, JSON.stringify(request), response);
+    // @ts-ignore: all error should have this method
     throw new Error(error.toString());
   }
 
