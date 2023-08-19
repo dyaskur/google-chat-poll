@@ -1,5 +1,5 @@
-import {CommandHandler} from '../src/handlers/CommandHandler';
-import {NewPollFormCard} from '../src/cards/NewPollFormCard';
+import CommandHandler from '../src/handlers/CommandHandler';
+import NewPollFormCard from '../src/cards/NewPollFormCard';
 
 describe('process command from google chat message event', () => {
   test('should return a message with a dialog action when the slash command is poll and the argument text is provided',

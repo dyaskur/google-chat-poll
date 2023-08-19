@@ -1,9 +1,9 @@
-import {BaseCard} from './BaseCard';
+import BaseCard from './BaseCard';
 import {PollConfig} from '../helpers/interfaces';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 
-export class NewPollFormCard extends BaseCard {
+export default class NewPollFormCard extends BaseCard {
   private config: PollConfig;
 
   constructor(config: PollConfig) {

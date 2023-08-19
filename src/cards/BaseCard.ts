@@ -16,7 +16,7 @@ interface Card {
   createMessage(): chatV1.Schema$Message;
 }
 
-export abstract class BaseCard implements Card {
+export default abstract class BaseCard implements Card {
   private id: string = 'cardId';
   private _content: chatV1.Schema$GoogleAppsCardV1Section[] = [];
 

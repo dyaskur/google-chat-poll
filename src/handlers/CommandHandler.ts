@@ -1,9 +1,9 @@
-import {NewPollFormCard} from '../cards/NewPollFormCard';
+import NewPollFormCard from '../cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
-import {BaseHandler} from './BaseHandler';
+import BaseHandler from './BaseHandler';
 import {buildOptionsFromMessage} from '../helpers/utils';
 
-export class CommandHandler extends BaseHandler {
+export default class CommandHandler extends BaseHandler {
   private slashCommand: chatV1.Schema$SlashCommandMetadata | undefined;
 
   public constructor(event: chatV1.Schema$DeprecatedEvent) {
@@ -24,7 +24,6 @@ export class CommandHandler extends BaseHandler {
   }
 
   process(): chatV1.Schema$Message {
-    console.log('command:', this.slashCommand!.commandName);
     switch (this.slashCommand!.commandName) {
       case '/poll':
         const argumentText = this.event.message?.argumentText?.trim() ?? '';

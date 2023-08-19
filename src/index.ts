@@ -11,10 +11,9 @@ import {addOptionToState} from './helpers/option';
 import {buildActionResponseStatus} from './helpers/response';
 import {MAX_NUM_OF_OPTIONS} from './config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
-import {Voter, Votes} from './helpers/interfaces';
-import {PollCard} from './cards/PollCard';
-import {CommandHandler} from './handlers/CommandHandler';
-import {MessageHandler} from './handlers/MessageHandler';
+import CommandHandler from './handlers/CommandHandler';
+import MessageHandler from './handlers/MessageHandler';
+import ActionHandler from './handlers/ActionHandler';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {

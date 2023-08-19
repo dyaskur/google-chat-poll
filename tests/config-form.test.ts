@@ -1,6 +1,6 @@
 // @ts-ignore: it should be fine
 import {default as json} from './json/configuration_form.json';
-import {NewPollFormCard} from '../src/cards/NewPollFormCard';
+import NewPollFormCard from '../src/cards/NewPollFormCard';
 import {PollConfig} from '../src/helpers/interfaces';
 
 test('make configuration form', () => {

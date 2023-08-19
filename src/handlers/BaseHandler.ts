@@ -1,6 +1,6 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 
-export abstract class BaseHandler {
+export default abstract class BaseHandler {
   protected event: chatV1.Schema$DeprecatedEvent;
 
   protected constructor(event: chatV1.Schema$DeprecatedEvent) {
@@ -11,5 +11,5 @@ export abstract class BaseHandler {
     return this.event?.message?.annotations ?? [];
   }
 
-  public abstract process(): chatV1.Schema$Message;
+  public abstract process(): chatV1.Schema$Message | Promise<chatV1.Schema$Message>;
 }

@@ -1,5 +1,5 @@
 import {PollState} from '../../src/helpers/interfaces';
-import {PollCard} from '../../src/cards/PollCard';
+import PollCard from '../../src/cards/PollCard';
 
 describe('PollCard', () => {
   it('should return a valid GoogleAppsCardV1Card object when create() is called', () => {

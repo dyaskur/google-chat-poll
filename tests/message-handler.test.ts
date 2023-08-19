@@ -1,6 +1,6 @@
-import {MessageHandler} from '../src/handlers/MessageHandler';
+import MessageHandler from '../src/handlers/MessageHandler';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
-import {PollCard} from '../src/cards/PollCard';
+import PollCard from '../src/cards/PollCard';
 
 describe('process', () => {
   // Tests that the method returns the help response when the argumentText is empty

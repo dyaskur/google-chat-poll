@@ -1,10 +1,10 @@
-import {BaseCard} from './BaseCard';
+import BaseCard from './BaseCard';
 import {PollState, Voter} from '../helpers/interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {ICON_URL_48X48} from '../config/default';
 import {progressBarText} from '../helpers/vote';
 
-export class PollCard extends BaseCard {
+export default class PollCard extends BaseCard {
   private readonly state: PollState;
 
   constructor(state: PollState) {

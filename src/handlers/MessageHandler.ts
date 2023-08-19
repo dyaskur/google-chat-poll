@@ -1,9 +1,9 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
-import {BaseHandler} from './BaseHandler';
+import BaseHandler from './BaseHandler';
 import {splitMessage} from '../helpers/utils';
-import {PollCard} from '../cards/PollCard';
+import PollCard from '../cards/PollCard';
 
-export class MessageHandler extends BaseHandler {
+export default class MessageHandler extends BaseHandler {
   constructor(event: chatV1.Schema$DeprecatedEvent) {
     super(event);
   }
