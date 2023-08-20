@@ -25,3 +25,4 @@ coverage/*
 babel.config.json
 jest.config.js
 .eslintrc.cjs
+*/__mock__

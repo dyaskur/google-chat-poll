@@ -33,11 +33,10 @@ export async function callMessageApi(action: string, request: object) {
       response = await chatApi.spaces.messages.create(request);
     } else if (action === 'update') {
       response = await chatApi.spaces.messages.update(request);
-    } else if (action === 'get') {
-      response = await chatApi.spaces.messages.get(request);
     }
   } catch (error) {
     console.error('Error:', action, JSON.stringify(request), response);
+    // @ts-ignore: all error should have this method
     throw new Error(error.toString());
   }
 
