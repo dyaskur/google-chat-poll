@@ -21,7 +21,7 @@ const votes: Votes = {
   ],
   '4': [],
 };
-export const dummyPoll: PollState = {
+export const dummyPollState: PollState = {
   topic: topic,
   author: author,
   choices: choices,
@@ -29,3 +29,27 @@ export const dummyPoll: PollState = {
   anon: false,
   optionable: true,
 };
+
+const anonymousVotes: Votes = {
+  '0': [],
+  '1': [],
+  '2': [
+    {uid: 'users/118239915905237561078'},
+    {uid: 'users/103846892623842357554'},
+  ],
+  '3': [
+    {uid: 'users/123242424242323423423'},
+    {uid: 'users/222423423523532523532'},
+  ],
+  '4': [],
+};
+
+export const dummyAnonymousPollState: PollState = {
+  topic: topic,
+  author: author,
+  choices: choices,
+  votes: anonymousVotes,
+  anon: true,
+  optionable: true,
+};
+

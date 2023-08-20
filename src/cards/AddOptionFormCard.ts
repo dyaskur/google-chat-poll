@@ -1,19 +1,31 @@
-import {PollState} from './helpers/interfaces';
+import BaseCard from './BaseCard';
+import {PollConfig} from '../helpers/interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 
-/**
- * Build the add option form.
- *
- * @param {object} state - the current message state
- * @returns {object} card
- */
-export function buildAddOptionForm(state: PollState): chatV1.Schema$GoogleAppsCardV1Card {
-  return {
-    'header': {
+export default class AddOptionFormCard extends BaseCard {
+  private readonly config: PollConfig;
+
+  constructor(config: PollConfig) {
+    super();
+    this.config = config;
+  }
+
+  create(): chatV1.Schema$GoogleAppsCardV1Card {
+    this.buildHeader();
+    this.buildSections();
+    this.buildFooter();
+    return this.card;
+  }
+
+  buildHeader() {
+    this.card.header = {
       'title': 'Add a new option/choice',
-      'subtitle': 'Q:' + state.topic,
-    },
-    'sections': [
+      'subtitle': 'Q:' + this.config.topic,
+    };
+  }
+
+  buildSections() {
+    this.card.sections = [
       {
         'widgets': [
           {
@@ -28,8 +40,11 @@ export function buildAddOptionForm(state: PollState): chatV1.Schema$GoogleAppsCa
           },
         ],
       },
-    ],
-    'fixedFooter': {
+    ];
+  }
+
+  buildFooter() {
+    this.card.fixedFooter = {
       'primaryButton': {
         'text': 'Add option',
         'onClick': {
@@ -38,11 +53,11 @@ export function buildAddOptionForm(state: PollState): chatV1.Schema$GoogleAppsCa
             'parameters': [
               {
                 key: 'state',
-                value: JSON.stringify(state),
+                value: JSON.stringify(this.config),
               }],
           },
         },
       },
-    },
-  };
+    };
+  }
 }

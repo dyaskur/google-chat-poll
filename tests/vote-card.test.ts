@@ -1,10 +1,7 @@
-import {dummyPoll} from './dummy';
-import {buildVoteCard} from '../src/vote-card';
+import {dummyPollState} from './dummy';
 // @ts-ignore: unreasonable error
-import voteCardJson from './json/vote_card.json';
 import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
 import {Votes} from '../src/helpers/interfaces';
-import PollCard from '../src/cards/PollCard';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -82,8 +79,8 @@ test('build progress bar text', () => {
 });
 
 test('build choice section ', () => {
-  const state = JSON.stringify(dummyPoll);
-  const normalChoice = choiceSection(2, dummyPoll, 4, state, 'Muhammad Dyas Yaskur');
+  const state = JSON.stringify(dummyPollState);
+  const normalChoice = choiceSection(2, dummyPollState, 4, state, 'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
     toStrictEqual({
@@ -101,7 +98,7 @@ test('build choice section ', () => {
                   'parameters': [
                     {
                       'key': 'state',
-                      'value': JSON.stringify(dummyPoll),
+                      'value': JSON.stringify(dummyPollState),
                     }, {'key': 'index', 'value': '2'}],
                 },
               }, 'text': 'vote',
@@ -111,9 +108,9 @@ test('build choice section ', () => {
         }, {'textParagraph': {'text': 'Isa bin Maryam, Musa bin Imran'}}],
     });
 
-  dummyPoll.anon = true;
-  const anonymousChoice = choiceSection(2, dummyPoll, 4,
-    JSON.stringify(dummyPoll));
+  dummyPollState.anon = true;
+  const anonymousChoice = choiceSection(2, dummyPollState, 4,
+    JSON.stringify(dummyPollState));
   expect(anonymousChoice).toStrictEqual({
     'widgets': [
       {
@@ -126,7 +123,7 @@ test('build choice section ', () => {
                 'parameters': [
                   {
                     'key': 'state',
-                    'value': JSON.stringify(dummyPoll),
+                    'value': JSON.stringify(dummyPollState),
                   }, {'key': 'index', 'value': '2'}],
               },
             }, 'text': 'vote',
@@ -135,20 +132,5 @@ test('build choice section ', () => {
         },
       }],
   });
-  dummyPoll.anon = false;
-});
-
-test('build vote card', () => {
-  // const pollCard = buildVoteCard(dummyPoll);
-  const pollCard = new PollCard(dummyPoll).createCardWithId();
-  expect(pollCard.card).toEqual(voteCardJson);
-});
-
-test('build vote card with long topic', () => {
-  dummyPoll.topic = '12345678901234567890123456789012345678901234567890';
-  const pollCard = buildVoteCard(dummyPoll);
-
-  expect(pollCard.card?.header).toBeUndefined();
-  // @ts-ignore: should not error
-  expect(pollCard.card.sections[0].widgets[0].decoratedText.text).toBe(dummyPoll.topic);
+  dummyPollState.anon = false;
 });

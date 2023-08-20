@@ -10,7 +10,7 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
  * @param {string} status - Status of
  * @returns {object} - ActionResponse
  */
-export function buildActionResponseStatus(message: string, status = 'OK') {
+export function createStatusActionResponse(message: string, status = 'OK') {
   return {
     actionResponse: {
       type: 'DIALOG',
@@ -27,24 +27,19 @@ export function buildActionResponseStatus(message: string, status = 'OK') {
 /**
  * Creates an action response with specific type
  * ref: https://developers.google.com/chat/api/reference/rest/v1/spaces.messages#responsetype
- * @param {string} type - NEW_MESSAGE | UPDATE_MESSAGE | UPDATE_USER_MESSAGE_CARDS | REQUEST_CONFIG | DIALOG
  * @param {object} message - Card message either text or cardsV2
  * @returns {object} - ActionResponse
  */
-export function buildActionResponse(type: string, message: object) {
+export function createDialogActionResponse(message: object) {
   const responseBody: chatV1.Schema$Message = {
     actionResponse: {
-      type,
+      type: 'DIALOG',
+      dialogAction: {
+        dialog: {
+          body: message,
+        },
+      },
     },
   };
-  if (type === 'DIALOG') {
-    responseBody.actionResponse!.dialogAction = {
-      dialog: {
-        body: message,
-      },
-    };
-    return responseBody;
-  } else {
-    return {...responseBody, ...message};
-  }
+  return responseBody;
 }
