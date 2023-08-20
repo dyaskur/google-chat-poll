@@ -1,5 +1,8 @@
 import {PollState} from '../../src/helpers/interfaces';
 import PollCard from '../../src/cards/PollCard';
+import {dummyPollState} from '../dummy';
+// @ts-ignore: unreasonable error
+import voteCardJson from '../json/vote_card.json';
 
 describe('PollCard', () => {
   it('should return a valid GoogleAppsCardV1Card object when create() is called', () => {
@@ -55,5 +58,16 @@ describe('PollCard', () => {
     const result = pollCard.choiceSection(0, 0);
     expect(result).toBeDefined();
     expect(result.widgets).toBeDefined();
+    expect(result.widgets?.[0]?.decoratedText?.topLabel).toBeUndefined();
+
+    // create choice section with the creator name (when added from new option)
+    const result2 = pollCard.choiceSection(1, 0, 'Ahmad');
+    expect(result2).toBeDefined();
+    expect(result2.widgets?.[0]?.decoratedText?.topLabel).toEqual('Added by Ahmad');
+  });
+
+  it('build vote card with dummy state', () => {
+    const pollCard = new PollCard(dummyPollState).createCardWithId();
+    expect(pollCard.card).toEqual(voteCardJson);
   });
 });

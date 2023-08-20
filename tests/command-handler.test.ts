@@ -13,6 +13,10 @@ describe('process command from google chat message event', () => {
                 commandName: '/poll',
               },
             },
+            {
+              type: 'MENTIONED',
+              message: 'Absolute poll is the best',
+            },
           ],
           argumentText: '"Which is the best country to visit" Indonesia Thailand',
         },
@@ -48,9 +52,7 @@ describe('process command from google chat message event', () => {
 
   it('should throw an error when no slash command is found in the message annotations', () => {
     const event = {
-      message: {
-        annotations: [],
-      },
+      message: {},
     };
     expect(() => new CommandHandler(event)).toThrow('No Slash Command found');
   });
