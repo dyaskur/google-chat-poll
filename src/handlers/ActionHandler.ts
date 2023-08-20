@@ -20,10 +20,6 @@ interface PollAction {
 }
 
 export default class ActionHandler extends BaseHandler implements PollAction {
-  constructor(event: chatV1.Schema$DeprecatedEvent) {
-    super(event);
-  }
-
   async process(): Promise<chatV1.Schema$Message> {
     const action = this.event.common?.invokedFunction;
     switch (action) {
@@ -54,7 +50,6 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   /**
    * Handle the custom start_poll action.
    *
-   * @param {object} chatV1.Schema$DeprecatedEvent - chat event
    * @returns {object} Response to send back to Chat
    */
   async startPoll() {
@@ -119,7 +114,6 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    * Handle the custom vote action. Updates the state to record
    * the user's vote then rerenders the card.
    *
-   * @param {object} event - chat event
    * @returns {object} Response to send back to Chat
    */
   recordVote() {
@@ -147,8 +141,6 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
   /**
    * Opens and starts a dialog that allows users to add details about a contact.
-   *
-   * @param {object} event the event object from Google Chat.
    *
    * @returns {object} open a dialog.
    */

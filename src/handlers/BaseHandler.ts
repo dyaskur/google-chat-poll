@@ -3,7 +3,7 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 export default abstract class BaseHandler {
   protected event: chatV1.Schema$DeprecatedEvent;
 
-  protected constructor(event: chatV1.Schema$DeprecatedEvent) {
+  constructor(event: chatV1.Schema$DeprecatedEvent) {
     this.event = event;
   }
 

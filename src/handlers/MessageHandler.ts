@@ -4,10 +4,6 @@ import {splitMessage} from '../helpers/utils';
 import PollCard from '../cards/PollCard';
 
 export default class MessageHandler extends BaseHandler {
-  constructor(event: chatV1.Schema$DeprecatedEvent) {
-    super(event);
-  }
-
   process(): chatV1.Schema$Message {
     const argumentText = this.event.message?.argumentText?.trim() ?? '';
     const helpResponse = {

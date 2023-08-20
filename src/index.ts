@@ -57,9 +57,7 @@ export const app: HttpFunction = async (req, res) => {
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
     event.user.displayName, event.user.email, event.space.type, event.space.name);
-  // console.log(JSON.stringify(event.message.cardsV2));
-  console.log(JSON.stringify(event.message));
-  console.log(JSON.stringify(event.user));
+
   let reply: chatV1.Schema$Message = {
     thread: event.message.thread,
     actionResponse: {
