@@ -5,6 +5,7 @@
     "imageUrl": "https://raw.githubusercontent.com/dyaskur/google-chat-poll/master/assets/logo48x48.png",
     "imageType": "CIRCLE"
   },
+  "name": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}",
   "sections": [
     {
       "widgets": [
@@ -18,10 +19,6 @@
                 "action": {
                   "function": "vote",
                   "parameters": [
-                    {
-                      "key": "state",
-                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}"
-                    },
                     {
                       "key": "index",
                       "value": "0"
@@ -46,10 +43,6 @@
                 "action": {
                   "function": "vote",
                   "parameters": [
-                    {
-                      "key": "state",
-                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}"
-                    },
                     {
                       "key": "index",
                       "value": "1"
@@ -76,10 +69,6 @@
                 "action": {
                   "function": "vote",
                   "parameters": [
-                    {
-                      "key": "state",
-                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}"
-                    },
                     {
                       "key": "index",
                       "value": "2"
@@ -112,10 +101,6 @@
                   "function": "vote",
                   "parameters": [
                     {
-                      "key": "state",
-                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}"
-                    },
-                    {
                       "key": "index",
                       "value": "3"
                     }
@@ -144,10 +129,6 @@
                 "action": {
                   "function": "vote",
                   "parameters": [
-                    {
-                      "key": "state",
-                      "value": "{\"topic\":\"What is the most beautiful worms?\",\"author\":{\"user\":\"user/11111\",\"displayName\":\"Dyas Yaskur\"},\"choices\":[\"Feather Duster Worm\",\"Christmas Tree Worm\",\"Coco Worm\",\"Bearded Fireworm\",\"Giant Tube Worm\"],\"votes\":{\"0\":[],\"1\":[],\"2\":[{\"uid\":\"users/118239915905237561078\",\"name\":\"Isa bin Maryam\"},{\"uid\":\"users/103846892623842357554\",\"name\":\"Musa bin Imran\"}],\"3\":[{\"uid\":\"users/123242424242323423423\",\"name\":\"Ismail bin Ibrahim\"},{\"uid\":\"users/222423423523532523532\",\"name\":\"Ishaq bin Ibrahim\"}],\"4\":[]},\"anon\":false,\"optionable\":true}"
-                    },
                     {
                       "key": "index",
                       "value": "4"

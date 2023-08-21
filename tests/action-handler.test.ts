@@ -180,7 +180,8 @@ describe('process', () => {
       body: dummyAddOptionForm,
     };
     const actionHandler = new ActionHandler(event);
-    actionHandler.getEventPollState = jest.fn().mockReturnValue({});
+    actionHandler.getEventPollState = jest.fn().
+      mockReturnValue({'topic': 'Who is the most handsome AI?', 'choices': []});
     // Act
     const result = actionHandler.addOptionForm();
 

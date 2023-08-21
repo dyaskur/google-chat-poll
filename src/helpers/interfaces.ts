@@ -24,6 +24,5 @@ export interface PollConfig {
 export interface PollState extends PollConfig{
   choiceCreator?: ChoiceCreator,
   author?: chatV1.Schema$User,
-  choices: string[],
   votes?: Votes,
 }

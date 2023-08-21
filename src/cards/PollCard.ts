@@ -16,6 +16,7 @@ export default class PollCard extends BaseCard {
     this.buildHeader();
     this.buildSections();
     this.buildButtons();
+    this.card.name = this.getSerializedState();
     return this.card;
   }
 
@@ -141,10 +142,6 @@ export default class PollCard extends BaseCard {
             action: {
               function: 'vote',
               parameters: [
-                {
-                  key: 'state',
-                  value: this.getSerializedState(),
-                },
                 {
                   key: 'index',
                   value: index.toString(10),

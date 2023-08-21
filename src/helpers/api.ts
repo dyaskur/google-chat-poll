@@ -35,9 +35,10 @@ export async function callMessageApi(action: string, request: object) {
       response = await chatApi.spaces.messages.update(request);
     }
   } catch (error) {
-    console.error('Error:', action, JSON.stringify(request), response);
     // @ts-ignore: all error should have this method
-    throw new Error(error.toString());
+    const errorMessage = error.message ?? error.toString() ?? 'Unknown error';
+    console.error('Error:', action, JSON.stringify(request), response, errorMessage);
+    throw new Error(errorMessage);
   }
 
   return response;
