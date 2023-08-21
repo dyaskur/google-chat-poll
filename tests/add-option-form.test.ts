@@ -1,5 +1,5 @@
 // @ts-ignore: unreasonable ts error
-import {addOptionToState} from '../src/helpers/option';
+import {addOptionToState} from '../src/helpers/state';
 
 import {dummyPollState} from './dummy';
 

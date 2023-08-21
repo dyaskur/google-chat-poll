@@ -1,7 +1,7 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import BaseHandler from './BaseHandler';
 import NewPollFormCard from '../cards/NewPollFormCard';
-import {addOptionToState} from '../helpers/option';
+import {addOptionToState, getStateFromCard} from '../helpers/state';
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
@@ -125,7 +125,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const userId = this.event.user?.name ?? '';
     const userName = this.event.user?.displayName ?? '';
     const voter: Voter = {uid: userId, name: userName};
-    const state = JSON.parse(parameters['state']);
+    const state = this.getEventPollState();
 
     // Add or update the user's selected option
     state.votes = saveVotes(choice, voter, state.votes, state.anon);
@@ -145,10 +145,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    * @returns {object} open a dialog.
    */
   addOptionForm() {
-    const card = this.event.message!.cardsV2?.[0]?.card;
-    // @ts-ignore: because too long
-    const stateJson = (card.sections[0].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value || card.sections[1].widgets[0].decoratedText?.button?.onClick?.action?.parameters[0].value) ?? '';
-    const state = JSON.parse(stateJson);
+    const state = this.getEventPollState();
     const dialog = new AddOptionFormCard(state).create();
     return createDialogActionResponse(dialog);
   };
@@ -182,8 +179,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   }
 
   getEventPollState(): PollState {
-    const parameters = this.event.common?.parameters;
-    const state = parameters?.['state'];
+    const state = getStateFromCard(this.event);
     if (!state) {
       throw new ReferenceError('no valid state in the event');
     }
