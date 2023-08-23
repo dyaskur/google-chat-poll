@@ -14,15 +14,22 @@ interface ChoiceCreator {
 export interface Votes {
   [key: string]: Voter[];
 }
-export interface PollConfig {
-  topic: string,
-  choices: string[],
-  anon?: boolean,
-  optionable?: boolean,
-  closable?: boolean,
+export enum ClosableType {
+  UNCLOSEABLE,
+  CLOSEABLE_BY_CREATOR,
+  CLOSEABLE_BY_ANYONE,
 }
+export interface PollConfig {
+  anon?: boolean,
+  choices: string[],
+  optionable?: boolean,
+  topic: string,
+  type?: ClosableType,
+}
+
 export interface PollState extends PollConfig{
   choiceCreator?: ChoiceCreator,
   author?: chatV1.Schema$User,
   votes?: Votes,
+  closedTime?: number,
 }

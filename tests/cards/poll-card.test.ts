@@ -1,4 +1,4 @@
-import {PollState} from '../../src/helpers/interfaces';
+import {ClosableType, PollState} from '../../src/helpers/interfaces';
 import PollCard from '../../src/cards/PollCard';
 import {dummyPollState} from '../dummy';
 // @ts-ignore: unreasonable error
@@ -43,9 +43,35 @@ describe('PollCard', () => {
       choices: ['Choice 1', 'Choice 2'],
       votes: {},
       optionable: false,
+      closedTime: 1,
     };
     const pollCard = new PollCard(state).create();
     expect(pollCard.sections!.find((section) => section.widgets?.[0]?.buttonList?.buttons?.[0]?.text === 'Add Option')).
+      toBeUndefined();
+    const closeButton = pollCard.sections!.find((section) => section.widgets?.[0]?.buttonList?.buttons?.[0]?.disabled);
+    // since closedTime < now the close button is disabled
+    expect(closeButton.widgets?.[0]?.buttonList?.buttons?.[0]?.disabled).toEqual(true);
+    const voteButton = pollCard.sections!.find((section) => {
+      const button = section.widgets?.[0]?.decoratedText.button;
+      return button?.text === 'vote' && button.disabled === true;
+    });
+    expect(voteButton).toBeDefined();
+  });
+
+  it('should not add any button when the type is UNCLOSEABLE and optionable is false', () => {
+    const state: PollState = {
+      topic: 'Test Topic',
+      choices: ['Choice 1', 'Choice 2'],
+      votes: {},
+      optionable: false,
+      type: ClosableType.UNCLOSEABLE,
+    };
+    const pollCard = new PollCard(state).create();
+    // since optionable
+    expect(pollCard.sections!.find((section) => section.widgets?.[0]?.buttonList?.buttons?.[0]?.text === 'Add Option')).
+      toBeUndefined();
+    // because default if closable is not defined is true
+    expect(pollCard.sections!.find((section) => section.widgets?.[0]?.buttonList?.buttons?.[1]?.text === 'Close Poll')).
       toBeUndefined();
   });
 

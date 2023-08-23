@@ -9,6 +9,7 @@ import {PollState, Voter, Votes} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
+import ClosePollFormCard from '../cards/ClosePollFormCard';
 
 /*
 This list methods are used in the poll chat message
@@ -32,16 +33,11 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       case 'add_option':
         return await this.saveOption();
       case 'show_form':
-        return {
-          actionResponse: {
-            type: 'DIALOG',
-            dialogAction: {
-              dialog: {
-                body: new NewPollFormCard({topic: '', choices: []}).create(),
-              },
-            },
-          },
-        };
+        return createDialogActionResponse(new NewPollFormCard({topic: '', choices: []}).create());
+      case 'close_poll_form':
+        return createDialogActionResponse(new ClosePollFormCard().create());
+      case 'close_poll':
+        return await this.closePoll();
       default:
         return createStatusActionResponse('Unknown action!', 'UNKNOWN');
     }
@@ -128,7 +124,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const state = this.getEventPollState();
 
     // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes, state.anon);
+    state.votes = saveVotes(choice, voter, state.votes!, state.anon);
     const card = new PollCard(state);
     return {
       thread: this.event.message?.thread,
@@ -184,5 +180,22 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       throw new ReferenceError('no valid state in the event');
     }
     return JSON.parse(state);
+  }
+
+  async closePoll(): Promise<chatV1.Schema$Message> {
+    const state = this.getEventPollState();
+    state.closedTime = Date.now();
+    const cardMessage = new PollCard(state).createMessage();
+    const request = {
+      name: this.event.message!.name,
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    };
+    const apiResponse = await callMessageApi('update', request);
+    if (apiResponse) {
+      return createStatusActionResponse('Poll is closed', 'OK');
+    } else {
+      return createStatusActionResponse('Failed to close poll.', 'UNKNOWN');
+    }
   }
 }
