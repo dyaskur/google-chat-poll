@@ -16,6 +16,7 @@ export default class NewPollFormCard extends BaseCard {
     this.buildFooter();
     return this.card;
   }
+
   buildSections() {
     this.buildTopicInputSection();
     this.buildOptionSwitchSection();
@@ -64,6 +65,31 @@ export default class NewPollFormCard extends BaseCard {
             },
           },
           'horizontalAlignment': 'CENTER',
+        },
+        {
+          'selectionInput': {
+            'type': 'DROPDOWN',
+            'label': 'Allow to close poll',
+            'name': 'type',
+            'items': [
+              {
+                'text': 'Yes, but only creator',
+                'value': '1',
+                'selected': true,
+              },
+              {
+                'text': 'Yes, anyone can close',
+                'value': '2',
+                'selected': false,
+              },
+              {
+                'text': 'No, I want unclosable poll',
+                'value': '0',
+                'selected': false,
+              },
+            ],
+          },
+          'horizontalAlignment': 'START',
         },
       ],
     });

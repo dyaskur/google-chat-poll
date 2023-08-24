@@ -54,6 +54,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const topic = formValues?.['topic']?.stringInputs?.value?.[0]?.trim() ?? '';
     const isAnonymous = formValues?.['is_anonymous']?.stringInputs?.value?.[0] === '1';
     const allowAddOption = formValues?.['allow_add_option']?.stringInputs?.value?.[0] === '1';
+    const pollType: ClosableType = parseInt(formValues?.['type']?.stringInputs?.value?.[0] ?? '1') as ClosableType;
     const choices = [];
     const votes: Votes = {};
 
@@ -89,6 +90,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       votes: votes,
       anon: isAnonymous,
       optionable: allowAddOption,
+      type: pollType,
     }).createCardWithId();
     // Valid configuration, make the voting card to display in the space
     const message = {
@@ -175,11 +177,11 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   }
 
   getEventPollState(): PollState {
-    const state = getStateFromCard(this.event);
-    if (!state) {
+    const stateJson = getStateFromCard(this.event);
+    if (!stateJson) {
       throw new ReferenceError('no valid state in the event');
     }
-    return JSON.parse(state);
+    return JSON.parse(stateJson);
   }
 
   async closePoll(): Promise<chatV1.Schema$Message> {
