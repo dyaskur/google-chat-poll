@@ -33,3 +33,9 @@ export interface PollState extends PollConfig{
   votes?: Votes,
   closedTime?: number,
 }
+
+export interface MessageDialogConfig {
+  title: string,
+  message: string,
+  imageUrl?: string,
+}

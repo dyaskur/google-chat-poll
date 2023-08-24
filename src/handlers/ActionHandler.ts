@@ -5,11 +5,12 @@ import {addOptionToState, getStateFromCard} from '../helpers/state';
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {PollState, Voter, Votes} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollState, Voter, Votes} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
-import {MAX_NUM_OF_OPTIONS} from '../config/default';
+import {MAX_NUM_OF_OPTIONS, PROHIBITED_ICON_URL} from '../config/default';
 import ClosePollFormCard from '../cards/ClosePollFormCard';
+import MessageDialogCard from '../cards/MessageDialogCard';
 
 /*
 This list methods are used in the poll chat message
@@ -35,7 +36,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       case 'show_form':
         return createDialogActionResponse(new NewPollFormCard({topic: '', choices: []}).create());
       case 'close_poll_form':
-        return createDialogActionResponse(new ClosePollFormCard().create());
+        return this.closePollForm();
       case 'close_poll':
         return await this.closePoll();
       default:
@@ -199,5 +200,19 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     } else {
       return createStatusActionResponse('Failed to close poll.', 'UNKNOWN');
     }
+  }
+
+  closePollForm() {
+    const state = this.getEventPollState();
+    if (state.type === ClosableType.CLOSEABLE_BY_ANYONE || state.author!.name === this.event.user?.name) {
+      return createDialogActionResponse(new ClosePollFormCard().create());
+    }
+
+    const dialogConfig: MessageDialogConfig = {
+      title: 'Sorry, you can not close this poll',
+      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.displayName}).`,
+      imageUrl: PROHIBITED_ICON_URL,
+    };
+    return createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
   }
 }
