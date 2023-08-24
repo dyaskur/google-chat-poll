@@ -1,14 +1,14 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import BaseHandler from './BaseHandler';
 import NewPollFormCard from '../cards/NewPollFormCard';
-import {addOptionToState, getStateFromCard} from '../helpers/state';
+import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers/state';
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {ClosableType, MessageDialogConfig, PollState, Voter, Votes} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollState, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
-import {MAX_NUM_OF_OPTIONS, PROHIBITED_ICON_URL} from '../config/default';
+import {PROHIBITED_ICON_URL} from '../config/default';
 import ClosePollFormCard from '../cards/ClosePollFormCard';
 import MessageDialogCard from '../cards/MessageDialogCard';
 
@@ -51,47 +51,18 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    */
   async startPoll() {
     // Get the form values
-    const formValues = this.event.common?.formInputs;
-    const topic = formValues?.['topic']?.stringInputs?.value?.[0]?.trim() ?? '';
-    const isAnonymous = formValues?.['is_anonymous']?.stringInputs?.value?.[0] === '1';
-    const allowAddOption = formValues?.['allow_add_option']?.stringInputs?.value?.[0] === '1';
-    const pollType: ClosableType = parseInt(formValues?.['type']?.stringInputs?.value?.[0] ?? '1') as ClosableType;
-    const choices = [];
-    const votes: Votes = {};
+    const formValues: { [key: string]: chatV1.Schema$Inputs } = this.event.common!.formInputs!;
 
-    for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
-      const choice = formValues?.[`option${i}`]?.stringInputs?.value?.[0]?.trim();
-      if (choice) {
-        choices.push(choice);
-        votes[i] = [];
-      }
-    }
+    const config = getConfigFromInput(formValues);
 
-    if (!topic || choices.length === 0) {
+    if (!config.topic || config.choices.length === 0) {
       // Incomplete form submitted, rerender
-      const dialog = new NewPollFormCard({
-        topic,
-        choices,
-      }).create();
-      return {
-        actionResponse: {
-          type: 'DIALOG',
-          dialogAction: {
-            dialog: {
-              body: dialog,
-            },
-          },
-        },
-      };
+      const dialog = new NewPollFormCard(config).create();
+      return createDialogActionResponse(dialog);
     }
     const pollCard = new PollCard({
-      topic: topic, choiceCreator: undefined,
       author: this.event.user,
-      choices: choices,
-      votes: votes,
-      anon: isAnonymous,
-      optionable: allowAddOption,
-      type: pollType,
+      ...config,
     }).createCardWithId();
     // Valid configuration, make the voting card to display in the space
     const message = {

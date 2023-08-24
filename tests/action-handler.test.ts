@@ -457,7 +457,7 @@ describe('closePollForm', () => {
   it('should disallow the creator of the poll with CLOSEABLE_BY_CREATOR type to close the poll', () => {
     const state = {
       type: ClosableType.CLOSEABLE_BY_CREATOR,
-      author: {name: 'creator'},
+      author: {name: 'creator', displayName: 'creator user'},
     };
     const event = {
       user: {name: 'other user'},
@@ -467,7 +467,7 @@ describe('closePollForm', () => {
 
     const dialogConfig = {
       title: 'Sorry, you can not close this poll',
-      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.name}).`,
+      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.displayName}).`,
       imageUrl: PROHIBITED_ICON_URL,
     };
     const expectedResponse = createDialogActionResponse(new MessageDialogCard(dialogConfig).create());

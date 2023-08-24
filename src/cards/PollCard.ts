@@ -66,7 +66,7 @@ export default class PollCard extends BaseCard {
   }
 
   buildSections() {
-    const votes: Array<Array<Voter>> = Object.values(this.state.votes!);
+    const votes: Array<Array<Voter>> = Object.values(this.state.votes ?? {});
     const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
     for (let i = 0; i < this.state.choices.length; ++i) {
       const creator = this.state.choiceCreator?.[i] ?? '';

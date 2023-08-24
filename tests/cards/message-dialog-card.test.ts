@@ -19,7 +19,6 @@ describe('MessageDialogCard', () => {
         imageUrl: 'https://example.com/image.jpg',
         imageType: 'CIRCLE',
       }),
-      sections: [],
     }));
   });
 
