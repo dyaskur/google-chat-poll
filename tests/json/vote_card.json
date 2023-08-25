@@ -155,6 +155,16 @@
                     "parameters": []
                   }
                 }
+              },
+              {
+                "text": "Close Poll",
+                "onClick": {
+                  "action": {
+                    "function": "close_poll_form",
+                    "interaction": "OPEN_DIALOG",
+                    "parameters": []
+                  }
+                }
               }
             ]
           }

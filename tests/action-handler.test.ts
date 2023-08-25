@@ -4,9 +4,13 @@ import ActionHandler from '../src/handlers/ActionHandler';
 // @ts-ignore: dummy test
 import dummyAddOptionForm from './json/add_option_form.json';
 import {mockCreate, mockGoogleAuth, mockUpdate} from './mocks';
-import {createStatusActionResponse} from '../src/helpers/response';
+import {createDialogActionResponse, createStatusActionResponse} from '../src/helpers/response';
 import NewPollFormCard from '../src/cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis';
+import {ClosableType} from '../src/helpers/interfaces';
+import ClosePollFormCard from '../src/cards/ClosePollFormCard';
+import {PROHIBITED_ICON_URL} from '../src/config/default';
+import MessageDialogCard from '../src/cards/MessageDialogCard';
 
 jest.mock('../src/cards/PollCard');
 
@@ -214,6 +218,23 @@ describe('process', () => {
     expect(saveOptionMock).toHaveBeenCalled();
   });
 
+  it('should return a message with an updated poll card when the action is "close_poll_form"', async () => {
+    // Mock the closePollForm function
+    const closePollFormMock = jest.fn().mockReturnValue({});
+
+    // Create an instance of ActionHandler
+    const actionHandler = new ActionHandler({common: {invokedFunction: 'close_poll_form'}});
+
+    // Mock the closePollForm function in the ActionHandler instance
+    actionHandler.closePollForm = closePollFormMock;
+
+    // Call the process method
+    await actionHandler.process();
+
+    // Expect the saveOption function to be called
+    expect(closePollFormMock).toHaveBeenCalled();
+  });
+
   // Tests that the 'unknown' action returns a message with an updated poll card
   it('should return a message with an updated poll card when the action is "add_option"', async () => {
     // Create an instance of ActionHandler
@@ -235,10 +256,19 @@ describe('startPoll', () => {
         invokedFunction: 'start_poll',
         formInputs: {
           topic: {stringInputs: {value: ['Topic']}},
-          is_anonymous: {stringInputs: {value: ['1']}},
-          allow_add_option: {stringInputs: {value: ['1']}},
-          option0: {stringInputs: {value: ['Option 1']}},
-          option1: {stringInputs: {value: ['Option 2']}},
+          is_anonymous: {stringInputs: {value: ['0']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['0']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['No Way']}},
+          option6: {stringInputs: {value: ['']}},
+          option7: {stringInputs: {value: ['']}},
+          option8: {stringInputs: {value: ['']}},
+          option9: {stringInputs: {value: ['']}},
         },
       },
       user: {displayName: 'User'},
@@ -251,10 +281,10 @@ describe('startPoll', () => {
       topic: 'Topic',
       choiceCreator: undefined,
       author: event.user,
-      choices: ['Option 1', 'Option 2'],
+      choices: ['Yae', 'Nae', 'No Way'],
       votes: {'0': [], '1': []},
-      anon: true,
-      optionable: true,
+      anon: false,
+      optionable: false,
     }).createCardWithId();
     // Valid configuration, make the voting card to display in the space
     const message = {
@@ -281,7 +311,20 @@ describe('startPoll', () => {
     const event = {
       common: {
         formInputs: {
+          topic: {stringInputs: {value: ['']}},
+          is_anonymous: {stringInputs: {value: ['1']}},
+          allow_add_option: {stringInputs: {value: ['1']}},
+          type: {stringInputs: {value: ['1']}},
           option0: {stringInputs: {value: ['Option 1']}},
+          option1: {stringInputs: {value: ['']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['']}},
+          option6: {stringInputs: {value: ['']}},
+          option7: {stringInputs: {value: ['']}},
+          option8: {stringInputs: {value: ['']}},
+          option9: {stringInputs: {value: ['']}},
         },
       },
     };
@@ -298,6 +341,8 @@ describe('startPoll', () => {
             body: new NewPollFormCard({
               topic: '',
               choices: ['Option 1'],
+              anon: true,
+              type: 1,
             }).create(),
           },
         },
@@ -361,5 +406,96 @@ describe('recordVote', () => {
         '0': [{uid: 'userId', name: 'userName'}],
       }, anon: false,
     });
+  });
+});
+
+describe('closePoll', () => {
+  it('should close the poll and return a status message with "Poll is closed" and status "OK"', async () => {
+    const expectedResponse = {
+      actionResponse: {
+        type: 'DIALOG',
+        dialogAction: {
+          actionStatus: {
+            statusCode: 'OK',
+            userFacingMessage: 'Poll is closed',
+          },
+        },
+      },
+    };
+    mockUpdate.mockResolvedValue('ok');
+
+    const actionHandler = new ActionHandler({message: {name: 'messageName'}});
+    actionHandler.getEventPollState = jest.fn().mockReturnValue({});
+    const result = await actionHandler.closePoll();
+
+    expect(result).toEqual(expectedResponse);
+    expect(mockUpdate).toHaveBeenCalledWith({name: 'messageName', requestBody: {cardsV2: []}, updateMask: 'cardsV2'});
+  });
+
+  it('should return a status message with "Failed to close poll." when the call to "callMessageApi" fails',
+    async () => {
+      // Arrange
+      const state = {
+        closedTime: undefined,
+      };
+      const expectedResponse = {
+        actionResponse: {
+          type: 'DIALOG',
+          dialogAction: {
+            actionStatus: {
+              statusCode: 'UNKNOWN',
+              userFacingMessage: 'Failed to close poll.',
+            },
+          },
+        },
+      };
+
+      mockUpdate.mockResolvedValue('');
+
+      const actionHandler = new ActionHandler({message: {name: 'messageName'}});
+      actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+
+      const result = await actionHandler.closePoll();
+
+      expect(result).toEqual(expectedResponse);
+      expect(state.closedTime).toBeDefined();
+    });
+});
+
+describe('closePollForm', () => {
+  it('should allow the creator of the poll with CLOSEABLE_BY_CREATOR type to close the poll', () => {
+    const state = {
+      type: ClosableType.CLOSEABLE_BY_CREATOR,
+      author: {name: 'creator'},
+    };
+    const event = {
+      user: {name: 'creator'},
+    };
+    const actionHandler = new ActionHandler(event);
+    actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+
+    const result = actionHandler.closePollForm();
+
+    expect(result).toEqual(createDialogActionResponse(new ClosePollFormCard().create()));
+  });
+  it('should disallow the creator of the poll with CLOSEABLE_BY_CREATOR type to close the poll', () => {
+    const state = {
+      type: ClosableType.CLOSEABLE_BY_CREATOR,
+      author: {name: 'creator', displayName: 'creator user'},
+    };
+    const event = {
+      user: {name: 'other user'},
+    };
+    const actionHandler = new ActionHandler(event);
+    actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+
+    const dialogConfig = {
+      title: 'Sorry, you can not close this poll',
+      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.displayName}).`,
+      imageUrl: PROHIBITED_ICON_URL,
+    };
+    const expectedResponse = createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
+    const result = actionHandler.closePollForm();
+    expect(result).toEqual(expectedResponse);
   });
 });

@@ -1,5 +1,5 @@
 import BaseCard from './BaseCard';
-import {PollState, Voter} from '../helpers/interfaces';
+import {ClosableType, PollState, Voter} from '../helpers/interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {ICON_URL_48X48} from '../config/default';
 import {progressBarText} from '../helpers/vote';
@@ -66,7 +66,7 @@ export default class PollCard extends BaseCard {
   }
 
   buildSections() {
-    const votes: Array<Array<Voter>> = Object.values(this.state.votes!);
+    const votes: Array<Array<Voter>> = Object.values(this.state.votes ?? {});
     const totalVotes: number = votes.reduce((sum, vote) => sum + vote.length, 0);
     for (let i = 0; i < this.state.choices.length; ++i) {
       const creator = this.state.choiceCreator?.[i] ?? '';
@@ -76,24 +76,45 @@ export default class PollCard extends BaseCard {
   }
 
   buildButtons() {
+    const buttons = [];
     if (this.state.optionable) {
+      buttons.push({
+        'text': 'Add Option',
+        'onClick': {
+          'action': {
+            'function': 'add_option_form',
+            'interaction': 'OPEN_DIALOG',
+            'parameters': [],
+          },
+        },
+      });
+    }
+    const isClosable = this.state.type === undefined || this.state.type !== ClosableType.UNCLOSEABLE;
+
+    if (isClosable) {
+      const closeButton: chatV1.Schema$GoogleAppsCardV1Button = {
+        'text': 'Close Poll',
+        'onClick': {
+          'action': {
+            'function': 'close_poll_form',
+            'interaction': 'OPEN_DIALOG',
+            'parameters': [],
+          },
+        },
+      };
+      if (this.isClosed()) {
+        closeButton.disabled = true;
+      }
+      buttons.push(closeButton);
+    }
+
+    if (buttons.length > 0) {
       this.card.sections!.push(
         {
           'widgets': [
             {
               'buttonList': {
-                'buttons': [
-                  {
-                    'text': 'Add Option',
-                    'onClick': {
-                      'action': {
-                        'function': 'add_option_form',
-                        'interaction': 'OPEN_DIALOG',
-                        'parameters': [],
-                      },
-                    },
-                  },
-                ],
+                buttons,
               },
             },
           ],
@@ -132,25 +153,34 @@ export default class PollCard extends BaseCard {
 
   choice(index: number, text: string, voteCount: number, totalVotes: number): chatV1.Schema$GoogleAppsCardV1Widget {
     const progressBar = progressBarText(voteCount, totalVotes);
+    const voteButton: chatV1.Schema$GoogleAppsCardV1Button = {
+      text: 'vote',
+      onClick: {
+        action: {
+          function: 'vote',
+          parameters: [
+            {
+              key: 'index',
+              value: index.toString(10),
+            },
+          ],
+        },
+      },
+    };
+
+    if (this.isClosed()) {
+      voteButton.disabled = true;
+    }
     return {
       decoratedText: {
         bottomLabel: `${progressBar} ${voteCount}`,
         text: text,
-        button: {
-          text: 'vote',
-          onClick: {
-            action: {
-              function: 'vote',
-              parameters: [
-                {
-                  key: 'index',
-                  value: index.toString(10),
-                },
-              ],
-            },
-          },
-        },
+        button: voteButton,
       },
     };
+  }
+
+  private isClosed(): boolean {
+    return this.state.closedTime !== undefined && this.state.closedTime <= Date.now();
   }
 }

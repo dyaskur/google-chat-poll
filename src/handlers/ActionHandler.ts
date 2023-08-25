@@ -1,14 +1,16 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import BaseHandler from './BaseHandler';
 import NewPollFormCard from '../cards/NewPollFormCard';
-import {addOptionToState, getStateFromCard} from '../helpers/state';
+import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers/state';
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {PollState, Voter, Votes} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
-import {MAX_NUM_OF_OPTIONS} from '../config/default';
+import {PROHIBITED_ICON_URL} from '../config/default';
+import ClosePollFormCard from '../cards/ClosePollFormCard';
+import MessageDialogCard from '../cards/MessageDialogCard';
 
 /*
 This list methods are used in the poll chat message
@@ -32,16 +34,11 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       case 'add_option':
         return await this.saveOption();
       case 'show_form':
-        return {
-          actionResponse: {
-            type: 'DIALOG',
-            dialogAction: {
-              dialog: {
-                body: new NewPollFormCard({topic: '', choices: []}).create(),
-              },
-            },
-          },
-        };
+        return createDialogActionResponse(new NewPollFormCard({topic: '', choices: []}).create());
+      case 'close_poll_form':
+        return this.closePollForm();
+      case 'close_poll':
+        return await this.closePoll();
       default:
         return createStatusActionResponse('Unknown action!', 'UNKNOWN');
     }
@@ -54,45 +51,18 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    */
   async startPoll() {
     // Get the form values
-    const formValues = this.event.common?.formInputs;
-    const topic = formValues?.['topic']?.stringInputs?.value?.[0]?.trim() ?? '';
-    const isAnonymous = formValues?.['is_anonymous']?.stringInputs?.value?.[0] === '1';
-    const allowAddOption = formValues?.['allow_add_option']?.stringInputs?.value?.[0] === '1';
-    const choices = [];
-    const votes: Votes = {};
+    const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
 
-    for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
-      const choice = formValues?.[`option${i}`]?.stringInputs?.value?.[0]?.trim();
-      if (choice) {
-        choices.push(choice);
-        votes[i] = [];
-      }
-    }
+    const config = getConfigFromInput(formValues);
 
-    if (!topic || choices.length === 0) {
+    if (!config.topic || config.choices.length === 0) {
       // Incomplete form submitted, rerender
-      const dialog = new NewPollFormCard({
-        topic,
-        choices,
-      }).create();
-      return {
-        actionResponse: {
-          type: 'DIALOG',
-          dialogAction: {
-            dialog: {
-              body: dialog,
-            },
-          },
-        },
-      };
+      const dialog = new NewPollFormCard(config).create();
+      return createDialogActionResponse(dialog);
     }
     const pollCard = new PollCard({
-      topic: topic, choiceCreator: undefined,
       author: this.event.user,
-      choices: choices,
-      votes: votes,
-      anon: isAnonymous,
-      optionable: allowAddOption,
+      ...config,
     }).createCardWithId();
     // Valid configuration, make the voting card to display in the space
     const message = {
@@ -128,7 +98,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const state = this.getEventPollState();
 
     // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes, state.anon);
+    state.votes = saveVotes(choice, voter, state.votes!, state.anon);
     const card = new PollCard(state);
     return {
       thread: this.event.message?.thread,
@@ -179,10 +149,41 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   }
 
   getEventPollState(): PollState {
-    const state = getStateFromCard(this.event);
-    if (!state) {
+    const stateJson = getStateFromCard(this.event);
+    if (!stateJson) {
       throw new ReferenceError('no valid state in the event');
     }
-    return JSON.parse(state);
+    return JSON.parse(stateJson);
+  }
+
+  async closePoll(): Promise<chatV1.Schema$Message> {
+    const state = this.getEventPollState();
+    state.closedTime = Date.now();
+    const cardMessage = new PollCard(state).createMessage();
+    const request = {
+      name: this.event.message!.name,
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    };
+    const apiResponse = await callMessageApi('update', request);
+    if (apiResponse) {
+      return createStatusActionResponse('Poll is closed', 'OK');
+    } else {
+      return createStatusActionResponse('Failed to close poll.', 'UNKNOWN');
+    }
+  }
+
+  closePollForm() {
+    const state = this.getEventPollState();
+    if (state.type === ClosableType.CLOSEABLE_BY_ANYONE || state.author!.name === this.event.user?.name) {
+      return createDialogActionResponse(new ClosePollFormCard().create());
+    }
+
+    const dialogConfig: MessageDialogConfig = {
+      title: 'Sorry, you can not close this poll',
+      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.displayName}).`,
+      imageUrl: PROHIBITED_ICON_URL,
+    };
+    return createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
   }
 }
