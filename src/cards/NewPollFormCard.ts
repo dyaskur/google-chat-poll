@@ -1,5 +1,5 @@
 import BaseCard from './BaseCard';
-import {PollConfig} from '../helpers/interfaces';
+import {ClosableType, PollConfig} from '../helpers/interfaces';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 
@@ -48,7 +48,7 @@ export default class NewPollFormCard extends BaseCard {
               'controlType': 'SWITCH',
               'name': 'is_anonymous',
               'value': '1',
-              'selected': false,
+              'selected': this.config?.anon ?? false,
             },
           },
           'horizontalAlignment': 'CENTER',
@@ -61,7 +61,7 @@ export default class NewPollFormCard extends BaseCard {
               'controlType': 'SWITCH',
               'name': 'allow_add_option',
               'value': '1',
-              'selected': true,
+              'selected': this.config?.optionable ?? true,
             },
           },
           'horizontalAlignment': 'CENTER',
@@ -75,17 +75,17 @@ export default class NewPollFormCard extends BaseCard {
               {
                 'text': 'Yes, but only creator',
                 'value': '1',
-                'selected': true,
+                'selected': this.config.type === ClosableType.CLOSEABLE_BY_CREATOR,
               },
               {
                 'text': 'Yes, anyone can close',
                 'value': '2',
-                'selected': false,
+                'selected': this.config.type === ClosableType.CLOSEABLE_BY_ANYONE,
               },
               {
                 'text': 'No, I want unclosable poll',
                 'value': '0',
-                'selected': false,
+                'selected': this.config.type === ClosableType.UNCLOSEABLE,
               },
             ],
           },

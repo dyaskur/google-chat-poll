@@ -341,6 +341,8 @@ describe('startPoll', () => {
             body: new NewPollFormCard({
               topic: '',
               choices: ['Option 1'],
+              anon: true,
+              type: 1,
             }).create(),
           },
         },

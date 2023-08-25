@@ -7,6 +7,7 @@ test('make configuration form', () => {
   const dialog = new NewPollFormCard({
     topic: 'Who is the most handsome AI?',
     choices: [],
+    type: 1,
   }).createCardWithId().card;
   expect(dialog).toEqual(json);
 });
