@@ -5,7 +5,7 @@ import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {ClosableType, MessageDialogConfig, PollState, Voter} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
 import {PROHIBITED_ICON_URL} from '../config/default';
@@ -51,7 +51,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    */
   async startPoll() {
     // Get the form values
-    const formValues: { [key: string]: chatV1.Schema$Inputs } = this.event.common!.formInputs!;
+    const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
 
     const config = getConfigFromInput(formValues);
 

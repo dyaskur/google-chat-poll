@@ -34,6 +34,14 @@ export interface PollState extends PollConfig{
   closedTime?: number,
 }
 
+export interface PollFormInputs {
+  topic: chatV1.Schema$Inputs,
+  is_anonymous: chatV1.Schema$Inputs,
+  allow_add_option: chatV1.Schema$Inputs,
+  type: chatV1.Schema$Inputs,
+  [key: string]: chatV1.Schema$Inputs, // for unknown number option
+}
+
 export interface MessageDialogConfig {
   title: string,
   message: string,

@@ -256,10 +256,19 @@ describe('startPoll', () => {
         invokedFunction: 'start_poll',
         formInputs: {
           topic: {stringInputs: {value: ['Topic']}},
-          is_anonymous: {stringInputs: {value: ['1']}},
-          allow_add_option: {stringInputs: {value: ['1']}},
-          option0: {stringInputs: {value: ['Option 1']}},
-          option1: {stringInputs: {value: ['Option 2']}},
+          is_anonymous: {stringInputs: {value: ['0']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['0']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['No Way']}},
+          option6: {stringInputs: {value: ['']}},
+          option7: {stringInputs: {value: ['']}},
+          option8: {stringInputs: {value: ['']}},
+          option9: {stringInputs: {value: ['']}},
         },
       },
       user: {displayName: 'User'},
@@ -272,10 +281,10 @@ describe('startPoll', () => {
       topic: 'Topic',
       choiceCreator: undefined,
       author: event.user,
-      choices: ['Option 1', 'Option 2'],
+      choices: ['Yae', 'Nae', 'No Way'],
       votes: {'0': [], '1': []},
-      anon: true,
-      optionable: true,
+      anon: false,
+      optionable: false,
     }).createCardWithId();
     // Valid configuration, make the voting card to display in the space
     const message = {
@@ -302,7 +311,20 @@ describe('startPoll', () => {
     const event = {
       common: {
         formInputs: {
+          topic: {stringInputs: {value: ['']}},
+          is_anonymous: {stringInputs: {value: ['1']}},
+          allow_add_option: {stringInputs: {value: ['1']}},
+          type: {stringInputs: {value: ['1']}},
           option0: {stringInputs: {value: ['Option 1']}},
+          option1: {stringInputs: {value: ['']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['']}},
+          option6: {stringInputs: {value: ['']}},
+          option7: {stringInputs: {value: ['']}},
+          option8: {stringInputs: {value: ['']}},
+          option9: {stringInputs: {value: ['']}},
         },
       },
     };
