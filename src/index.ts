@@ -59,7 +59,7 @@ export const app: HttpFunction = async (req, res) => {
     event.user.displayName, event.user.email, event.space.type, event.space.name);
 
   let reply: chatV1.Schema$Message = {
-    thread: event.message.thread,
+    thread: event.message?.thread,
     actionResponse: {
       type: 'NEW_MESSAGE',
     },
