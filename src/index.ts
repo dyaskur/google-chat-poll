@@ -5,6 +5,7 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import CommandHandler from './handlers/CommandHandler';
 import MessageHandler from './handlers/MessageHandler';
 import ActionHandler from './handlers/ActionHandler';
+import {generateHelpText} from './helpers/helper';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
@@ -41,7 +42,7 @@ export const app: HttpFunction = async (req, res) => {
                     'text': 'Contact Us',
                     'onClick': {
                       'openLink': {
-                        'url': 'https://absolute-poll.yaskur.com/contact-us',
+                        'url': 'https://github.com/dyaskur/google-chat-poll/issues',
                       },
                     },
                   },
@@ -88,7 +89,6 @@ export const app: HttpFunction = async (req, res) => {
         'decision-making efficiency on Google Chat™.\n' +
         '\n' +
         'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
-        'You can also test our app in a direct message if you prefer.\n' +
         '\n' +
         'Alternatively, you can ' +
         'You can also test our app in a direct message if you prefer.\n' +
@@ -96,15 +96,7 @@ export const app: HttpFunction = async (req, res) => {
         'We hope you find our service useful and please don\'t hesitate to contact us ' +
         'if you have any questions or concerns.';
     } else if (spaceType === 'DM') {
-      message.text = 'Hey there! ' +
-        'Before creating a poll in a group space, you can test it out here in a direct message.\n' +
-        '\n' +
-        'To create a poll, you can use the */poll* command or click on the "Create Poll" button below.\n' +
-        '\n' +
-        'Thank you for using our bot. We hope that it will prove to be a valuable tool for you and your team.\n' +
-        '\n' +
-        'Don\'t hesitate to reach out if you have any questions or concerns in the future.' +
-        ' We are always here to help you and your team';
+      message.text = generateHelpText(true);
     }
 
     message.cardsV2 = [buttonCard];

@@ -8,7 +8,11 @@ export default abstract class BaseHandler {
   }
 
   protected getAnnotations(): chatV1.Schema$Annotation[] {
-    return this.event?.message?.annotations ?? [];
+    return this.event.message?.annotations ?? [];
+  }
+
+  protected getAnnotationByType(type: string): chatV1.Schema$Annotation | undefined {
+    return this.getAnnotations().find((annotation) => annotation.type === type);
   }
 
   public abstract process(): chatV1.Schema$Message | Promise<chatV1.Schema$Message>;

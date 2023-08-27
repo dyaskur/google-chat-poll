@@ -20,24 +20,48 @@ describe('process', () => {
     const result = messageHandler.process();
 
     // Assert
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       thread: {
         'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
       },
       actionResponse: {
         type: 'NEW_MESSAGE',
       },
-      text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-        'in decision-making using Google Chat™.\n' +
-        '\n' +
-        'Below is an example commands:\n' +
-        '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-        '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-        '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-        '\n' +
-        'We hope you find our service useful and please don\'t hesitate to contact us ' +
-        'if you have any questions or concerns.',
     });
+    expect(result.text).toContain('Below is an example commands:');
+    expect(result).toHaveProperty('cardsV2');
+  });
+
+  it('should return the help response with additional message', () => {
+    // Arrange
+    const event: chatV1.Schema$DeprecatedEvent = {
+      message: {
+        argumentText: 'hi',
+        thread: {
+          'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+        },
+      },
+      space: {
+        type: 'DM',
+      },
+    };
+    const messageHandler = new MessageHandler(event);
+
+    // Act
+    const result = messageHandler.process();
+
+    // Assert
+    expect(result).toMatchObject({
+      thread: {
+        'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+      },
+      actionResponse: {
+        type: 'NEW_MESSAGE',
+      },
+    });
+    expect(result.text).toContain('Below is an example commands:');
+    expect(result.text).toContain('group');
+    expect(result).toHaveProperty('cardsV2');
   });
 
   // Tests that the method returns the help response when the argumentText has less than 3 choices
@@ -49,6 +73,22 @@ describe('process', () => {
         thread: {
           'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
         },
+        annotations: [
+          {
+            'type': 'USER_MENTION',
+            'startIndex': 0,
+            'length': 7,
+            'userMention': {
+              'user': {
+                'name': 'users/100819441865491039935',
+                'displayName': 'Absolute Poll',
+                'type': 'BOT',
+              },
+              'type': 'MENTION',
+            },
+          },
+        ],
+
       },
       user: {name: 'zzz'},
     };
@@ -94,23 +134,14 @@ describe('process', () => {
     const result = messageHandler.process();
 
     // Assert
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       thread: {
         'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
       },
       actionResponse: {
         type: 'NEW_MESSAGE',
       },
-      text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-        'in decision-making using Google Chat™.\n' +
-        '\n' +
-        'Below is an example commands:\n' +
-        '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-        '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-        '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-        '\n' +
-        'We hope you find our service useful and please don\'t hesitate to contact us ' +
-        'if you have any questions or concerns.',
     });
+    expect(result).toHaveProperty('text');
   });
 });

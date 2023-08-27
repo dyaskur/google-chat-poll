@@ -47,7 +47,7 @@ describe('process command from google chat message event', () => {
       const handler = new CommandHandler(event);
       const result = handler.process();
       expect(result.actionResponse.type).toEqual('NEW_MESSAGE');
-      expect(result.text).toContain('Hi there! I can help you create polls to enhance collaboration and efficiency');
+      expect(result.text).toContain('Below is an example commands:');
     });
 
   it('should throw an error when no slash command is found in the message annotations', () => {

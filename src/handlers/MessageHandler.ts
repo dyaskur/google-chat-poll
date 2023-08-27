@@ -2,32 +2,68 @@ import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import BaseHandler from './BaseHandler';
 import {splitMessage} from '../helpers/utils';
 import PollCard from '../cards/PollCard';
+import {generateHelpText} from '../helpers/helper';
 
 export default class MessageHandler extends BaseHandler {
   process(): chatV1.Schema$Message {
     const argumentText = this.event.message?.argumentText?.trim() ?? '';
+    const buttonCard: chatV1.Schema$CardWithId = {
+      'cardId': 'welcome-card',
+      'card': {
+        'sections': [
+          {
+            'widgets': [
+              {
+                'buttonList': {
+                  'buttons': [
+                    {
+                      'text': 'Create Poll',
+                      'onClick': {
+                        'action': {
+                          'function': 'show_form',
+                          'interaction': 'OPEN_DIALOG',
+                          'parameters': [],
+                        },
+                      },
+                    },
+                    {
+                      'text': 'Contact Us',
+                      'onClick': {
+                        'openLink': {
+                          'url': 'https://github.com/dyaskur/google-chat-poll/issues',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    };
+
     const helpResponse = {
       thread: this.event.message!.thread,
       actionResponse: {
         type: 'NEW_MESSAGE',
       },
-      text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-        'in decision-making using Google Chat™.\n' +
-        '\n' +
-        'Below is an example commands:\n' +
-        '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-        '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-        '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-        '\n' +
-        'We hope you find our service useful and please don\'t hesitate to contact us ' +
-        'if you have any questions or concerns.',
+      text: '',
+      cardsV2: [buttonCard],
     };
+    const isPrivate = this.event!.space?.type === 'DM';
+
     switch (argumentText) {
       case 'help':
+        helpResponse.text = generateHelpText(isPrivate);
+        return helpResponse;
+      case 'test dyas':
+        helpResponse.text = 'Hello <https://github.com/dyaskur/google-chat-poll|google-chat-poll>';
         return helpResponse;
       default:
         const choices = splitMessage(argumentText);
-        if (choices.length > 2) {
+        const annotation = this.getAnnotationByType('USER_MENTION');
+        if (annotation && choices.length > 2) {
           const pollCard = new PollCard({
             choiceCreator: undefined,
             topic: choices.shift() ?? '',
@@ -46,6 +82,7 @@ export default class MessageHandler extends BaseHandler {
             ...message,
           };
         }
+        helpResponse.text = generateHelpText(isPrivate);
         return helpResponse;
     }
   }

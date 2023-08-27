@@ -2,6 +2,7 @@ import NewPollFormCard from '../cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import BaseHandler from './BaseHandler';
 import {buildOptionsFromMessage} from '../helpers/utils';
+import {generateHelpText} from '../helpers/helper';
 
 export default class CommandHandler extends BaseHandler {
   private slashCommand: chatV1.Schema$SlashCommandMetadata | undefined;
@@ -39,21 +40,13 @@ export default class CommandHandler extends BaseHandler {
           },
         };
       default:
+        const isPrivate = this.event!.space?.type === 'DM';
         return {
           thread: this.event.message!.thread,
           actionResponse: {
             type: 'NEW_MESSAGE',
           },
-          text: 'Hi there! I can help you create polls to enhance collaboration and efficiency ' +
-            'in decision-making using Google Chat™.\n' +
-            '\n' +
-            'Below is an example commands:\n' +
-            '`/poll` - You will need to fill out the topic and answers in the form that will be displayed.\n' +
-            '`/poll "Which is the best country to visit" "Indonesia"` - to create a poll with ' +
-            '"Which is the best country to visit" as the topic and "Indonesia" as the answer\n' +
-            '\n' +
-            'We hope you find our service useful and please don\'t hesitate to contact us ' +
-            'if you have any questions or concerns.',
+          text: generateHelpText(isPrivate),
         };
     }
   }

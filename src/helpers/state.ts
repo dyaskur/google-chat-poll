@@ -26,19 +26,25 @@ export function getStateFromCard(event: chatV1.Schema$DeprecatedEvent) {
     getStateFromCardWhenHasHeader(card);
 }
 
+function getChoicesFromInput(formValues: PollFormInputs) {
+  const choices = [];
+  for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
+    const choice = formValues[`option${i}`]?.stringInputs!.value![0]!.trim();
+    if (choice) {
+      choices.push(choice);
+    }
+  }
+  return choices;
+}
+
 export function getConfigFromInput(formValues: PollFormInputs) {
   const state: PollConfig = {topic: '', choices: []};
   state.topic = formValues.topic.stringInputs!.value![0]!.trim() ?? '';
   state.anon = formValues.is_anonymous?.stringInputs!.value![0] === '1';
   state.optionable = formValues.allow_add_option?.stringInputs!.value![0] === '1';
   state.type = parseInt(formValues.type?.stringInputs!.value![0] ?? '1') as ClosableType;
+  state.choices = getChoicesFromInput(formValues);
 
-  for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
-    const choice = formValues[`option${i}`]?.stringInputs!.value![0]!.trim();
-    if (choice) {
-      state.choices.push(choice);
-    }
-  }
   return state;
 }
 
