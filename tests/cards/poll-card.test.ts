@@ -34,7 +34,8 @@ describe('PollCard', () => {
       votes: {},
     };
     const pollCard = new PollCard(state).create();
-    expect(pollCard.sections![0]).toBeDefined();
+    expect(pollCard.header).toBeUndefined();
+    expect(pollCard.sections![0].widgets![0].decoratedText.text).toEqual(state.topic);
   });
 
   it('should not add an "Add Option" button when optionable is false', () => {

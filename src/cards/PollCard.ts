@@ -23,7 +23,7 @@ export default class PollCard extends BaseCard {
   buildHeader() {
     if (this.state.topic.length > 40) {
       const widgetHeader = this.sectionHeader();
-      this.card.sections!.slice().unshift(widgetHeader);
+      this.card.sections!.push(widgetHeader);
     } else {
       this.card.header = this.cardHeader();
     }
