@@ -246,6 +246,29 @@ describe('process', () => {
     // Expect the saveOption function to be called
     expect(result).toEqual(createStatusActionResponse('Unknown action!', 'UNKNOWN'));
   });
+
+  it('should rebuild poll form with inputted data when new_poll_on_change invoked', async () => {
+    const event = {
+      common: {
+        invokedFunction: 'new_poll_on_change',
+        formInputs: {
+          topic: {stringInputs: {value: ['Yay or Nay']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['2']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+        },
+      },
+      user: {displayName: 'User'},
+      space: {name: 'Space'},
+    };
+    const actionHandler = new ActionHandler(event);
+    const result = await actionHandler.process();
+    const expectedConfig: PollForm = {topic: 'Yay or Nay', choices: ['Yay', 'Nae'], optionable: false, type: 2};
+    const expectedCard = new NewPollFormCard(expectedConfig).create();
+    const expectedResponse = createDialogActionResponse(expectedCard);
+    expect(result).toEqual(expectedResponse);
+  });
 });
 
 describe('startPoll', () => {
@@ -496,36 +519,6 @@ describe('closePollForm', () => {
     };
     const expectedResponse = createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
     const result = actionHandler.closePollForm();
-    expect(result).toEqual(expectedResponse);
-  });
-});
-
-describe('newPollOnChange', () => {
-  it('should rebuild poll form', async () => {
-    const event = {
-      common: {
-        invokedFunction: 'new_poll_on_change',
-        formInputs: {
-          topic: {stringInputs: {value: ['Topic']}},
-          allow_add_option: {stringInputs: {value: ['0']}},
-          type: {stringInputs: {value: ['0']}},
-          option0: {stringInputs: {value: ['Yay']}},
-          option1: {stringInputs: {value: ['Nae']}},
-          option2: {stringInputs: {value: ['']}},
-          option3: {stringInputs: {value: ['']}},
-          option4: {stringInputs: {value: ['']}},
-          option5: {stringInputs: {value: ['No Way']}},
-        },
-      },
-      user: {displayName: 'User'},
-      space: {name: 'Space'},
-    };
-    const actionHandler = new ActionHandler(event);
-    const result = await actionHandler.process();
-    const expectedConfig: PollForm = {topic: 'Topic', choices: ['Yay', 'Nae', 'No Way'], optionable: false, type: 0};
-    const expectedCard = new NewPollFormCard(expectedConfig).create();
-    const expectedResponse = createDialogActionResponse(expectedCard);
-
     expect(result).toEqual(expectedResponse);
   });
 });

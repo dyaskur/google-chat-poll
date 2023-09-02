@@ -9,6 +9,7 @@
     "build": "tsc",
     "start": "functions-framework --target=app",
     "prestart": "yarn build",
+    "deploy": "gcloud functions deploy app --env-vars-file .env.yaml --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs18",
     "gcp-build": "yarn build"
   },
   "keywords": [],
@@ -18,6 +19,7 @@
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-typescript": "^7.22.5",
     "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/tasks": "^4.0.0",
     "babel-jest": "^29.6.2",
     "googleapis": "123.0.0"
   },
