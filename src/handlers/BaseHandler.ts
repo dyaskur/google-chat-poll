@@ -15,5 +15,9 @@ export default abstract class BaseHandler {
     return this.getAnnotations().find((annotation) => annotation.type === type);
   }
 
+  protected getUserTimezone(): chatV1.Schema$TimeZone | undefined {
+    return this.event.common?.timeZone;
+  }
+
   public abstract process(): chatV1.Schema$Message | Promise<chatV1.Schema$Message>;
 }

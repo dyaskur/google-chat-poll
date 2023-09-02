@@ -7,7 +7,7 @@ import {mockCreate, mockGoogleAuth, mockUpdate} from './mocks';
 import {createDialogActionResponse, createStatusActionResponse} from '../src/helpers/response';
 import NewPollFormCard from '../src/cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis';
-import {ClosableType} from '../src/helpers/interfaces';
+import {ClosableType, PollForm} from '../src/helpers/interfaces';
 import ClosePollFormCard from '../src/cards/ClosePollFormCard';
 import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
@@ -346,7 +346,20 @@ describe('recordVote', () => {
     const actionHandler = new ActionHandler(event);
 
     expect(() => actionHandler.recordVote()).toThrow('Index Out of Bounds');
-    expect(() => actionHandler.getEventPollState()).toThrow('no valid state in the event');
+    expect(() => actionHandler.getEventPollState()).toThrow('no valid card in the event');
+    const event2 = {
+      common: {
+        parameters: {},
+      },
+      message: {
+        thread: {
+          'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+        },
+        cardsV2: [{cardId: 'card', card: {}}],
+      },
+    };
+    const actionHandler2 = new ActionHandler(event2);
+    expect(() => actionHandler2.getEventPollState()).toThrow('no valid state in the event');
   });
   it('should update an existing vote with a new vote', () => {
     const event = {
@@ -364,6 +377,7 @@ describe('recordVote', () => {
         thread: {
           'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
         },
+        cardsV2: [{cardId: 'card', card: {}}],
       },
     };
     const actionHandler = new ActionHandler(event);
@@ -482,6 +496,36 @@ describe('closePollForm', () => {
     };
     const expectedResponse = createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
     const result = actionHandler.closePollForm();
+    expect(result).toEqual(expectedResponse);
+  });
+});
+
+describe('newPollOnChange', () => {
+  it('should rebuild poll form', async () => {
+    const event = {
+      common: {
+        invokedFunction: 'new_poll_on_change',
+        formInputs: {
+          topic: {stringInputs: {value: ['Topic']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['0']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['No Way']}},
+        },
+      },
+      user: {displayName: 'User'},
+      space: {name: 'Space'},
+    };
+    const actionHandler = new ActionHandler(event);
+    const result = await actionHandler.process();
+    const expectedConfig: PollForm = {topic: 'Topic', choices: ['Yay', 'Nae', 'No Way'], optionable: false, type: 0};
+    const expectedCard = new NewPollFormCard(expectedConfig).create();
+    const expectedResponse = createDialogActionResponse(expectedCard);
+
     expect(result).toEqual(expectedResponse);
   });
 });

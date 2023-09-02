@@ -1,6 +1,5 @@
 import {HttpFunction} from '@google-cloud/functions-framework/build/src/functions';
 
-
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import CommandHandler from './handlers/CommandHandler';
 import MessageHandler from './handlers/MessageHandler';
@@ -58,6 +57,7 @@ export const app: HttpFunction = async (req, res) => {
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
     event.user.displayName, event.user.email, event.space.type, event.space.name);
+  console.log(JSON.stringify(event));
 
   let reply: chatV1.Schema$Message = {
     thread: event.message?.thread,

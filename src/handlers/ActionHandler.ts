@@ -34,7 +34,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       case 'add_option':
         return await this.saveOption();
       case 'show_form':
-        return createDialogActionResponse(new NewPollFormCard({topic: '', choices: []}).create());
+        const pollForm = new NewPollFormCard({topic: '', choices: []}, this.getUserTimezone()).create();
+        return createDialogActionResponse(pollForm);
+      case 'new_poll_on_change':
+        return this.newPollOnChange();
       case 'close_poll_form':
         return this.closePollForm();
       case 'close_poll':
@@ -57,7 +60,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
     if (!config.topic || config.choices.length === 0) {
       // Incomplete form submitted, rerender
-      const dialog = new NewPollFormCard(config).create();
+      const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
       return createDialogActionResponse(dialog);
     }
     const pollCard = new PollCard({
@@ -185,5 +188,11 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       imageUrl: PROHIBITED_ICON_URL,
     };
     return createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
+  }
+
+  newPollOnChange() {
+    const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
+    const config = getConfigFromInput(formValues);
+    return createDialogActionResponse(new NewPollFormCard(config, this.getUserTimezone()).create());
   }
 }

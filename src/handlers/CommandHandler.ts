@@ -34,13 +34,13 @@ export default class CommandHandler extends BaseHandler {
             type: 'DIALOG',
             dialogAction: {
               dialog: {
-                body: new NewPollFormCard(options).create(),
+                body: new NewPollFormCard(options, this.getUserTimezone()).create(),
               },
             },
           },
         };
       default:
-        const isPrivate = this.event!.space?.type === 'DM';
+        const isPrivate = this.event.space?.type === 'DM';
         return {
           thread: this.event.message!.thread,
           actionResponse: {

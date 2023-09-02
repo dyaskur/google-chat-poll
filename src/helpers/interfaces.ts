@@ -27,6 +27,13 @@ export interface PollConfig {
   type?: ClosableType,
 }
 
+export interface PollForm extends PollConfig{
+  autoclose?: boolean,
+  timezone_offset?: number | null,
+  timezone_name?: string | null,
+  close_schedule_time?: number
+}
+
 export interface PollState extends PollConfig{
   choiceCreator?: ChoiceCreator,
   author?: chatV1.Schema$User,
@@ -39,6 +46,8 @@ export interface PollFormInputs {
   is_anonymous: chatV1.Schema$Inputs,
   allow_add_option: chatV1.Schema$Inputs,
   type: chatV1.Schema$Inputs,
+  timezone: chatV1.Schema$Inputs,
+  close_schedule_time: chatV1.Schema$Inputs,
   [key: string]: chatV1.Schema$Inputs, // for unknown number option
 }
 

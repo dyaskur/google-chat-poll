@@ -124,7 +124,7 @@ describe('process command from google chat message event', () => {
     }).create();
     expect(expectedCard).toEqual(result.actionResponse.dialogAction.dialog.body);
     expect(expectedCard.fixedFooter.primaryButton.text).toEqual('Submit');
-    expect(expectedCard.sections.length).toEqual(2);
+    expect(expectedCard.sections.length).toEqual(3);
   });
 
   it('should limit the number of options to 10', () => {

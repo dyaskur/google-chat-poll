@@ -18,8 +18,30 @@ export default class ClosePollFormCard extends BaseCard {
     };
   }
 
+
   buildSections() {
-    this.card.sections = [];
+    this.card.sections = [
+      {
+        'widgets': [
+          {
+            'divider': {},
+          },
+          {
+            'divider': {},
+          },
+          {
+            'divider': {},
+          },
+          {
+            'divider': {},
+          },
+          {
+            'textParagraph': {
+              'text': 'If you have any problems, questions, or feedback, ' +
+                'please feel free to post them <a href="https://github.com/dyaskur/google-chat-poll/issues">here</a> ',
+            },
+          }],
+      }];
   }
 
   buildFooter() {
