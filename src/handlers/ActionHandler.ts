@@ -5,12 +5,13 @@ import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, Voter} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, taskEvent, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
 import {PROHIBITED_ICON_URL} from '../config/default';
 import ClosePollFormCard from '../cards/ClosePollFormCard';
 import MessageDialogCard from '../cards/MessageDialogCard';
+import {createTask} from '../helpers/task';
 
 /*
 This list methods are used in the poll chat message
@@ -57,6 +58,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
 
     const config = getConfigFromInput(formValues);
+    if (config.closedTime) {
+      // because previously we marked up the time with user timezone offset
+      config.closedTime -= this.getUserTimezone()?.offset ?? 0;
+    }
 
     if (!config.topic || config.choices.length === 0) {
       // Incomplete form submitted, rerender
@@ -76,7 +81,14 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       requestBody: message,
     };
     const apiResponse = await callMessageApi('create', request);
-    if (apiResponse) {
+    if (apiResponse?.data?.name) {
+      console.log(JSON.stringify(apiResponse.data));
+      console.log(JSON.stringify(config));
+      if (config.autoclose && config.closedTime) {
+        console.log('Creating task');
+        const taskPayload: taskEvent = {'id': apiResponse.data.name, 'action': 'close_poll', 'type': 'TASK'};
+        await createTask(JSON.stringify(taskPayload), config.closedTime);
+      }
       return createStatusActionResponse('Poll started.', 'OK');
     } else {
       return createStatusActionResponse('Failed to start poll.', 'UNKNOWN');

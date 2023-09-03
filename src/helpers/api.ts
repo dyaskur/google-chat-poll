@@ -33,6 +33,8 @@ export async function callMessageApi(action: string, request: object) {
       response = await chatApi.spaces.messages.create(request);
     } else if (action === 'update') {
       response = await chatApi.spaces.messages.update(request);
+    } else if (action === 'get') {
+      response = await chatApi.spaces.messages.get(request);
     }
   } catch (error) {
     // @ts-ignore: all error should have this method

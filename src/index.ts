@@ -5,9 +5,11 @@ import CommandHandler from './handlers/CommandHandler';
 import MessageHandler from './handlers/MessageHandler';
 import ActionHandler from './handlers/ActionHandler';
 import {generateHelpText} from './helpers/helper';
+import TaskHandler from './handlers/TaskHandler';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
+    console.log('unknown access', req.hostname, req.ips.join(','), req.method, req.body);
     res.status(400).send('');
   }
   const buttonCard: chatV1.Schema$CardWithId = {
@@ -54,11 +56,13 @@ export const app: HttpFunction = async (req, res) => {
     },
   };
   const event = req.body;
+  if (event.type === 'TASK') {
+    const reply = await new TaskHandler(event).process();
+    res.json(reply);
+  }
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
     event.user.displayName, event.user.email, event.space.type, event.space.name);
-  console.log(JSON.stringify(event));
-
   let reply: chatV1.Schema$Message = {
     thread: event.message?.thread,
     actionResponse: {
@@ -69,6 +73,7 @@ export const app: HttpFunction = async (req, res) => {
       'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
   };
   // Dispatch slash and action events
+
   if (event.type === 'MESSAGE') {
     const message = event.message;
     if (message.slashCommand?.commandId) {

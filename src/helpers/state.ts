@@ -47,10 +47,8 @@ export function getConfigFromInput(formValues: PollFormInputs) {
   state.optionable = formValues.allow_add_option?.stringInputs!.value![0] === '1';
   state.type = parseInt(formValues.type?.stringInputs!.value![0] ?? '1') as ClosableType;
   state.autoclose = formValues.is_autoclose?.stringInputs!.value![0] === '1';
-  state.close_schedule_time = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '1');
+  state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
   state.choices = getChoicesFromInput(formValues);
-
-  console.log(JSON.stringify(state));
   return state;
 }
 
@@ -63,7 +61,7 @@ function getStateFromCardWhenHasHeader(card: chatV1.Schema$GoogleAppsCardV1Card)
   return card.sections?.[1].widgets?.[0].decoratedText?.button?.onClick?.action?.parameters?.[0]?.value;
 }
 
-function getStateFromCardName(card: chatV1.Schema$GoogleAppsCardV1Card) {
+export function getStateFromCardName(card: chatV1.Schema$GoogleAppsCardV1Card) {
   // when has header the first section is header
   return card.name;
 }

@@ -14,31 +14,30 @@ interface ChoiceCreator {
 export interface Votes {
   [key: string]: Voter[];
 }
+
 export enum ClosableType {
   UNCLOSEABLE,
   CLOSEABLE_BY_CREATOR,
   CLOSEABLE_BY_ANYONE,
 }
+
 export interface PollConfig {
   anon?: boolean,
   choices: string[],
   optionable?: boolean,
   topic: string,
   type?: ClosableType,
+  closedTime?: number,
 }
 
-export interface PollForm extends PollConfig{
+export interface PollForm extends PollConfig {
   autoclose?: boolean,
-  timezone_offset?: number | null,
-  timezone_name?: string | null,
-  close_schedule_time?: number
 }
 
-export interface PollState extends PollConfig{
+export interface PollState extends PollConfig {
   choiceCreator?: ChoiceCreator,
   author?: chatV1.Schema$User,
   votes?: Votes,
-  closedTime?: number,
 }
 
 export interface PollFormInputs {
@@ -55,4 +54,10 @@ export interface MessageDialogConfig {
   title: string,
   message: string,
   imageUrl?: string,
+}
+
+export interface taskEvent {
+  id: string,
+  action: string,
+  type: 'TASK'
 }

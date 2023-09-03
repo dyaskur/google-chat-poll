@@ -34,6 +34,19 @@ jest.mock('googleapis', () => {
   };
 });
 
+jest.mock('@google-cloud/tasks', () => {
+  return {
+    CloudTasksClient: jest.fn(() => {
+      return {
+        createTask: jest.fn().mockResolvedValue([{name: 'testEmail'}]),
+        queuePath: jest.fn().mockResolvedValue({
+          email: 'testEmail',
+        }),
+      };
+    }),
+  };
+});
+
 it('should add a new option to the poll state and return an "OK" status message', async () => {
   // Mock event object
   const event = {
@@ -287,14 +300,30 @@ describe('startPoll', () => {
           option3: {stringInputs: {value: ['']}},
           option4: {stringInputs: {value: ['']}},
           option5: {stringInputs: {value: ['No Way']}},
+          is_autoclose: {stringInputs: {value: ['1']}},
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: Date.now().toString()}},
         },
       },
       user: {displayName: 'User'},
       space: {name: 'Space'},
     };
+
     const actionHandler = new ActionHandler(event);
 
+    // will throw error because not all required environment variables are set
+    await expect(async () => {
+      await actionHandler.startPoll();
+    }).rejects.toThrowError('Missing required environment variables');
+    // duplicate test with another way for reference to test the error
+    await actionHandler.startPoll().catch((error) => {
+      expect(error).toEqual(new Error('Missing required environment variables'));
+    });
+
+    process.env.GCP_PROJECT = 'test-project';
+    process.env.QUEUE_NAME = 'test-queue';
+    process.env.FUNCTION_REGION = 'us-central1';
     const result = await actionHandler.startPoll();
+
     const pollCard = new PollCard({
       topic: 'Topic',
       choiceCreator: undefined,
