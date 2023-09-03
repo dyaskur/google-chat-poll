@@ -17,6 +17,7 @@ export default class TaskHandler {
         if (!currentState.closedTime || currentState.closedTime > Date.now()) {
           currentState.closedTime = Date.now();
         }
+        currentState.closedBy = 'scheduled auto-close';
         const apiResponse = await this.updatePollMessage(currentState);
         if (apiResponse?.status !== 200) {
           throw new Error('Error when closing message');
@@ -40,7 +41,8 @@ export default class TaskHandler {
   }
 
   async updatePollMessage(currentState: PollState) {
-    const cardMessage = new PollCard(currentState).createMessage();
+    const localeTimezone = {locale: 'en', offset: 0, id: 'UTC'};
+    const cardMessage = new PollCard(currentState, localeTimezone).createMessage();
     const request = {
       name: this.event.id,
       requestBody: cardMessage,

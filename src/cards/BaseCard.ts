@@ -24,6 +24,21 @@ export default abstract class BaseCard implements Card {
     sections: this._content,
   };
 
+  protected createButton(
+    text: string, action: string, interaction: string | undefined = undefined,
+    parameters = []): chatV1.Schema$GoogleAppsCardV1Button {
+    return {
+      text,
+      'onClick': {
+        'action': {
+          'function': action,
+          interaction,
+          parameters,
+        },
+      },
+    };
+  }
+
   abstract buildSections(): void;
 
   abstract create(): chatV1.Schema$GoogleAppsCardV1Card;

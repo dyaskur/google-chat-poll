@@ -1,21 +1,24 @@
 import BaseCard from './BaseCard';
-import {ClosableType, PollState, Voter} from '../helpers/interfaces';
+import {ClosableType, localeTimezone, PollState, Voter} from '../helpers/interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {ICON_URL_48X48} from '../config/default';
 import {progressBarText} from '../helpers/vote';
 
 export default class PollCard extends BaseCard {
   private readonly state: PollState;
+  private readonly timezone: localeTimezone;
 
-  constructor(state: PollState) {
+  constructor(state: PollState, timezone: localeTimezone) {
     super();
     this.state = state;
+    this.timezone = timezone;
   }
 
   create() {
     this.buildHeader();
     this.buildSections();
     this.buildButtons();
+    this.buildFooter();
     this.card.name = this.getSerializedState();
     return this.card;
   }
@@ -78,30 +81,12 @@ export default class PollCard extends BaseCard {
   buildButtons() {
     const buttons = [];
     if (this.state.optionable) {
-      buttons.push({
-        'text': 'Add Option',
-        'onClick': {
-          'action': {
-            'function': 'add_option_form',
-            'interaction': 'OPEN_DIALOG',
-            'parameters': [],
-          },
-        },
-      });
+      buttons.push(this.createButton('Add Option', 'add_option_form', 'OPEN_DIALOG'));
     }
     const isClosable = this.state.type === undefined || this.state.type !== ClosableType.UNCLOSEABLE;
 
     if (isClosable) {
-      const closeButton: chatV1.Schema$GoogleAppsCardV1Button = {
-        'text': 'Close Poll',
-        'onClick': {
-          'action': {
-            'function': 'close_poll_form',
-            'interaction': 'OPEN_DIALOG',
-            'parameters': [],
-          },
-        },
-      };
+      const closeButton = this.createButton('Close Poll', 'close_poll_form', 'OPEN_DIALOG');
       if (this.isClosed()) {
         closeButton.disabled = true;
       }
@@ -115,6 +100,43 @@ export default class PollCard extends BaseCard {
             {
               'buttonList': {
                 buttons,
+              },
+            },
+          ],
+        });
+    }
+  }
+
+  buildFooter() {
+    if (!this.isClosed() && this.state.closedTime) {
+      const locale = this.timezone.locale || 'en';
+      try {
+        const closedDate = new Date(this.state.closedTime).toLocaleString(locale, {timeZone: this.timezone.id});
+        this.card.sections!.push(
+          {
+            'widgets': [
+              {
+                'decoratedText': {
+                  'text': `<i>Auto Close at <time> ${closedDate}</time>  ${this.timezone.id} </i>`,
+                  'startIcon': {
+                    'knownIcon': 'CLOCK',
+                    'altText': '@',
+                  },
+                },
+              },
+            ],
+          });
+      } catch (e) {
+        // the most possible error is because of timezone issue, so just ignore
+        console.log(e, JSON.stringify(this.timezone));
+      }
+    } else if (this.isClosed()) {
+      this.card.sections!.push(
+        {
+          'widgets': [
+            {
+              'decoratedText': {
+                'text': `This poll was closed at by ${this.state.closedBy}`,
               },
             },
           ],

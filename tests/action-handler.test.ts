@@ -11,6 +11,7 @@ import {ClosableType, PollForm} from '../src/helpers/interfaces';
 import ClosePollFormCard from '../src/cards/ClosePollFormCard';
 import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
+import {dummyLocalTimezone} from './dummy';
 
 jest.mock('../src/cards/PollCard');
 
@@ -303,6 +304,7 @@ describe('startPoll', () => {
           is_autoclose: {stringInputs: {value: ['1']}},
           close_schedule_time: {dateTimeInput: {msSinceEpoch: Date.now().toString()}},
         },
+        timeZone: {'id': 'America/New_York'},
       },
       user: {displayName: 'User'},
       space: {name: 'Space'},
@@ -332,7 +334,7 @@ describe('startPoll', () => {
       votes: {'0': [], '1': []},
       anon: false,
       optionable: false,
-    }).createMessage();
+    }, dummyLocalTimezone).createMessage();
 
     const request = {
       parent: event.space?.name,
@@ -447,7 +449,7 @@ describe('recordVote', () => {
         '1': [{uid: 'userId2', name: 'userName2'}],
       }, anon: false,
     };
-    expect(PollCard).toHaveBeenCalledWith(expectedPollState);
+    expect(PollCard).toHaveBeenCalledWith(expectedPollState, {'locale': 'en', 'offset': 0, 'id': 'UTC'});
     expect(mockCreateCardWithId).toHaveBeenCalled();
     expect(response).toEqual(expectedResponse);
     expect(actionHandler.getEventPollState()).toEqual({

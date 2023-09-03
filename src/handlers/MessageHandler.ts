@@ -72,7 +72,7 @@ export default class MessageHandler extends BaseHandler {
             votes: {},
             anon: false,
             optionable: true,
-          });
+          }, this.getUserTimezone());
           const message = pollCard.createMessage();
           return {
             thread: this.event.message!.thread,

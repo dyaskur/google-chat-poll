@@ -38,6 +38,7 @@ export interface PollState extends PollConfig {
   choiceCreator?: ChoiceCreator,
   author?: chatV1.Schema$User,
   votes?: Votes,
+  closedBy?: string,
 }
 
 export interface PollFormInputs {
@@ -54,6 +55,12 @@ export interface MessageDialogConfig {
   title: string,
   message: string,
   imageUrl?: string,
+}
+
+export interface localeTimezone extends chatV1.Schema$TimeZone {
+  locale?: string | null,
+  id: string
+  offset: number
 }
 
 export interface taskEvent {

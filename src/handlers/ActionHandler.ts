@@ -67,7 +67,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       // because previously we marked up the time with user timezone offset
       config.closedTime -= this.getUserTimezone()?.offset ?? 0;
     }
-    const pollCardMessage = new PollCard({author: this.event.user, ...config}).createMessage();
+    const pollCardMessage = new PollCard({author: this.event.user, ...config}, this.getUserTimezone()).createMessage();
     const request = {
       parent: this.event.space?.name,
       requestBody: pollCardMessage,
@@ -103,7 +103,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
     // Add or update the user's selected option
     state.votes = saveVotes(choice, voter, state.votes!, state.anon);
-    const card = new PollCard(state);
+    const card = new PollCard(state, this.getUserTimezone());
     return {
       thread: this.event.message?.thread,
       actionResponse: {
@@ -137,7 +137,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const optionValue = formValues?.['value']?.stringInputs?.value?.[0]?.trim() || '';
     addOptionToState(optionValue, state, userName);
 
-    const cardMessage = new PollCard(state).createMessage();
+    const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
 
     const request = {
       name: this.event.message!.name,
@@ -163,7 +163,8 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   async closePoll(): Promise<chatV1.Schema$Message> {
     const state = this.getEventPollState();
     state.closedTime = Date.now();
-    const cardMessage = new PollCard(state).createMessage();
+    state.closedBy = this.event.user?.displayName ?? '';
+    const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
     const request = {
       name: this.event.message!.name,
       requestBody: cardMessage,
