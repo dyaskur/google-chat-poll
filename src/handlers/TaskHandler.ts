@@ -10,28 +10,20 @@ export default class TaskHandler {
     this.event = event;
   }
 
-  async process() {
+  async process(): Promise<void> {
     switch (this.event.action) {
       case 'close_poll':
         const currentState = await this.getStateFromMessageId();
         if (!currentState.closedTime || currentState.closedTime > Date.now()) {
           currentState.closedTime = Date.now();
         }
-        const cardMessage = new PollCard(currentState).createMessage();
-        const request = {
-          name: this.event.id,
-          requestBody: cardMessage,
-          updateMask: 'cardsV2',
-        };
-        const apiResponse = await callMessageApi('update', request);
-        if (apiResponse?.status === 200) {
-          console.log('message is closed by autoclose system');
-        } else {
-          console.log('message is closed by autoclose system');
+        const apiResponse = await this.updatePollMessage(currentState);
+        if (apiResponse?.status !== 200) {
           throw new Error('Error when closing message');
         }
+        break;
       default:
-        return {};
+        console.log('unknown task');
     }
   }
 
@@ -40,16 +32,20 @@ export default class TaskHandler {
       name: this.event.id,
     };
     const apiResponse = await callMessageApi('get', request);
-    console.log('task getting message', JSON.stringify(apiResponse));
-    if (apiResponse) {
-      const currentState = getStateFromCardName(apiResponse.data?.cardsV2?.[0].card ?? {});
-      console.log('task getting state', JSON.stringify(currentState));
-      if (!currentState) {
-        throw new Error('State not found');
-      }
-      return JSON.parse(currentState) as PollState;
-    } else {
-      throw new Error('Error when getting message detail');
+    const currentState = getStateFromCardName(apiResponse.data!.cardsV2?.[0].card ?? {});
+    if (!currentState) {
+      throw new Error('State not found');
     }
+    return JSON.parse(currentState) as PollState;
+  }
+
+  async updatePollMessage(currentState: PollState) {
+    const cardMessage = new PollCard(currentState).createMessage();
+    const request = {
+      name: this.event.id,
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    };
+    return await callMessageApi('update', request);
   }
 }

@@ -56,36 +56,25 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   async startPoll() {
     // Get the form values
     const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
-
     const config = getConfigFromInput(formValues);
-    if (config.closedTime) {
-      // because previously we marked up the time with user timezone offset
-      config.closedTime -= this.getUserTimezone()?.offset ?? 0;
-    }
 
     if (!config.topic || config.choices.length === 0) {
       // Incomplete form submitted, rerender
       const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
       return createDialogActionResponse(dialog);
     }
-    const pollCard = new PollCard({
-      author: this.event.user,
-      ...config,
-    }).createCardWithId();
-    // Valid configuration, make the voting card to display in the space
-    const message = {
-      cardsV2: [pollCard],
-    };
+    if (config.closedTime) {
+      // because previously we marked up the time with user timezone offset
+      config.closedTime -= this.getUserTimezone()?.offset ?? 0;
+    }
+    const pollCardMessage = new PollCard({author: this.event.user, ...config}).createMessage();
     const request = {
       parent: this.event.space?.name,
-      requestBody: message,
+      requestBody: pollCardMessage,
     };
     const apiResponse = await callMessageApi('create', request);
-    if (apiResponse?.data?.name) {
-      console.log(JSON.stringify(apiResponse.data));
-      console.log(JSON.stringify(config));
+    if (apiResponse.data?.name) {
       if (config.autoclose && config.closedTime) {
-        console.log('Creating task');
         const taskPayload: taskEvent = {'id': apiResponse.data.name, 'action': 'close_poll', 'type': 'TASK'};
         await createTask(JSON.stringify(taskPayload), config.closedTime);
       }
@@ -156,7 +145,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       updateMask: 'cardsV2',
     };
     const apiResponse = await callMessageApi('update', request);
-    if (apiResponse) {
+    if (apiResponse.status === 200) {
       return createStatusActionResponse('Option is added', 'OK');
     } else {
       return createStatusActionResponse('Failed to add option.', 'UNKNOWN');
@@ -181,7 +170,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       updateMask: 'cardsV2',
     };
     const apiResponse = await callMessageApi('update', request);
-    if (apiResponse) {
+    if (apiResponse.status === 200) {
       return createStatusActionResponse('Poll is closed', 'OK');
     } else {
       return createStatusActionResponse('Failed to close poll.', 'UNKNOWN');

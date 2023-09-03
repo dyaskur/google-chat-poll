@@ -86,7 +86,7 @@ it('should add a new option to the poll state and return an "OK" status message'
   const actionHandler2 = new ActionHandler(event);
 
   actionHandler2.getEventPollState = getEventPollStateMock;
-  mockUpdate.mockResolvedValue('');
+  mockUpdate.mockResolvedValue({status: 400});
   const result2 = await actionHandler2.saveOption();
   expect(result2).toEqual(createStatusActionResponse('Failed to add option.', 'UNKNOWN'));
 });
@@ -324,7 +324,7 @@ describe('startPoll', () => {
     process.env.FUNCTION_REGION = 'us-central1';
     const result = await actionHandler.startPoll();
 
-    const pollCard = new PollCard({
+    const pollCardMessage = new PollCard({
       topic: 'Topic',
       choiceCreator: undefined,
       author: event.user,
@@ -332,21 +332,18 @@ describe('startPoll', () => {
       votes: {'0': [], '1': []},
       anon: false,
       optionable: false,
-    }).createCardWithId();
-    // Valid configuration, make the voting card to display in the space
-    const message = {
-      cardsV2: [pollCard],
-    };
+    }).createMessage();
+
     const request = {
       parent: event.space?.name,
-      requestBody: message,
+      requestBody: pollCardMessage,
     };
 
     expect(result).toEqual(createStatusActionResponse('Poll started.', 'OK'));
     expect(mockCreate).toHaveBeenCalledWith(request);
 
     // when google API return invalid data, it should return an error message
-    mockCreate.mockResolvedValue('');
+    mockCreate.mockResolvedValue({status: 400, data: {}});
     const actionHandler2 = new ActionHandler(event);
     const result2 = await actionHandler2.startPoll();
     expect(result2).toEqual(createStatusActionResponse('Failed to start poll.', 'UNKNOWN'));
@@ -474,7 +471,7 @@ describe('closePoll', () => {
         },
       },
     };
-    mockUpdate.mockResolvedValue('ok');
+    mockUpdate.mockResolvedValue({'status': 200, 'data': {}});
 
     const actionHandler = new ActionHandler({message: {name: 'messageName'}});
     actionHandler.getEventPollState = jest.fn().mockReturnValue({});
@@ -502,7 +499,7 @@ describe('closePoll', () => {
         },
       };
 
-      mockUpdate.mockResolvedValue('');
+      mockUpdate.mockResolvedValue({'status': 400, 'data': {}});
 
       const actionHandler = new ActionHandler({message: {name: 'messageName'}});
       actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
@@ -511,6 +508,11 @@ describe('closePoll', () => {
 
       expect(result).toEqual(expectedResponse);
       expect(state.closedTime).toBeDefined();
+
+      mockUpdate.mockResolvedValue(undefined);
+      await actionHandler.closePoll().catch((error) => {
+        expect(error).toEqual(new Error('Empty response'));
+      });
     });
 });
 

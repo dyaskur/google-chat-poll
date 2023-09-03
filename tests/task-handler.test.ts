@@ -7,20 +7,11 @@ import * as yaskur from '../src/helpers/api';
 describe('process', () => {
   it('should throw an error if the state is not found', async () => {
     // Mock the callMessageApi function to return a successful response
-    const apiResponse = {status: 200};
+    const apiResponse = {status: 200, data: {cardsV2: [{}]}};
     jest.spyOn(yaskur, 'callMessageApi').mockResolvedValue(apiResponse);
     // Call the process method and expect it to throw an error
     const taskHandler = new TaskHandler({id: '123', action: 'close_poll', type: 'TASK'});
     await expect(taskHandler.process()).rejects.toThrow('State not found');
-  });
-
-  it('should throw an error if error when getting message detail', async () => {
-    // Mock the callMessageApi function to return a successful response
-    const apiResponse = null;
-    jest.spyOn(yaskur, 'callMessageApi').mockResolvedValue(apiResponse);
-    // Call the process method and expect it to throw an error
-    const taskHandler = new TaskHandler({id: '123', action: 'close_poll', type: 'TASK'});
-    await expect(taskHandler.process()).rejects.toThrow('Error when getting message detail');
   });
 
   it('should close the poll when it is not already closed', async () => {
@@ -51,7 +42,7 @@ describe('process', () => {
     const result = await taskHandler.process();
 
     // Expect that an empty object is returned
-    expect(result).toEqual({});
+    expect(result).toBeUndefined();
   });
 
   it('should still call the api even if it is already closed', async () => {

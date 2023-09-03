@@ -8,12 +8,12 @@ export const mockGoogleAuth = {
 };
 
 export const mockCreate = jest.fn().mockResolvedValue({
-  messages: 'testEmail',
+  status: 200,
   data: {name: true},
 });
 
 export const mockUpdate = jest.fn().mockResolvedValue({
-  messages: 'testEmail',
+  status: 200,
   data: {name: true},
 
 });

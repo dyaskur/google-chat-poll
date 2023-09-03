@@ -43,5 +43,9 @@ export async function callMessageApi(action: string, request: object) {
     throw new Error(errorMessage);
   }
 
+  if (!response) {
+    throw new Error('Empty response');
+  }
+
   return response;
 }

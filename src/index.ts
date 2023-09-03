@@ -9,7 +9,7 @@ import TaskHandler from './handlers/TaskHandler';
 
 export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
-    console.log('unknown access', req.hostname, req.ips.join(','), req.method, req.body);
+    console.log('unknown access', req.hostname, req.ips.join(','), req.method, JSON.stringify(req.body));
     res.status(400).send('');
   }
   const buttonCard: chatV1.Schema$CardWithId = {
@@ -57,8 +57,8 @@ export const app: HttpFunction = async (req, res) => {
   };
   const event = req.body;
   if (event.type === 'TASK') {
-    const reply = await new TaskHandler(event).process();
-    res.json(reply);
+    await new TaskHandler(event).process();
+    res.json('');
   }
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,

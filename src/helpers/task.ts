@@ -3,7 +3,7 @@ import {google} from '@google-cloud/tasks/build/protos/protos';
 
 const client = new CloudTasksClient();
 
-export async function createTask(payload: string, scheduleInSeconds?: number) {
+export async function createTask(payload: string, scheduleInSeconds: number) {
   const project = process.env.GCP_PROJECT;
   const queue = process.env.QUEUE_NAME;
   const location = process.env.FUNCTION_REGION;
@@ -24,15 +24,13 @@ export async function createTask(payload: string, scheduleInSeconds?: number) {
 
   task.httpRequest!.body = Buffer.from(payload).toString('base64');
 
-  if (scheduleInSeconds) {
-    // The time when the task is scheduled to be attempted.
-    task.scheduleTime = {
-      seconds: scheduleInSeconds / 1000,
-    };
-  }
+  // The time when the task is scheduled to be attempted.
+  task.scheduleTime = {
+    seconds: scheduleInSeconds / 1000,
+  };
 
   const request: google.cloud.tasks.v2.ICreateTaskRequest = {parent: parent, task: task};
-  const [response]= await client.createTask(request);
+  const [response] = await client.createTask(request);
   console.log(`Created task ${response.name}`);
   return response;
 }

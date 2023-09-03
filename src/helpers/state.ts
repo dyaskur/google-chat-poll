@@ -40,13 +40,20 @@ function getChoicesFromInput(formValues: PollFormInputs) {
   return choices;
 }
 
+function getStringInputValue(input: chatV1.Schema$Inputs) {
+  if (!input) {
+    return '';
+  }
+  return input.stringInputs!.value![0];
+}
+
 export function getConfigFromInput(formValues: PollFormInputs) {
   const state: PollForm = {topic: '', choices: []};
-  state.topic = formValues.topic.stringInputs!.value![0]!.trim() ?? '';
-  state.anon = formValues.is_anonymous?.stringInputs!.value![0] === '1';
-  state.optionable = formValues.allow_add_option?.stringInputs!.value![0] === '1';
-  state.type = parseInt(formValues.type?.stringInputs!.value![0] ?? '1') as ClosableType;
-  state.autoclose = formValues.is_autoclose?.stringInputs!.value![0] === '1';
+  state.topic = getStringInputValue(formValues.topic).trim() ?? '';
+  state.anon = getStringInputValue(formValues.is_anonymous) === '1';
+  state.optionable = getStringInputValue(formValues.allow_add_option) === '1';
+  state.type = parseInt(getStringInputValue(formValues.type) || '1') as ClosableType;
+  state.autoclose = getStringInputValue(formValues.is_autoclose) === '1';
   state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
   state.choices = getChoicesFromInput(formValues);
   return state;
