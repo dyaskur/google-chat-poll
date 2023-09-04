@@ -60,6 +60,7 @@ export const app: HttpFunction = async (req, res) => {
     await new TaskHandler(event).process();
     res.json('');
   }
+  console.log(JSON.stringify(event));
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
     event.user.displayName, event.user.email, event.space.type, event.space.name);

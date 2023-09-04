@@ -46,15 +46,7 @@ export default class ClosePollFormCard extends BaseCard {
 
   buildFooter() {
     this.card.fixedFooter = {
-      'primaryButton': {
-        'text': 'Close Poll',
-        'onClick': {
-          'action': {
-            'function': 'close_poll',
-            'parameters': [],
-          },
-        },
-      },
+      'primaryButton': this.createButton('Close Poll', 'close_poll'),
     };
   }
 }

@@ -173,14 +173,7 @@ export default class NewPollFormCard extends BaseCard {
 
   buildFooter() {
     this.card.fixedFooter = {
-      'primaryButton': {
-        'text': 'Submit',
-        'onClick': {
-          'action': {
-            'function': 'start_poll',
-          },
-        },
-      },
+      'primaryButton': this.createButton('Submit', 'start_poll'),
     };
   }
 }
