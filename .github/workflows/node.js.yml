@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 19.x]
+        node-version: [18.x, 19.x, 20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -31,6 +31,6 @@ jobs:
     - name: Run ESLint
       run: yarn eslint .
     - name: Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@3b7078ee895f74fc267b7b267c88211df59fa816
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
