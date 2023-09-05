@@ -98,13 +98,13 @@ describe('PollCard', () => {
     expect(pollCard.card).toEqual(voteCardJson);
   });
 
-  it('if closedTime > now, it should show a clock icon which indicate that poll has autoclose schedule', () => {
+  it('if closedTime > now, it should show a clock icon which indicate that poll has autoClose schedule', () => {
     const pollCard = new PollCard(dummyAutoclosePollState, dummyLocalTimezone).create();
     expect(pollCard.sections.find((section) => section.widgets?.[0]?.decoratedText?.startIcon?.knownIcon === 'CLOCK')).
       toBeDefined();
   });
 
-  it('if poll has autoclose schedule but has invalid timezone the icon is not showed', () => {
+  it('if poll has autoClose schedule but has invalid timezone the icon is not showed', () => {
     const pollCard = new PollCard(dummyAutoclosePollState, {
       id: 'Invalid/Timezone',
       offset: 25200000,

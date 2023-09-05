@@ -53,7 +53,8 @@ export function getConfigFromInput(formValues: PollFormInputs) {
   state.anon = getStringInputValue(formValues.is_anonymous) === '1';
   state.optionable = getStringInputValue(formValues.allow_add_option) === '1';
   state.type = parseInt(getStringInputValue(formValues.type) || '1') as ClosableType;
-  state.autoclose = getStringInputValue(formValues.is_autoclose) === '1';
+  state.autoClose = getStringInputValue(formValues.is_autoclose) === '1';
+  state.autoMention = getStringInputValue(formValues.auto_mention) === '1';
   state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
   state.choices = getChoicesFromInput(formValues);
   return state;

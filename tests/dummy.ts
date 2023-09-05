@@ -1,4 +1,4 @@
-import {localeTimezone, PollState, Votes} from '../src/helpers/interfaces';
+import {LocaleTimezone, PollState, Votes} from '../src/helpers/interfaces';
 
 const topic = 'What is the most beautiful worms?';
 const choices = [
@@ -63,7 +63,7 @@ export const dummyAutoclosePollState: PollState = {
   closedTime: Date.now()+1000000,
 };
 
-export const dummyLocalTimezone: localeTimezone = {
+export const dummyLocalTimezone: LocaleTimezone = {
   id: 'Asia/Jakarta',
   offset: 25200000,
   locale: 'en-US',

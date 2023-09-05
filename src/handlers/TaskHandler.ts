@@ -1,26 +1,31 @@
-import {PollState, taskEvent} from '../helpers/interfaces';
+import {PollState, TaskEvent} from '../helpers/interfaces';
 import {callMessageApi} from '../helpers/api';
 import {getStateFromCardName} from '../helpers/state';
 import PollCard from '../cards/PollCard';
 
 export default class TaskHandler {
-  event: taskEvent;
+  event: TaskEvent;
 
-  public constructor(event: taskEvent) {
+  public constructor(event: TaskEvent) {
     this.event = event;
   }
 
   async process(): Promise<void> {
+    this.event.state = await this.getStateFromMessageId();
     switch (this.event.action) {
       case 'close_poll':
-        const currentState = await this.getStateFromMessageId();
-        if (!currentState.closedTime || currentState.closedTime > Date.now()) {
-          currentState.closedTime = Date.now();
+        if (!this.event.state.closedTime || this.event.state.closedTime > Date.now()) {
+          this.event.state.closedTime = Date.now();
         }
-        currentState.closedBy = 'scheduled auto-close';
-        const apiResponse = await this.updatePollMessage(currentState);
+        this.event.state.closedBy = 'scheduled auto-close';
+        const apiResponse = await this.updatePollMessage(this.event.state);
         if (apiResponse?.status !== 200) {
           throw new Error('Error when closing message');
+        }
+        break;
+      case 'remind_all':
+        if (this.event.state.closedTime && this.event.state.closedTime > Date.now()) {
+          await this.remindAll();
         }
         break;
       default:
@@ -37,6 +42,8 @@ export default class TaskHandler {
     if (!currentState) {
       throw new Error('State not found');
     }
+    this.event.space = apiResponse.data!.space;
+    this.event.thread = apiResponse.data!.thread;
     return JSON.parse(currentState) as PollState;
   }
 
@@ -49,5 +56,19 @@ export default class TaskHandler {
       updateMask: 'cardsV2',
     };
     return await callMessageApi('update', request);
+  }
+
+  async remindAll() {
+    const text = `<users/all>, The poll with the topic *${this.event.state!.topic}*  is reaching its finale. Please wrap up your voting now.`;
+
+    const request = {
+      name: this.event.id,
+      parent: this.event.space!.name,
+      messageReplyOption: 'REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD',
+      requestBody: {
+        text, thread: this.event.thread,
+      },
+    };
+    return await callMessageApi('create', request);
   }
 }

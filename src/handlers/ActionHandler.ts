@@ -5,7 +5,7 @@ import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, taskEvent, Voter} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, TaskEvent, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
 import {PROHIBITED_ICON_URL} from '../config/default';
@@ -74,9 +74,13 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     };
     const apiResponse = await callMessageApi('create', request);
     if (apiResponse.data?.name) {
-      if (config.autoclose && config.closedTime) {
-        const taskPayload: taskEvent = {'id': apiResponse.data.name, 'action': 'close_poll', 'type': 'TASK'};
+      if (config.autoClose && config.closedTime) {
+        const taskPayload: TaskEvent = {'id': apiResponse.data.name, 'action': 'close_poll', 'type': 'TASK'};
         await createTask(JSON.stringify(taskPayload), config.closedTime);
+        if (config.autoMention) {
+          const taskPayload: TaskEvent = {'id': apiResponse.data.name, 'action': 'remind_all', 'type': 'TASK'};
+          await createTask(JSON.stringify(taskPayload), config.closedTime - 420000);
+        }
       }
       return createStatusActionResponse('Poll started.', 'OK');
     } else {

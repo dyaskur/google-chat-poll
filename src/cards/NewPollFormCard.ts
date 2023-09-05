@@ -11,7 +11,7 @@ export default class NewPollFormCard extends BaseCard {
   constructor(config: PollForm, timezone: chatV1.Schema$TimeZone | undefined = undefined) {
     super();
     this.config = config;
-    if (timezone && timezone.offset) {
+    if (timezone?.offset) {
       this.timezone = timezone;
     } else {
       this.timezone = {offset: 0, id: 'GMT'};
@@ -28,6 +28,9 @@ export default class NewPollFormCard extends BaseCard {
     this.buildTopicInputSection();
     this.buildOptionSwitchSection();
     this.buildCloseConfigSection();
+    if (this.config.autoClose) {
+      this.buildAutoCloseSection();
+    }
   }
 
   buildTopicInputSection() {
@@ -114,7 +117,7 @@ export default class NewPollFormCard extends BaseCard {
             'controlType': 'SWITCH',
             'name': 'is_autoclose',
             'value': '1',
-            'selected': this.config.autoclose ?? false,
+            'selected': this.config.autoClose ?? false,
             'onChangeAction': {
               'function': 'new_poll_on_change',
               'parameters': [],
@@ -122,19 +125,38 @@ export default class NewPollFormCard extends BaseCard {
           },
         },
       }];
-    if (this.config.autoclose) {
-      const timezone = offsetToTimezone(this.timezone.offset!);
-      const nowMs = Date.now() + this.timezone.offset! + 18000000;
-      widgets.push(
-        {
-          'dateTimePicker': {
-            'label': 'Close schedule time ' + timezone,
-            'name': 'close_schedule_time',
-            'type': 'DATE_AND_TIME',
-            'valueMsEpoch': nowMs.toString(),
+    this.card.sections!.push({
+      widgets,
+    });
+  }
+
+  buildAutoCloseSection() {
+    const widgets: chatV1.Schema$GoogleAppsCardV1Widget[] = [];
+    const timezone = offsetToTimezone(this.timezone.offset!);
+    const nowMs = Date.now() + this.timezone.offset! + 18000000;
+    widgets.push(
+      {
+        'dateTimePicker': {
+          'label': 'Close schedule time ' + timezone,
+          'name': 'close_schedule_time',
+          'type': 'DATE_AND_TIME',
+          'valueMsEpoch': nowMs.toString(),
+        },
+      });
+
+    widgets.push(
+      {
+        'decoratedText': {
+          'text': 'Auto mention <b>@all</b> on 5 minutes before poll closed',
+          'bottomLabel': 'This is to prevent other users to vote before the poll is closed',
+          'switchControl': {
+            'controlType': 'SWITCH',
+            'name': 'auto_mention',
+            'value': '1',
+            'selected': this.config.autoMention ?? false,
           },
-        });
-    }
+        },
+      });
     this.card.sections!.push({
       widgets,
     });

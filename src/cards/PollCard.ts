@@ -1,14 +1,14 @@
 import BaseCard from './BaseCard';
-import {ClosableType, localeTimezone, PollState, Voter} from '../helpers/interfaces';
+import {ClosableType, LocaleTimezone, PollState, Voter} from '../helpers/interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {ICON_URL_48X48} from '../config/default';
 import {progressBarText} from '../helpers/vote';
 
 export default class PollCard extends BaseCard {
   private readonly state: PollState;
-  private readonly timezone: localeTimezone;
+  private readonly timezone: LocaleTimezone;
 
-  constructor(state: PollState, timezone: localeTimezone) {
+  constructor(state: PollState, timezone: LocaleTimezone) {
     super();
     this.state = state;
     this.timezone = timezone;
@@ -136,7 +136,7 @@ export default class PollCard extends BaseCard {
           'widgets': [
             {
               'decoratedText': {
-                'text': `This poll was closed at by ${this.state.closedBy}`,
+                'bottomLabel': `<i>This poll was closed by ${this.state.closedBy}</i>`,
               },
             },
           ],
@@ -203,6 +203,6 @@ export default class PollCard extends BaseCard {
   }
 
   private isClosed(): boolean {
-    return this.state.closedTime !== undefined && this.state.closedTime <= Date.now();
+    return this.state.closedTime != undefined && this.state.closedTime <= Date.now();
   }
 }

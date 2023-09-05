@@ -16,7 +16,7 @@ test('should build a card with the correct topic and options values', () => {
   const config: PollForm = {
     topic: 'Favorite Color',
     choices: ['Red', 'Blue', 'Green'],
-    autoclose: true,
+    autoClose: true,
   };
   const newPollFormCard = new NewPollFormCard(config, {id: 'GMT+1', offset: 3600000});
   const sections = newPollFormCard.createMessage().cardsV2[0].card.sections;
@@ -27,5 +27,6 @@ test('should build a card with the correct topic and options values', () => {
   expect(topicInputSection.widgets[4].textInput.value).toBe('Green');
   const closeConfigSection = sections[2];
   expect(closeConfigSection.widgets[1].decoratedText.switchControl.selected).toBe(true);
-  expect(closeConfigSection.widgets[2].dateTimePicker).toBeDefined();
+  const autoCloseSection = sections[3];
+  expect(autoCloseSection.widgets[0].dateTimePicker).toBeDefined();
 });

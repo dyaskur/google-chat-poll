@@ -31,7 +31,8 @@ export interface PollConfig {
 }
 
 export interface PollForm extends PollConfig {
-  autoclose?: boolean,
+  autoClose?: boolean,
+  autoMention?: boolean,
 }
 
 export interface PollState extends PollConfig {
@@ -48,6 +49,7 @@ export interface PollFormInputs {
   type: chatV1.Schema$Inputs,
   timezone: chatV1.Schema$Inputs,
   close_schedule_time: chatV1.Schema$Inputs,
+  auto_mention: chatV1.Schema$Inputs,
   [key: string]: chatV1.Schema$Inputs, // for unknown number option
 }
 
@@ -57,14 +59,17 @@ export interface MessageDialogConfig {
   imageUrl?: string,
 }
 
-export interface localeTimezone extends chatV1.Schema$TimeZone {
+export interface LocaleTimezone extends chatV1.Schema$TimeZone {
   locale?: string | null,
   id: string
   offset: number
 }
 
-export interface taskEvent {
+export interface TaskEvent {
   id: string,
   action: string,
-  type: 'TASK'
+  type: 'TASK',
+  space?: chatV1.Schema$Space,
+  thread?: chatV1.Schema$Thread,
+  state?: PollState,
 }
