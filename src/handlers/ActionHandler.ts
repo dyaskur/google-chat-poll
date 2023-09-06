@@ -53,7 +53,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    *
    * @returns {object} Response to send back to Chat
    */
-  async startPoll() {
+  async startPoll(): Promise<chatV1.Schema$Message> {
     // Get the form values
     const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
     const config = getConfigFromInput(formValues);
@@ -63,15 +63,24 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
       return createDialogActionResponse(dialog);
     }
+
     if (config.closedTime) {
-      // because previously we marked up the time with user timezone offset
-      config.closedTime -= this.getUserTimezone()?.offset ?? 0;
+      // because previously in the form, we marked up the time with user timezone offset
+      const utcClosedTime = config.closedTime + this.getUserTimezone()?.offset ?? 0;
+      if (utcClosedTime < Date.now() - 360000) {
+        const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
+        return createDialogActionResponse(dialog);
+      }
+      config.closedTime = utcClosedTime;
     }
-    const pollCardMessage = new PollCard({author: this.event.user, ...config}, this.getUserTimezone()).createMessage();
+
+    const pollCardMessage = new PollCard({author: this.event.user, ...config},
+      this.getUserTimezone()).createMessage();
     const request = {
       parent: this.event.space?.name,
       requestBody: pollCardMessage,
     };
+
     const apiResponse = await callMessageApi('create', request);
     if (apiResponse.data?.name) {
       if (config.autoClose && config.closedTime) {

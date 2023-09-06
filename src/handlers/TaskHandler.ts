@@ -14,6 +14,10 @@ export default class TaskHandler {
     this.event.state = await this.getStateFromMessageId();
     switch (this.event.action) {
       case 'close_poll':
+        if (this.event.state.closedBy) {
+          console.log('the poll is already closed by ', this.event.state.closedBy);
+          return;
+        }
         if (!this.event.state.closedTime || this.event.state.closedTime > Date.now()) {
           this.event.state.closedTime = Date.now();
         }

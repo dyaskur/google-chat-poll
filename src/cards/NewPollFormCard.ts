@@ -165,7 +165,8 @@ export default class NewPollFormCard extends BaseCard {
   buildHelpText() {
     return {
       textParagraph: {
-        text: 'Enter the poll topic and up to 10 choices in the poll. Blank options will be omitted.',
+        text: 'Enter the poll topic and up to 10 choices in the poll. Blank options will be omitted.<br>' +
+          'For scheduled auto close, the minimum time is 5 minutes after poll created.',
       },
     };
   }

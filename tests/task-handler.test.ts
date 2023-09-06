@@ -16,6 +16,27 @@ describe('process', () => {
 
   it('should close the poll when it is not already closed', async () => {
     // Mock the createMessage function of PollCard to return a cardMessage
+    const cardMessage = {cardsV2: [{card: {name: '{"closedBy":"scheduled auto-close"}'}}]};
+    // Mock the callMessageApi function to return a successful response
+    const apiResponse = {status: 200, data: cardMessage};
+    jest.spyOn(yaskur, 'callMessageApi').mockResolvedValue(apiResponse);
+    jest.spyOn(PollCard.prototype, 'createMessage').mockReturnValue(cardMessage);
+
+    // Call the process method
+    const taskHandler = new TaskHandler({id: '123', action: 'close_poll', type: 'TASK'});
+    await taskHandler.process();
+
+    // Expect that the closedTime is updated and a card message is sent
+    expect(PollCard.prototype.createMessage).not.toHaveBeenCalled();
+    expect(yaskur.callMessageApi).not.toHaveBeenCalledWith('update', {
+      name: '123',
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    });
+  });
+
+  it('should close the poll when it is not already closed', async () => {
+    // Mock the createMessage function of PollCard to return a cardMessage
     const cardMessage = {cardsV2: [{card: {name: '{}'}}]};
     jest.spyOn(PollCard.prototype, 'createMessage').mockReturnValue(cardMessage);
 

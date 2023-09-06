@@ -386,6 +386,37 @@ describe('startPoll', () => {
       },
     });
   });
+
+  // we should validate the input from the form
+  it('should rerender form when the closed time less than now', async () => {
+    // Mock event object
+    const event = {
+      common: {
+        invokedFunction: 'start_poll',
+        formInputs: {
+          topic: {stringInputs: {value: ['Topic']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['0']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+          option2: {stringInputs: {value: ['']}},
+          option3: {stringInputs: {value: ['']}},
+          option4: {stringInputs: {value: ['']}},
+          option5: {stringInputs: {value: ['No Way']}},
+          is_autoclose: {stringInputs: {value: ['1']}},
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() - 3600000).toString()}},
+        },
+        timeZone: {'id': 'Asia/Jakarta'},
+      },
+      user: {displayName: 'User'},
+      space: {name: 'Space'},
+    };
+
+    const actionHandler = new ActionHandler(event);
+
+    const result = await actionHandler.startPoll();
+    expect(result.actionResponse.dialogAction.dialog.body).toBeDefined();
+  });
 });
 describe('recordVote', () => {
   it('should throw an error if the index parameter is missing', () => {
