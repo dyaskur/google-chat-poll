@@ -60,7 +60,7 @@ export interface MessageDialogConfig {
 }
 
 export interface LocaleTimezone extends chatV1.Schema$TimeZone {
-  locale?: string | null,
+  locale: string,
   id: string
   offset: number
 }

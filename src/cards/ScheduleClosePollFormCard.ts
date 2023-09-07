@@ -38,12 +38,12 @@ export default class ScheduleClosePollFormCard extends ClosePollFormCard {
 
   buildAutoCloseSection() {
     const widgets: chatV1.Schema$GoogleAppsCardV1Widget[] = [];
-    const timezone = offsetToTimezone(this.timezone.offset!);
+    const timezone = offsetToTimezone(this.timezone.offset);
     let scheduleTime = Date.now() + 18000000;
     if (this.state.closedTime) {
       scheduleTime = this.state.closedTime;
     }
-    scheduleTime += this.timezone.offset!;
+    scheduleTime += this.timezone.offset;
     widgets.push(
       {
         'dateTimePicker': {

@@ -34,7 +34,7 @@ export default class ClosePollFormCard extends BaseCard {
   }
 
   buildCurrentScheduleInfo() {
-    const locale = this.timezone.locale || 'en';
+    const locale = this.timezone.locale;
     const closedDate = new Date(this.state.closedTime!).toLocaleString(locale, {timeZone: this.timezone.id});
     this.card.sections!.push(
       {

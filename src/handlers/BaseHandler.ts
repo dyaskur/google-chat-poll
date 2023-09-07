@@ -19,7 +19,7 @@ export default abstract class BaseHandler {
 
   protected getUserTimezone(): LocaleTimezone {
     if (this.event.common?.timeZone?.id) {
-      const locale = this.event.common.userLocale;
+      const locale = this.event.common.userLocale ?? 'en';
       const id = this.event.common.timeZone.id;
       const offset = this.event.common.timeZone.offset ?? 0;
       return {locale, id, offset};

@@ -109,7 +109,7 @@ export default class PollCard extends BaseCard {
 
   buildFooter() {
     if (!this.isClosed() && this.state.closedTime) {
-      const locale = this.timezone.locale || 'en';
+      const locale = this.timezone.locale;
       try {
         const closedDate = new Date(this.state.closedTime).toLocaleString(locale, {timeZone: this.timezone.id});
         this.card.sections!.push(

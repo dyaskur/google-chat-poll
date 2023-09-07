@@ -1,21 +1,17 @@
 import BaseCard from './BaseCard';
-import {ClosableType, PollForm} from '../helpers/interfaces';
+import {ClosableType, LocaleTimezone, PollForm} from '../helpers/interfaces';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {offsetToTimezone} from '../helpers/time';
 
 export default class NewPollFormCard extends BaseCard {
   private config: PollForm;
-  private timezone: chatV1.Schema$TimeZone;
+  private timezone: LocaleTimezone;
 
-  constructor(config: PollForm, timezone: chatV1.Schema$TimeZone | undefined = undefined) {
+  constructor(config: PollForm, timezone: LocaleTimezone) {
     super();
     this.config = config;
-    if (timezone?.offset) {
-      this.timezone = timezone;
-    } else {
-      this.timezone = {offset: 0, id: 'GMT'};
-    }
+    this.timezone = timezone;
   }
 
   create() {
@@ -132,8 +128,8 @@ export default class NewPollFormCard extends BaseCard {
 
   buildAutoCloseSection() {
     const widgets: chatV1.Schema$GoogleAppsCardV1Widget[] = [];
-    const timezone = offsetToTimezone(this.timezone.offset!);
-    const nowMs = Date.now() + this.timezone.offset! + 18000000;
+    const timezone = offsetToTimezone(this.timezone.offset);
+    const nowMs = Date.now() + this.timezone.offset + 18000000;
     widgets.push(
       {
         'dateTimePicker': {
