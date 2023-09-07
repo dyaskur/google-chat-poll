@@ -5,13 +5,13 @@ import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
-import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, TaskEvent, Voter} from '../helpers/interfaces';
+import {ClosableType, MessageDialogConfig, PollFormInputs, PollState, Voter} from '../helpers/interfaces';
 import AddOptionFormCard from '../cards/AddOptionFormCard';
 import {saveVotes} from '../helpers/vote';
 import {PROHIBITED_ICON_URL} from '../config/default';
 import ClosePollFormCard from '../cards/ClosePollFormCard';
 import MessageDialogCard from '../cards/MessageDialogCard';
-import {createTask} from '../helpers/task';
+import {createAutoCloseTask} from '../helpers/task';
 import ScheduleClosePollFormCard from '../cards/ScheduleClosePollFormCard';
 
 /*
@@ -71,7 +71,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
     if (config.closedTime) {
       // because previously in the form, we marked up the time with user timezone offset
-      const utcClosedTime = config.closedTime + this.getUserTimezone()?.offset ?? 0;
+      const utcClosedTime = config.closedTime + this.getUserTimezone().offset;
       if (utcClosedTime < Date.now() - 360000) {
         const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
         return createDialogActionResponse(dialog);
@@ -88,14 +88,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
     const apiResponse = await callMessageApi('create', request);
     if (apiResponse.data?.name) {
-      if (config.autoClose && config.closedTime) {
-        const taskPayload: TaskEvent = {'id': apiResponse.data.name, 'action': 'close_poll', 'type': 'TASK'};
-        await createTask(JSON.stringify(taskPayload), config.closedTime);
-        if (config.autoMention) {
-          const taskPayload: TaskEvent = {'id': apiResponse.data.name, 'action': 'remind_all', 'type': 'TASK'};
-          await createTask(JSON.stringify(taskPayload), config.closedTime - 420000);
-        }
-      }
+      await createAutoCloseTask(config, apiResponse.data.name);
       return createStatusActionResponse('Poll started.', 'OK');
     } else {
       return createStatusActionResponse('Failed to start poll.', 'UNKNOWN');
@@ -215,19 +208,16 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const config = getConfigFromInput(formValues);
 
     // because previously in the form, we marked up the time with user timezone offset
-    const utcClosedTime = config.closedTime! + this.getUserTimezone()?.offset ?? 0;
+    const utcClosedTime = config.closedTime! + this.getUserTimezone()?.offset;
     if (utcClosedTime < Date.now() - 360000) {
       const dialog = new ScheduleClosePollFormCard(config, this.getUserTimezone()).create();
       return createDialogActionResponse(dialog);
     }
     config.closedTime = utcClosedTime;
     const messageId = this.event.message!.name!;
-    const taskPayload: TaskEvent = {'id': messageId, 'action': 'close_poll', 'type': 'TASK'};
-    await createTask(JSON.stringify(taskPayload), config.closedTime);
-    if (config.autoMention) {
-      const taskPayload: TaskEvent = {'id': messageId, 'action': 'remind_all', 'type': 'TASK'};
-      await createTask(JSON.stringify(taskPayload), config.closedTime - 420000);
-    }
+    config.autoClose = true;
+    await createAutoCloseTask(config, messageId);
+
     const state = this.getEventPollState();
     state.closedTime = utcClosedTime;
     const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();

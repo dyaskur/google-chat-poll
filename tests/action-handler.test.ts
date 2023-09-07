@@ -400,15 +400,12 @@ describe('startPoll', () => {
       common: {
         invokedFunction: 'start_poll',
         formInputs: {
-          topic: {stringInputs: {value: ['Topic']}},
+          topic: {stringInputs: {value: ['Yay or Nae']}},
           allow_add_option: {stringInputs: {value: ['0']}},
           type: {stringInputs: {value: ['0']}},
           option0: {stringInputs: {value: ['Yay']}},
           option1: {stringInputs: {value: ['Nae']}},
           option2: {stringInputs: {value: ['']}},
-          option3: {stringInputs: {value: ['']}},
-          option4: {stringInputs: {value: ['']}},
-          option5: {stringInputs: {value: ['No Way']}},
           is_autoclose: {stringInputs: {value: ['1']}},
           close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() - 3600000).toString()}},
         },
@@ -646,6 +643,7 @@ it('should update message if close_schedule_time is correct', async () => {
       invokedFunction: 'schedule_close_poll',
       formInputs: {
         close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() + 1000000).toString()}},
+        auto_mention: {stringInputs: {value: ['1']}},
       },
     },
     message: {'name': 'anu'},

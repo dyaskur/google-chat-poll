@@ -1,5 +1,6 @@
 import {CloudTasksClient} from '@google-cloud/tasks';
 import {google} from '@google-cloud/tasks/build/protos/protos';
+import {PollForm, TaskEvent} from './interfaces';
 
 const client = new CloudTasksClient();
 
@@ -33,4 +34,15 @@ export async function createTask(payload: string, scheduleInSeconds: number) {
   const [response] = await client.createTask(request);
   console.log(`Created task ${response.name}`);
   return response;
+}
+
+export async function createAutoCloseTask(config: PollForm, messageId: string) {
+  if (config.autoClose && config.closedTime) {
+    const taskPayload: TaskEvent = {'id': messageId, 'action': 'close_poll', 'type': 'TASK'};
+    await createTask(JSON.stringify(taskPayload), config.closedTime);
+    if (config.autoMention) {
+      const taskPayload: TaskEvent = {'id': messageId, 'action': 'remind_all', 'type': 'TASK'};
+      await createTask(JSON.stringify(taskPayload), config.closedTime - 420000);
+    }
+  }
 }
