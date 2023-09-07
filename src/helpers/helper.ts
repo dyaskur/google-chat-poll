@@ -80,3 +80,27 @@ export function generateHelpText(isPrivate: boolean = false) {
     'e.g *@Absolute Poll ' + example2 + '*\n\n' +
     footer;
 }
+
+export function generateHelperWidget() {
+  return {
+    'widgets': [
+      {
+        'divider': {},
+      },
+      {
+        'divider': {},
+      },
+      {
+        'divider': {},
+      },
+      {
+        'divider': {},
+      },
+      {
+        'textParagraph': {
+          'text': 'If you have any problems, questions, or feedback, ' +
+            'please feel free to post them <a href="https://github.com/dyaskur/google-chat-poll/issues">here</a> ',
+        },
+      }],
+  };
+}

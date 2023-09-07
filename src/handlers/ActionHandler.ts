@@ -12,6 +12,7 @@ import {PROHIBITED_ICON_URL} from '../config/default';
 import ClosePollFormCard from '../cards/ClosePollFormCard';
 import MessageDialogCard from '../cards/MessageDialogCard';
 import {createTask} from '../helpers/task';
+import ScheduleClosePollFormCard from '../cards/ScheduleClosePollFormCard';
 
 /*
 This list methods are used in the poll chat message
@@ -43,6 +44,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
         return this.closePollForm();
       case 'close_poll':
         return await this.closePoll();
+      case 'schedule_close_poll_form':
+        return this.scheduleClosePollForm();
+      case 'schedule_close_poll':
+        return this.scheduleClosePoll();
       default:
         return createStatusActionResponse('Unknown action!', 'UNKNOWN');
     }
@@ -194,7 +199,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   closePollForm() {
     const state = this.getEventPollState();
     if (state.type === ClosableType.CLOSEABLE_BY_ANYONE || state.author!.name === this.event.user?.name) {
-      return createDialogActionResponse(new ClosePollFormCard().create());
+      return createDialogActionResponse(new ClosePollFormCard(state, this.getUserTimezone()).create());
     }
 
     const dialogConfig: MessageDialogConfig = {
@@ -203,6 +208,46 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       imageUrl: PROHIBITED_ICON_URL,
     };
     return createDialogActionResponse(new MessageDialogCard(dialogConfig).create());
+  }
+
+  async scheduleClosePoll(): Promise<chatV1.Schema$Message> {
+    const formValues: PollFormInputs = this.event.common!.formInputs! as PollFormInputs;
+    const config = getConfigFromInput(formValues);
+
+    // because previously in the form, we marked up the time with user timezone offset
+    const utcClosedTime = config.closedTime! + this.getUserTimezone()?.offset ?? 0;
+    if (utcClosedTime < Date.now() - 360000) {
+      const dialog = new ScheduleClosePollFormCard(config, this.getUserTimezone()).create();
+      return createDialogActionResponse(dialog);
+    }
+    config.closedTime = utcClosedTime;
+    const messageId = this.event.message!.name!;
+    const taskPayload: TaskEvent = {'id': messageId, 'action': 'close_poll', 'type': 'TASK'};
+    await createTask(JSON.stringify(taskPayload), config.closedTime);
+    if (config.autoMention) {
+      const taskPayload: TaskEvent = {'id': messageId, 'action': 'remind_all', 'type': 'TASK'};
+      await createTask(JSON.stringify(taskPayload), config.closedTime - 420000);
+    }
+    const state = this.getEventPollState();
+    state.closedTime = utcClosedTime;
+    const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
+
+    const request = {
+      name: this.event.message!.name,
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    };
+    const apiResponse = await callMessageApi('update', request);
+    if (apiResponse.status === 200) {
+      return createStatusActionResponse('Poll is scheduled to close', 'OK');
+    } else {
+      return createStatusActionResponse('Failed to schedule close poll.', 'UNKNOWN');
+    }
+  }
+
+  scheduleClosePollForm() {
+    const state = this.getEventPollState();
+    return createDialogActionResponse(new ScheduleClosePollFormCard(state, this.getUserTimezone()).create());
   }
 
   newPollOnChange() {

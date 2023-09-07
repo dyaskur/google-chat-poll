@@ -1,11 +1,26 @@
 import BaseCard from './BaseCard';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {LocaleTimezone, PollState} from '../helpers/interfaces';
+import {generateHelperWidget} from '../helpers/helper';
 
 export default class ClosePollFormCard extends BaseCard {
+  id = 'close_poll_form';
+  state: PollState;
+  timezone: LocaleTimezone;
+
+  constructor(config: PollState, timezone: LocaleTimezone) {
+    super();
+    this.state = config;
+    this.timezone = timezone;
+  }
+
   create(): chatV1.Schema$GoogleAppsCardV1Card {
     this.buildHeader();
+    if (this.state.closedTime) {
+      this.buildCurrentScheduleInfo();
+    }
+    this.buildButtons();
     this.buildSections();
-    this.buildFooter();
     return this.card;
   }
 
@@ -18,35 +33,42 @@ export default class ClosePollFormCard extends BaseCard {
     };
   }
 
-
-  buildSections() {
-    this.card.sections = [
+  buildCurrentScheduleInfo() {
+    const locale = this.timezone.locale || 'en';
+    const closedDate = new Date(this.state.closedTime!).toLocaleString(locale, {timeZone: this.timezone.id});
+    this.card.sections!.push(
       {
         'widgets': [
           {
-            'divider': {},
-          },
-          {
-            'divider': {},
-          },
-          {
-            'divider': {},
-          },
-          {
-            'divider': {},
-          },
-          {
-            'textParagraph': {
-              'text': 'If you have any problems, questions, or feedback, ' +
-                'please feel free to post them <a href="https://github.com/dyaskur/google-chat-poll/issues">here</a> ',
+            'decoratedText': {
+              'text': `<i>This poll already has Auto Close schedule at <time> ${closedDate}</time>(${this.timezone.id}) </i>`,
+              'startIcon': {
+                'knownIcon': 'CLOCK',
+                'altText': '@',
+              },
             },
-          }],
-      }];
+          },
+        ],
+      });
   }
 
-  buildFooter() {
-    this.card.fixedFooter = {
-      'primaryButton': this.createButton('Close Poll', 'close_poll'),
-    };
+  buildButtons() {
+    let scheduleButtonText = 'Create Schedule Close';
+    if (this.state.closedTime) {
+      scheduleButtonText = 'Edit Schedule Close';
+    }
+
+    this.addSectionWidget({
+      'buttonList': {
+        'buttons': [
+          this.createButton(scheduleButtonText, 'schedule_close_poll_form'),
+          this.createButton('Close Now', 'close_poll'),
+        ],
+      },
+    });
+  }
+
+  buildSections() {
+    this.card.sections!.push(generateHelperWidget());
   }
 }

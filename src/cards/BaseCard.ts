@@ -17,7 +17,7 @@ interface Card {
 }
 
 export default abstract class BaseCard implements Card {
-  private id: string = 'cardId';
+  protected id: string = 'cardId';
   private _content: chatV1.Schema$GoogleAppsCardV1Section[] = [];
 
   protected card: chatV1.Schema$GoogleAppsCardV1Card = {
@@ -40,9 +40,14 @@ export default abstract class BaseCard implements Card {
     return button;
   }
 
+  protected addSectionWidget(widget: chatV1.Schema$GoogleAppsCardV1Widget) {
+    this.card.sections!.push({widgets: [widget]});
+  }
+
   abstract buildSections(): void;
 
   abstract create(): chatV1.Schema$GoogleAppsCardV1Card;
+
 
   createCardWithId(): chatV1.Schema$CardWithId {
     return {

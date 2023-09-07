@@ -64,3 +64,5 @@ export function offsetToTimezone(offset: number) {
   const timezones = getTimezoneList();
   return timezones[offset];
 }
+
+export const DEFAULT_LOCALE_TIMEZONE = {'locale': 'en', 'offset': 0, 'id': 'UTC'};

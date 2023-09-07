@@ -1,5 +1,6 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {LocaleTimezone} from '../helpers/interfaces';
+import {DEFAULT_LOCALE_TIMEZONE} from '../helpers/time';
 
 export default abstract class BaseHandler {
   protected event: chatV1.Schema$DeprecatedEvent;
@@ -24,7 +25,7 @@ export default abstract class BaseHandler {
       return {locale, id, offset};
     }
 
-    return {'locale': 'en', 'offset': 0, 'id': 'UTC'};
+    return DEFAULT_LOCALE_TIMEZONE;
   }
 
   public abstract process(): chatV1.Schema$Message | Promise<chatV1.Schema$Message>;

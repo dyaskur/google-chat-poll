@@ -1,5 +1,10 @@
 // @ts-ignore: mock
 import PollCard, {mockCreateCardWithId} from '../src/cards/PollCard';
+// @ts-ignore: mock
+import ClosePollFormCard, {mockCreateClosePollFormCard} from '../src/cards/ClosePollFormCard';
+// @ts-ignore: mock
+import ScheduleClosePollFormCard, {mockScheduleCreateClosePollFormCard} from '../src/cards/ScheduleClosePollFormCard';
+
 import ActionHandler from '../src/handlers/ActionHandler';
 // @ts-ignore: dummy test
 import dummyAddOptionForm from './json/add_option_form.json';
@@ -8,12 +13,14 @@ import {createDialogActionResponse, createStatusActionResponse} from '../src/hel
 import NewPollFormCard from '../src/cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis';
 import {ClosableType, PollForm} from '../src/helpers/interfaces';
-import ClosePollFormCard from '../src/cards/ClosePollFormCard';
 import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
 import {dummyLocalTimezone} from './dummy';
+import {DEFAULT_LOCALE_TIMEZONE} from '../src/helpers/time';
 
 jest.mock('../src/cards/PollCard');
+jest.mock('../src/cards/ClosePollFormCard');
+jest.mock('../src/cards/ScheduleClosePollFormCard');
 
 jest.mock('googleapis', () => {
   return {
@@ -34,7 +41,6 @@ jest.mock('googleapis', () => {
     },
   };
 });
-
 jest.mock('@google-cloud/tasks', () => {
   return {
     CloudTasksClient: jest.fn(() => {
@@ -480,7 +486,7 @@ describe('recordVote', () => {
         '1': [{uid: 'userId2', name: 'userName2'}],
       }, anon: false,
     };
-    expect(PollCard).toHaveBeenCalledWith(expectedPollState, {'locale': 'en', 'offset': 0, 'id': 'UTC'});
+    expect(PollCard).toHaveBeenCalledWith(expectedPollState, DEFAULT_LOCALE_TIMEZONE);
     expect(mockCreateCardWithId).toHaveBeenCalled();
     expect(response).toEqual(expectedResponse);
     expect(actionHandler.getEventPollState()).toEqual({
@@ -560,10 +566,10 @@ describe('closePollForm', () => {
     };
     const actionHandler = new ActionHandler(event);
     actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+    actionHandler.closePollForm();
 
-    const result = actionHandler.closePollForm();
-
-    expect(result).toEqual(createDialogActionResponse(new ClosePollFormCard().create()));
+    expect(ClosePollFormCard).toHaveBeenCalledWith(state, DEFAULT_LOCALE_TIMEZONE);
+    expect(mockCreateClosePollFormCard).toHaveBeenCalled();
   });
   it('should disallow the creator of the poll with CLOSEABLE_BY_CREATOR type to close the poll', () => {
     const state = {
@@ -585,4 +591,82 @@ describe('closePollForm', () => {
     const result = actionHandler.closePollForm();
     expect(result).toEqual(expectedResponse);
   });
+});
+
+describe('scheduleClosePoll', () => {
+  it('should return a message with an updated poll card when the action is "close_poll_form"', async () => {
+    // Mock the closePollForm function
+    const state = {
+      type: ClosableType.CLOSEABLE_BY_CREATOR,
+      author: {name: 'creator', displayName: 'creator test user'},
+    };
+    // Create an instance of ActionHandler
+    const actionHandler = new ActionHandler({common: {invokedFunction: 'schedule_close_poll_form'}});
+
+    actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+
+    // Call the process method
+    await actionHandler.process();
+
+    // Expect the saveOption function to be called
+    expect(ScheduleClosePollFormCard).toHaveBeenCalled();
+    expect(mockScheduleCreateClosePollFormCard).toHaveBeenCalled();
+    expect(actionHandler.getEventPollState).toHaveBeenCalled();
+  });
+
+  it('should return schedule close form card when the schedule input time is in the past', async () => {
+    // Create an instance of ActionHandler
+    const actionHandler = new ActionHandler({
+      common: {
+        invokedFunction: 'schedule_close_poll',
+        formInputs: {
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() - 1000000).toString()}},
+        },
+      },
+      message: {'name': 'anu'},
+    });
+    actionHandler.getEventPollState = jest.fn();
+
+    process.env.GCP_PROJECT = 'test-project';
+    process.env.QUEUE_NAME = 'test-queue';
+    process.env.FUNCTION_REGION = 'us-central1';
+    // Call the process method
+    await actionHandler.process();
+
+    expect(actionHandler.getEventPollState).not.toHaveBeenCalled();
+    // since the schedule date is in the past, the form will show again
+    expect(ScheduleClosePollFormCard).toHaveBeenCalled();
+    expect(mockScheduleCreateClosePollFormCard).toHaveBeenCalled();
+  });
+});
+it('should update message if close_schedule_time is correct', async () => {
+  // Create an instance of ActionHandler
+  const actionHandler = new ActionHandler({
+    common: {
+      invokedFunction: 'schedule_close_poll',
+      formInputs: {
+        close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() + 1000000).toString()}},
+      },
+    },
+    message: {'name': 'anu'},
+  });
+
+  const state = {
+    type: ClosableType.CLOSEABLE_BY_CREATOR,
+    author: {name: 'creator', displayName: 'creator user'},
+  };
+  actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+  mockUpdate.mockReturnValue(state);
+  process.env.GCP_PROJECT = 'test-project';
+  process.env.QUEUE_NAME = 'test-queue';
+  process.env.FUNCTION_REGION = 'us-central1';
+
+  // Call the process method
+  await actionHandler.scheduleClosePoll();
+
+  expect(actionHandler.getEventPollState).toHaveBeenCalled();
+  expect(mockUpdate).toHaveBeenCalled();
+  // since the schedule date is in the past, the form will show again
+  expect(ScheduleClosePollFormCard).not.toHaveBeenCalled();
+  // todo: create task toHaveBeenCalled
 });
