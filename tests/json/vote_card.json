@@ -151,8 +151,7 @@
                 "onClick": {
                   "action": {
                     "function": "add_option_form",
-                    "interaction": "OPEN_DIALOG",
-                    "parameters": []
+                    "interaction": "OPEN_DIALOG"
                   }
                 }
               },
@@ -161,8 +160,7 @@
                 "onClick": {
                   "action": {
                     "function": "close_poll_form",
-                    "interaction": "OPEN_DIALOG",
-                    "parameters": []
+                    "interaction": "OPEN_DIALOG"
                   }
                 }
               }

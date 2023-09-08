@@ -1,4 +1,6 @@
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {LocaleTimezone} from '../helpers/interfaces';
+import {DEFAULT_LOCALE_TIMEZONE} from '../helpers/time';
 
 export default abstract class BaseHandler {
   protected event: chatV1.Schema$DeprecatedEvent;
@@ -13,6 +15,17 @@ export default abstract class BaseHandler {
 
   protected getAnnotationByType(type: string): chatV1.Schema$Annotation | undefined {
     return this.getAnnotations().find((annotation) => annotation.type === type);
+  }
+
+  protected getUserTimezone(): LocaleTimezone {
+    if (this.event.common?.timeZone?.id) {
+      const locale = this.event.common.userLocale ?? 'en';
+      const id = this.event.common.timeZone.id;
+      const offset = this.event.common.timeZone.offset ?? 0;
+      return {locale, id, offset};
+    }
+
+    return DEFAULT_LOCALE_TIMEZONE;
   }
 
   public abstract process(): chatV1.Schema$Message | Promise<chatV1.Schema$Message>;

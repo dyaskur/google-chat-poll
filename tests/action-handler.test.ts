@@ -1,5 +1,10 @@
 // @ts-ignore: mock
 import PollCard, {mockCreateCardWithId} from '../src/cards/PollCard';
+// @ts-ignore: mock
+import ClosePollFormCard, {mockCreateClosePollFormCard} from '../src/cards/ClosePollFormCard';
+// @ts-ignore: mock
+import ScheduleClosePollFormCard, {mockScheduleCreateClosePollFormCard} from '../src/cards/ScheduleClosePollFormCard';
+
 import ActionHandler from '../src/handlers/ActionHandler';
 // @ts-ignore: dummy test
 import dummyAddOptionForm from './json/add_option_form.json';
@@ -7,12 +12,15 @@ import {mockCreate, mockGoogleAuth, mockUpdate} from './mocks';
 import {createDialogActionResponse, createStatusActionResponse} from '../src/helpers/response';
 import NewPollFormCard from '../src/cards/NewPollFormCard';
 import {chat_v1 as chatV1} from 'googleapis';
-import {ClosableType} from '../src/helpers/interfaces';
-import ClosePollFormCard from '../src/cards/ClosePollFormCard';
+import {ClosableType, PollForm} from '../src/helpers/interfaces';
 import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
+import {dummyLocalTimezone} from './dummy';
+import {DEFAULT_LOCALE_TIMEZONE} from '../src/helpers/time';
 
 jest.mock('../src/cards/PollCard');
+jest.mock('../src/cards/ClosePollFormCard');
+jest.mock('../src/cards/ScheduleClosePollFormCard');
 
 jest.mock('googleapis', () => {
   return {
@@ -31,6 +39,18 @@ jest.mock('googleapis', () => {
         };
       }),
     },
+  };
+});
+jest.mock('@google-cloud/tasks', () => {
+  return {
+    CloudTasksClient: jest.fn(() => {
+      return {
+        createTask: jest.fn().mockResolvedValue([{name: 'testEmail'}]),
+        queuePath: jest.fn().mockResolvedValue({
+          email: 'testEmail',
+        }),
+      };
+    }),
   };
 });
 
@@ -73,7 +93,7 @@ it('should add a new option to the poll state and return an "OK" status message'
   const actionHandler2 = new ActionHandler(event);
 
   actionHandler2.getEventPollState = getEventPollStateMock;
-  mockUpdate.mockResolvedValue('');
+  mockUpdate.mockResolvedValue({status: 400});
   const result2 = await actionHandler2.saveOption();
   expect(result2).toEqual(createStatusActionResponse('Failed to add option.', 'UNKNOWN'));
 });
@@ -246,6 +266,29 @@ describe('process', () => {
     // Expect the saveOption function to be called
     expect(result).toEqual(createStatusActionResponse('Unknown action!', 'UNKNOWN'));
   });
+
+  it('should rebuild poll form with inputted data when new_poll_on_change invoked', async () => {
+    const event = {
+      common: {
+        invokedFunction: 'new_poll_on_change',
+        formInputs: {
+          topic: {stringInputs: {value: ['Yay or Nay']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['2']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+        },
+      },
+      user: {displayName: 'User'},
+      space: {name: 'Space'},
+    };
+    const actionHandler = new ActionHandler(event);
+    const result = await actionHandler.process();
+    const expectedConfig: PollForm = {topic: 'Yay or Nay', choices: ['Yay', 'Nae'], optionable: false, type: 2};
+    const expectedCard = new NewPollFormCard(expectedConfig).create();
+    const expectedResponse = createDialogActionResponse(expectedCard);
+    expect(result).toEqual(expectedResponse);
+  });
 });
 
 describe('startPoll', () => {
@@ -264,15 +307,32 @@ describe('startPoll', () => {
           option3: {stringInputs: {value: ['']}},
           option4: {stringInputs: {value: ['']}},
           option5: {stringInputs: {value: ['No Way']}},
+          is_autoclose: {stringInputs: {value: ['1']}},
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: Date.now().toString()}},
         },
+        timeZone: {'id': 'America/New_York'},
       },
       user: {displayName: 'User'},
       space: {name: 'Space'},
     };
+
     const actionHandler = new ActionHandler(event);
 
+    // will throw error because not all required environment variables are set
+    await expect(async () => {
+      await actionHandler.startPoll();
+    }).rejects.toThrowError('Missing required environment variables');
+    // duplicate test with another way for reference to test the error
+    await actionHandler.startPoll().catch((error) => {
+      expect(error).toEqual(new Error('Missing required environment variables'));
+    });
+
+    process.env.GCP_PROJECT = 'test-project';
+    process.env.QUEUE_NAME = 'test-queue';
+    process.env.FUNCTION_REGION = 'us-central1';
     const result = await actionHandler.startPoll();
-    const pollCard = new PollCard({
+
+    const pollCardMessage = new PollCard({
       topic: 'Topic',
       choiceCreator: undefined,
       author: event.user,
@@ -280,21 +340,18 @@ describe('startPoll', () => {
       votes: {'0': [], '1': []},
       anon: false,
       optionable: false,
-    }).createCardWithId();
-    // Valid configuration, make the voting card to display in the space
-    const message = {
-      cardsV2: [pollCard],
-    };
+    }, dummyLocalTimezone).createMessage();
+
     const request = {
       parent: event.space?.name,
-      requestBody: message,
+      requestBody: pollCardMessage,
     };
 
     expect(result).toEqual(createStatusActionResponse('Poll started.', 'OK'));
     expect(mockCreate).toHaveBeenCalledWith(request);
 
     // when google API return invalid data, it should return an error message
-    mockCreate.mockResolvedValue('');
+    mockCreate.mockResolvedValue({status: 400, data: {}});
     const actionHandler2 = new ActionHandler(event);
     const result2 = await actionHandler2.startPoll();
     expect(result2).toEqual(createStatusActionResponse('Failed to start poll.', 'UNKNOWN'));
@@ -335,6 +392,34 @@ describe('startPoll', () => {
       },
     });
   });
+
+  // we should validate the input from the form
+  it('should rerender form when the closed time less than now', async () => {
+    // Mock event object
+    const event = {
+      common: {
+        invokedFunction: 'start_poll',
+        formInputs: {
+          topic: {stringInputs: {value: ['Yay or Nae']}},
+          allow_add_option: {stringInputs: {value: ['0']}},
+          type: {stringInputs: {value: ['0']}},
+          option0: {stringInputs: {value: ['Yay']}},
+          option1: {stringInputs: {value: ['Nae']}},
+          option2: {stringInputs: {value: ['']}},
+          is_autoclose: {stringInputs: {value: ['1']}},
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() - 3600000).toString()}},
+        },
+        timeZone: {'id': 'Asia/Jakarta'},
+      },
+      user: {displayName: 'User'},
+      space: {name: 'Space'},
+    };
+
+    const actionHandler = new ActionHandler(event);
+
+    const result = await actionHandler.startPoll();
+    expect(result.actionResponse.dialogAction.dialog.body).toBeDefined();
+  });
 });
 describe('recordVote', () => {
   it('should throw an error if the index parameter is missing', () => {
@@ -346,7 +431,20 @@ describe('recordVote', () => {
     const actionHandler = new ActionHandler(event);
 
     expect(() => actionHandler.recordVote()).toThrow('Index Out of Bounds');
-    expect(() => actionHandler.getEventPollState()).toThrow('no valid state in the event');
+    expect(() => actionHandler.getEventPollState()).toThrow('no valid card in the event');
+    const event2 = {
+      common: {
+        parameters: {},
+      },
+      message: {
+        thread: {
+          'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+        },
+        cardsV2: [{cardId: 'card', card: {}}],
+      },
+    };
+    const actionHandler2 = new ActionHandler(event2);
+    expect(() => actionHandler2.getEventPollState()).toThrow('no valid state in the event');
   });
   it('should update an existing vote with a new vote', () => {
     const event = {
@@ -364,6 +462,7 @@ describe('recordVote', () => {
         thread: {
           'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
         },
+        cardsV2: [{cardId: 'card', card: {}}],
       },
     };
     const actionHandler = new ActionHandler(event);
@@ -384,7 +483,7 @@ describe('recordVote', () => {
         '1': [{uid: 'userId2', name: 'userName2'}],
       }, anon: false,
     };
-    expect(PollCard).toHaveBeenCalledWith(expectedPollState);
+    expect(PollCard).toHaveBeenCalledWith(expectedPollState, DEFAULT_LOCALE_TIMEZONE);
     expect(mockCreateCardWithId).toHaveBeenCalled();
     expect(response).toEqual(expectedResponse);
     expect(actionHandler.getEventPollState()).toEqual({
@@ -408,7 +507,7 @@ describe('closePoll', () => {
         },
       },
     };
-    mockUpdate.mockResolvedValue('ok');
+    mockUpdate.mockResolvedValue({'status': 200, 'data': {}});
 
     const actionHandler = new ActionHandler({message: {name: 'messageName'}});
     actionHandler.getEventPollState = jest.fn().mockReturnValue({});
@@ -436,7 +535,7 @@ describe('closePoll', () => {
         },
       };
 
-      mockUpdate.mockResolvedValue('');
+      mockUpdate.mockResolvedValue({'status': 400, 'data': {}});
 
       const actionHandler = new ActionHandler({message: {name: 'messageName'}});
       actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
@@ -445,6 +544,11 @@ describe('closePoll', () => {
 
       expect(result).toEqual(expectedResponse);
       expect(state.closedTime).toBeDefined();
+
+      mockUpdate.mockResolvedValue(undefined);
+      await actionHandler.closePoll().catch((error) => {
+        expect(error).toEqual(new Error('Empty response'));
+      });
     });
 });
 
@@ -459,10 +563,10 @@ describe('closePollForm', () => {
     };
     const actionHandler = new ActionHandler(event);
     actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+    actionHandler.closePollForm();
 
-    const result = actionHandler.closePollForm();
-
-    expect(result).toEqual(createDialogActionResponse(new ClosePollFormCard().create()));
+    expect(ClosePollFormCard).toHaveBeenCalledWith(state, DEFAULT_LOCALE_TIMEZONE);
+    expect(mockCreateClosePollFormCard).toHaveBeenCalled();
   });
   it('should disallow the creator of the poll with CLOSEABLE_BY_CREATOR type to close the poll', () => {
     const state = {
@@ -484,4 +588,83 @@ describe('closePollForm', () => {
     const result = actionHandler.closePollForm();
     expect(result).toEqual(expectedResponse);
   });
+});
+
+describe('scheduleClosePoll', () => {
+  it('should return a message with an updated poll card when the action is "close_poll_form"', async () => {
+    // Mock the closePollForm function
+    const state = {
+      type: ClosableType.CLOSEABLE_BY_CREATOR,
+      author: {name: 'creator', displayName: 'creator test user'},
+    };
+    // Create an instance of ActionHandler
+    const actionHandler = new ActionHandler({common: {invokedFunction: 'schedule_close_poll_form'}});
+
+    actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+
+    // Call the process method
+    await actionHandler.process();
+
+    // Expect the saveOption function to be called
+    expect(ScheduleClosePollFormCard).toHaveBeenCalled();
+    expect(mockScheduleCreateClosePollFormCard).toHaveBeenCalled();
+    expect(actionHandler.getEventPollState).toHaveBeenCalled();
+  });
+
+  it('should return schedule close form card when the schedule input time is in the past', async () => {
+    // Create an instance of ActionHandler
+    const actionHandler = new ActionHandler({
+      common: {
+        invokedFunction: 'schedule_close_poll',
+        formInputs: {
+          close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() - 1000000).toString()}},
+        },
+      },
+      message: {'name': 'anu'},
+    });
+    actionHandler.getEventPollState = jest.fn();
+
+    process.env.GCP_PROJECT = 'test-project';
+    process.env.QUEUE_NAME = 'test-queue';
+    process.env.FUNCTION_REGION = 'us-central1';
+    // Call the process method
+    await actionHandler.process();
+
+    expect(actionHandler.getEventPollState).not.toHaveBeenCalled();
+    // since the schedule date is in the past, the form will show again
+    expect(ScheduleClosePollFormCard).toHaveBeenCalled();
+    expect(mockScheduleCreateClosePollFormCard).toHaveBeenCalled();
+  });
+});
+it('should update message if close_schedule_time is correct', async () => {
+  // Create an instance of ActionHandler
+  const actionHandler = new ActionHandler({
+    common: {
+      invokedFunction: 'schedule_close_poll',
+      formInputs: {
+        close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() + 1000000).toString()}},
+        auto_mention: {stringInputs: {value: ['1']}},
+      },
+    },
+    message: {'name': 'anu'},
+  });
+
+  const state = {
+    type: ClosableType.CLOSEABLE_BY_CREATOR,
+    author: {name: 'creator', displayName: 'creator user'},
+  };
+  actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+  mockUpdate.mockReturnValue(state);
+  process.env.GCP_PROJECT = 'test-project';
+  process.env.QUEUE_NAME = 'test-queue';
+  process.env.FUNCTION_REGION = 'us-central1';
+
+  // Call the process method
+  await actionHandler.scheduleClosePoll();
+
+  expect(actionHandler.getEventPollState).toHaveBeenCalled();
+  expect(mockUpdate).toHaveBeenCalled();
+  // since the schedule date is in the past, the form will show again
+  expect(ScheduleClosePollFormCard).not.toHaveBeenCalled();
+  // todo: create task toHaveBeenCalled
 });

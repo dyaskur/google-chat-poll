@@ -1,4 +1,4 @@
-import {ClosableType, PollConfig, PollFormInputs, PollState} from './interfaces';
+import {ClosableType, PollForm, PollFormInputs, PollState} from './interfaces';
 import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
 
@@ -22,6 +22,9 @@ export function addOptionToState(option: string, state: PollState, creator = '')
 
 export function getStateFromCard(event: chatV1.Schema$DeprecatedEvent) {
   const card = event.message?.cardsV2?.[0]?.card as chatV1.Schema$GoogleAppsCardV1Card;
+  if (!card) {
+    throw new ReferenceError('no valid card in the event');
+  }
   return getStateFromCardName(card) || getStateFromParameter(event) || getStateFromCardWhenNoHeader(card) ||
     getStateFromCardWhenHasHeader(card);
 }
@@ -37,29 +40,38 @@ function getChoicesFromInput(formValues: PollFormInputs) {
   return choices;
 }
 
-export function getConfigFromInput(formValues: PollFormInputs) {
-  const state: PollConfig = {topic: '', choices: []};
-  state.topic = formValues.topic.stringInputs!.value![0]!.trim() ?? '';
-  state.anon = formValues.is_anonymous?.stringInputs!.value![0] === '1';
-  state.optionable = formValues.allow_add_option?.stringInputs!.value![0] === '1';
-  state.type = parseInt(formValues.type?.stringInputs!.value![0] ?? '1') as ClosableType;
-  state.choices = getChoicesFromInput(formValues);
+function getStringInputValue(input: chatV1.Schema$Inputs) {
+  if (!input) {
+    return '';
+  }
+  return input.stringInputs!.value![0];
+}
 
+export function getConfigFromInput(formValues: PollFormInputs) {
+  const state: PollForm = {topic: '', choices: []};
+  state.topic = getStringInputValue(formValues.topic).trim() ?? '';
+  state.anon = getStringInputValue(formValues.is_anonymous) === '1';
+  state.optionable = getStringInputValue(formValues.allow_add_option) === '1';
+  state.type = parseInt(getStringInputValue(formValues.type) || '1') as ClosableType;
+  state.autoClose = getStringInputValue(formValues.is_autoclose) === '1';
+  state.autoMention = getStringInputValue(formValues.auto_mention) === '1';
+  state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
+  state.choices = getChoicesFromInput(formValues);
   return state;
 }
 
 function getStateFromCardWhenNoHeader(card: chatV1.Schema$GoogleAppsCardV1Card) {
-  return card?.sections?.[0].widgets?.[0].decoratedText?.button?.onClick?.action?.parameters?.[0]?.value;
+  return card.sections?.[0].widgets?.[0].decoratedText?.button?.onClick?.action?.parameters?.[0]?.value;
 }
 
 function getStateFromCardWhenHasHeader(card: chatV1.Schema$GoogleAppsCardV1Card) {
   // when has header the first section is header
-  return card?.sections?.[1].widgets?.[0].decoratedText?.button?.onClick?.action?.parameters?.[0]?.value;
+  return card.sections?.[1].widgets?.[0].decoratedText?.button?.onClick?.action?.parameters?.[0]?.value;
 }
 
-function getStateFromCardName(card: chatV1.Schema$GoogleAppsCardV1Card) {
+export function getStateFromCardName(card: chatV1.Schema$GoogleAppsCardV1Card) {
   // when has header the first section is header
-  return card?.name;
+  return card.name;
 }
 
 function getStateFromParameter(event: chatV1.Schema$DeprecatedEvent) {
