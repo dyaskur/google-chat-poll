@@ -2,6 +2,7 @@ name: "tagged-release"
 
 on:
   push:
+    branches: [ "test_auto_release" ]
     tags:
       - "v*"
 permissions: read-all
