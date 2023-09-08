@@ -29,6 +29,10 @@ jobs:
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloud'
       name: 'gcloud'
+      env:
+        GCP_PROJECT: ${{ secrets.$GCP_PROJECT }}
+        GCP_REGION: ${{ secrets.$GCP_REGION }}
       run: |
-        gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs20
+        gcloud config set project $GCP_PROJECT
+        gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs20 --region $GCP_REGION
 
