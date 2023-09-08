@@ -12,28 +12,40 @@ export default class TaskHandler {
 
   async process(): Promise<void> {
     this.event.state = await this.getStateFromMessageId();
+
     switch (this.event.action) {
       case 'close_poll':
-        if (this.event.state.closedBy) {
-          console.log('the poll is already closed by ', this.event.state.closedBy);
-          return;
-        }
-        if (!this.event.state.closedTime || this.event.state.closedTime > Date.now()) {
-          this.event.state.closedTime = Date.now();
-        }
-        this.event.state.closedBy = 'scheduled auto-close';
-        const apiResponse = await this.updatePollMessage(this.event.state);
-        if (apiResponse?.status !== 200) {
-          throw new Error('Error when closing message');
-        }
+        await this.handleClosePollAction();
         break;
       case 'remind_all':
-        if (this.event.state.closedTime && this.event.state.closedTime > Date.now()) {
-          await this.remindAll();
-        }
+        await this.handleRemindAllAction();
         break;
       default:
-        console.log('unknown task');
+        console.log('Unknown task');
+    }
+  }
+
+  private async handleClosePollAction(): Promise<void> {
+    if (this.event.state!.closedBy) {
+      console.log('The poll is already closed by', this.event.state!.closedBy);
+      return;
+    }
+
+    if (!this.event.state!.closedTime || this.event.state!.closedTime > Date.now()) {
+      this.event.state!.closedTime = Date.now();
+    }
+
+    this.event.state!.closedBy = 'scheduled auto-close';
+    const apiResponse = await this.updatePollMessage(this.event.state!);
+
+    if (apiResponse?.status !== 200) {
+      throw new Error('Error when closing message');
+    }
+  }
+
+  private async handleRemindAllAction(): Promise<void> {
+    if (this.event.state!.closedTime && this.event.state!.closedTime > Date.now()) {
+      await this.remindAll();
     }
   }
 
