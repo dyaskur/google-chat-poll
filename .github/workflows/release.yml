@@ -31,6 +31,7 @@ jobs:
       name: 'Deploy to google cloud function'
       env:
         GCP_PROJECT: '${{ secrets.GCP_PROJECT }}'
+        CLOUDSDK_CORE_PROJECT: '${{ secrets.GCP_PROJECT }}'
         GOOGLE_CLOUD_PROJECT: '${{ secrets.GCP_PROJECT }}'
         GCP_REGION: '${{ secrets.GCP_REGION }}'
       run: |
