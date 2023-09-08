@@ -203,6 +203,6 @@ export default class PollCard extends BaseCard {
   }
 
   private isClosed(): boolean {
-    return this.state.closedTime != undefined && this.state.closedTime <= Date.now();
+    return this.state.closedTime && this.state.closedTime <= Date.now();
   }
 }
