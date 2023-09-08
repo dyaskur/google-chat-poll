@@ -29,6 +29,6 @@ jobs:
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloud'
       name: 'gcloud'
-      run: |-
-        gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs18
+      run: |
+        gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs18 --user-output-enabled=false
 
