@@ -2,7 +2,6 @@ name: "tagged-release"
 
 on:
   push:
-    branches: [ "test_auto_release" ]
     tags:
       - "v*"
 permissions: read-all
@@ -30,10 +29,8 @@ jobs:
     - id: 'gcloud'
       name: 'Deploy to google cloud function'
       env:
-        GCP_PROJECT: '${{ secrets.GCP_PROJECT }}'
         CLOUDSDK_CORE_PROJECT: '${{ secrets.GCP_PROJECT }}'
-        GOOGLE_CLOUD_PROJECT: '${{ secrets.GCP_PROJECT }}'
         GCP_REGION: '${{ secrets.GCP_REGION }}'
       run: |
-        gcloud config set project $GCP_PROJECT
-        gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs20 --region $GCP_REGION 
+        gcloud config set compute/region $GCP_REGION
+        yarn release
