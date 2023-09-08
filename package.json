@@ -21,7 +21,7 @@
     "@google-cloud/functions-framework": "^3.3.0",
     "@google-cloud/tasks": "^4.0.0",
     "babel-jest": "^29.6.2",
-    "googleapis": "123.0.0"
+    "googleapis": "126.0.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",
