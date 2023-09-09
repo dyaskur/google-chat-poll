@@ -21,8 +21,11 @@ tests
 assets
 *.md
 yarn-error.log
-coverage/*
+coverage
 babel.config.json
 jest.config.js
 .eslintrc.cjs
 */__mock__
+src
+tsconfig.json
+.env.yaml.example

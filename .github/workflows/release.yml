@@ -11,16 +11,26 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Archive Release
-        uses: thedoctor0/zip-release@a24011d8d445e4da5935a7e73c1f98e22a439464
-        with:
-          type: 'zip'
-          filename: 'release.zip'
-          exclusions: '*.git* /*node_modules/* /*tests/* *tests/* *.github*'
+    - uses: 'actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac'
+    - name: Use Node.js
+      uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d
+    - run: yarn install
 
-      - name: Upload Release
-        uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5
-        with:
-          artifacts: "release.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@35b0e87d162680511bf346c299f71c9c5c379033'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@e30db14379863a8c79331b04a9969f4c1e225e0b'
+
+    # Now you can run gcloud commands authenticated as the impersonated service account.
+    - id: 'gcloud'
+      name: 'Deploy to google cloud function'
+      env:
+        CLOUDSDK_CORE_PROJECT: '${{ secrets.GCP_PROJECT }}'
+        GCP_REGION: '${{ secrets.GCP_REGION }}'
+      run: |
+        gcloud config set functions/region $GCP_REGION
+        yarn release
