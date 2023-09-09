@@ -2,7 +2,6 @@ name: "tagged-release"
 
 on:
   push:
-    branches: [ "test_auto_release" ]
     tags:
       - "v*"
 permissions: read-all
@@ -33,5 +32,5 @@ jobs:
         CLOUDSDK_CORE_PROJECT: '${{ secrets.GCP_PROJECT }}'
         GCP_REGION: '${{ secrets.GCP_REGION }}'
       run: |
-        gcloud config set compute/region $GCP_REGION
+        gcloud config set functions/region $GCP_REGION
         yarn release
