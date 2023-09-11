@@ -3,7 +3,7 @@ import {chat_v1 as chatV1} from '@googleapis/chat';
 import CommandHandler from './handlers/CommandHandler';
 import MessageHandler from './handlers/MessageHandler';
 import ActionHandler from './handlers/ActionHandler';
-import {generateHelpText} from './helpers/helper';
+import {generateHelpText, welcomeButtonCard} from './helpers/helper';
 import TaskHandler from './handlers/TaskHandler';
 
 export const app: HttpFunction = async (req, res) => {
@@ -11,49 +11,6 @@ export const app: HttpFunction = async (req, res) => {
     console.log('unknown access', req.hostname, req.ips.join(','), req.method, JSON.stringify(req.body));
     res.status(400).send('');
   }
-  const buttonCard: chatV1.Schema$CardWithId = {
-    'cardId': 'welcome-card',
-    'card': {
-      'sections': [
-        {
-          'widgets': [
-            {
-              'buttonList': {
-                'buttons': [
-                  {
-                    'text': 'Create Poll',
-                    'onClick': {
-                      'action': {
-                        'function': 'show_form',
-                        'interaction': 'OPEN_DIALOG',
-                        'parameters': [],
-                      },
-                    },
-                  },
-                  {
-                    'text': 'Terms and Conditions',
-                    'onClick': {
-                      'openLink': {
-                        'url': 'https://absolute-poll.yaskur.com/terms-and-condition',
-                      },
-                    },
-                  },
-                  {
-                    'text': 'Contact Us',
-                    'onClick': {
-                      'openLink': {
-                        'url': 'https://github.com/dyaskur/google-chat-poll/issues',
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-  };
   const event = req.body;
   if (event.type === 'TASK') {
     await new TaskHandler(event).process();
@@ -95,7 +52,7 @@ export const app: HttpFunction = async (req, res) => {
       message.text = generateHelpText(true);
     }
 
-    message.cardsV2 = [buttonCard];
+    message.cardsV2 = [welcomeButtonCard];
 
     reply = {
       actionResponse: {

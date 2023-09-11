@@ -2,6 +2,7 @@ import BaseCard from './BaseCard';
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import {LocaleTimezone, PollState} from '../helpers/interfaces';
 import {generateHelperWidget} from '../helpers/helper';
+import {createButton} from '../helpers/cards';
 
 export default class ClosePollFormCard extends BaseCard {
   id = 'close_poll_form';
@@ -61,8 +62,8 @@ export default class ClosePollFormCard extends BaseCard {
     this.addSectionWidget({
       'buttonList': {
         'buttons': [
-          this.createButton(scheduleButtonText, 'schedule_close_poll_form'),
-          this.createButton('Close Now', 'close_poll'),
+          createButton(scheduleButtonText, 'schedule_close_poll_form'),
+          createButton('Close Now', 'close_poll'),
         ],
       },
     });

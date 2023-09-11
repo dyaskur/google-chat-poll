@@ -1,3 +1,6 @@
+import {createButton, createButtonLink} from './cards';
+import {chat_v1 as chatV1} from '@googleapis/chat/build/v1';
+
 function getRandomString(string: Array<string>) {
   return string[Math.floor(Math.random() * string.length)];
 }
@@ -104,3 +107,46 @@ export function generateHelperWidget() {
       }],
   };
 }
+
+export const helperButtonCard = {
+  'cardId': 'helper-card',
+  'card': {
+    'sections': [
+      {
+        'widgets': [
+          {
+            'buttonList': {
+              'buttons': [
+                createButton('Create Poll', 'show_form', 'OPEN_DIALOG'),
+                createButtonLink('Contact Us', 'https://github.com/dyaskur/google-chat-poll/issues'),
+                createButtonLink('Give Us a Star', 'https://github.com/dyaskur/google-chat-poll'),
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+
+export const welcomeButtonCard: chatV1.Schema$CardWithId = {
+  'cardId': 'welcome-card',
+  'card': {
+    'sections': [
+      {
+        'widgets': [
+          {
+            'buttonList': {
+              'buttons': [
+                createButton('Create Poll', 'show_form', 'OPEN_DIALOG'),
+                createButtonLink('Terms and Conditions', 'https://absolute-poll.yaskur.com/terms-and-condition'),
+                createButtonLink('Contact Us', 'https://github.com/dyaskur/google-chat-poll/issues'),
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+

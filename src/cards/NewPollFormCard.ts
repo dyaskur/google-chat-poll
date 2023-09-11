@@ -3,6 +3,7 @@ import {ClosableType, LocaleTimezone, PollForm} from '../helpers/interfaces';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import {offsetToTimezone} from '../helpers/time';
+import {createButton} from '../helpers/cards';
 
 export default class NewPollFormCard extends BaseCard {
   private config: PollForm;
@@ -192,7 +193,7 @@ export default class NewPollFormCard extends BaseCard {
 
   buildFooter() {
     this.card.fixedFooter = {
-      'primaryButton': this.createButton('Submit', 'start_poll'),
+      'primaryButton': createButton('Submit', 'start_poll'),
     };
   }
 }

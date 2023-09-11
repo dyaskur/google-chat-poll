@@ -2,54 +2,11 @@ import {chat_v1 as chatV1} from '@googleapis/chat';
 import BaseHandler from './BaseHandler';
 import {splitMessage} from '../helpers/utils';
 import PollCard from '../cards/PollCard';
-import {generateHelpText} from '../helpers/helper';
+import {generateHelpText, helperButtonCard} from '../helpers/helper';
 
 export default class MessageHandler extends BaseHandler {
   process(): chatV1.Schema$Message {
     const argumentText = this.event.message?.argumentText?.trim() ?? '';
-    const buttonCard: chatV1.Schema$CardWithId = {
-      'cardId': 'welcome-card',
-      'card': {
-        'sections': [
-          {
-            'widgets': [
-              {
-                'buttonList': {
-                  'buttons': [
-                    {
-                      'text': 'Create Poll',
-                      'onClick': {
-                        'action': {
-                          'function': 'show_form',
-                          'interaction': 'OPEN_DIALOG',
-                          'parameters': [],
-                        },
-                      },
-                    },
-                    {
-                      'text': 'Contact Us',
-                      'onClick': {
-                        'openLink': {
-                          'url': 'https://github.com/dyaskur/google-chat-poll/issues',
-                        },
-                      },
-                    },
-                    {
-                      'text': 'Give Us a Star',
-                      'onClick': {
-                        'openLink': {
-                          'url': 'https://github.com/dyaskur/google-chat-poll',
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
-    };
 
     const helpResponse = {
       thread: this.event.message!.thread,
@@ -57,9 +14,9 @@ export default class MessageHandler extends BaseHandler {
         type: 'NEW_MESSAGE',
       },
       text: '',
-      cardsV2: [buttonCard],
+      cardsV2: [helperButtonCard],
     };
-    const isPrivate = this.event!.space?.type === 'DM';
+    const isPrivate = this.event.space?.type === 'DM';
 
     switch (argumentText) {
       case 'help':

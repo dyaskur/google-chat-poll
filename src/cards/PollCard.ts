@@ -3,6 +3,7 @@ import {ClosableType, LocaleTimezone, PollState, Voter} from '../helpers/interfa
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import {ICON_URL_48X48} from '../config/default';
 import {progressBarText} from '../helpers/vote';
+import {createButton} from '../helpers/cards';
 
 export default class PollCard extends BaseCard {
   private readonly state: PollState;
@@ -81,12 +82,12 @@ export default class PollCard extends BaseCard {
   buildButtons() {
     const buttons = [];
     if (this.state.optionable) {
-      buttons.push(this.createButton('Add Option', 'add_option_form', 'OPEN_DIALOG'));
+      buttons.push(createButton('Add Option', 'add_option_form', 'OPEN_DIALOG'));
     }
     const isClosable = this.state.type === undefined || this.state.type !== ClosableType.UNCLOSEABLE;
 
     if (isClosable) {
-      const closeButton = this.createButton('Close Poll', 'close_poll_form', 'OPEN_DIALOG');
+      const closeButton = createButton('Close Poll', 'close_poll_form', 'OPEN_DIALOG');
       if (this.isClosed()) {
         closeButton.disabled = true;
       }

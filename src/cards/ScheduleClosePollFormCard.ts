@@ -1,6 +1,7 @@
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import {offsetToTimezone} from '../helpers/time';
 import ClosePollFormCard from './ClosePollFormCard';
+import {createButton} from '../helpers/cards';
 
 export default class ScheduleClosePollFormCard extends ClosePollFormCard {
   create(): chatV1.Schema$GoogleAppsCardV1Card {
@@ -31,7 +32,7 @@ export default class ScheduleClosePollFormCard extends ClosePollFormCard {
 
     this.addSectionWidget({
       'buttonList': {
-        'buttons': [this.createButton(scheduleButtonText, 'schedule_close_poll')],
+        'buttons': [createButton(scheduleButtonText, 'schedule_close_poll')],
       },
     });
   }
