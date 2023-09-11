@@ -1,7 +1,7 @@
 import BaseCard from './BaseCard';
 import {ClosableType, LocaleTimezone, PollForm} from '../helpers/interfaces';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import {offsetToTimezone} from '../helpers/time';
 
 export default class NewPollFormCard extends BaseCard {

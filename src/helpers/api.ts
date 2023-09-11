@@ -1,4 +1,4 @@
-import {google} from 'googleapis';
+import {chat, auth} from '@googleapis/chat';
 
 /**
  * Create google api credentials
@@ -7,11 +7,12 @@ import {google} from 'googleapis';
  */
 function gAuth() {
   // Use default credentials (service account)
-  const credentials = new google.auth.GoogleAuth({
+  const credentials = new auth.GoogleAuth({
     // keyFile: path.join(__dirname, '../../tests/creds.json'),
     scopes: ['https://www.googleapis.com/auth/chat.bot'],
   });
-  return google.chat({
+
+  return chat({
     version: 'v1',
     auth: credentials,
   });

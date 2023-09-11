@@ -1,5 +1,5 @@
 import {MAX_NUM_OF_OPTIONS} from './config/default';
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import {PollState} from './helpers/interfaces';
 
 /** Upper bounds on number of choices to present. */

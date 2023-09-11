@@ -13,19 +13,19 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@babel/preset-env": "^7.22.9",
-    "@babel/preset-typescript": "^7.22.5",
     "@google-cloud/functions-framework": "^3.3.0",
     "@google-cloud/tasks": "^4.0.0",
-    "babel-jest": "^29.6.2",
-    "googleapis": "126.0.1"
+    "@googleapis/chat": "^17.2.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-typescript": "^7.22.5",
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
+    "babel-jest": "^29.6.2",
     "coveralls": "^3.1.1",
     "eslint": "^8.46.0",
     "eslint-config-google": "^0.14.0",

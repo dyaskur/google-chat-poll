@@ -1,4 +1,4 @@
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import BaseHandler from './BaseHandler';
 import NewPollFormCard from '../cards/NewPollFormCard';
 import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers/state';

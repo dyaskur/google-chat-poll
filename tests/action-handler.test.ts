@@ -11,7 +11,7 @@ import dummyAddOptionForm from './json/add_option_form.json';
 import {mockCreate, mockGoogleAuth, mockUpdate} from './mocks';
 import {createDialogActionResponse, createStatusActionResponse} from '../src/helpers/response';
 import NewPollFormCard from '../src/cards/NewPollFormCard';
-import {chat_v1 as chatV1} from 'googleapis';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import {ClosableType, PollForm} from '../src/helpers/interfaces';
 import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
@@ -22,23 +22,21 @@ jest.mock('../src/cards/PollCard');
 jest.mock('../src/cards/ClosePollFormCard');
 jest.mock('../src/cards/ScheduleClosePollFormCard');
 
-jest.mock('googleapis', () => {
+jest.mock('@googleapis/chat', () => {
   return {
-    google: {
-      auth: {
-        GoogleAuth: jest.fn(() => mockGoogleAuth),
-      },
-      chat: jest.fn().mockImplementation(() => {
-        return {
-          spaces: {
-            messages: {
-              create: mockCreate,
-              update: mockUpdate,
-            },
-          },
-        };
-      }),
+    auth: {
+      GoogleAuth: jest.fn(() => mockGoogleAuth),
     },
+    chat: jest.fn().mockImplementation(() => {
+      return {
+        spaces: {
+          messages: {
+            create: mockCreate,
+            update: mockUpdate,
+          },
+        },
+      };
+    }),
   };
 });
 jest.mock('@google-cloud/tasks', () => {
@@ -285,7 +283,7 @@ describe('process', () => {
     const actionHandler = new ActionHandler(event);
     const result = await actionHandler.process();
     const expectedConfig: PollForm = {topic: 'Yay or Nay', choices: ['Yay', 'Nae'], optionable: false, type: 2};
-    const expectedCard = new NewPollFormCard(expectedConfig).create();
+    const expectedCard = new NewPollFormCard(expectedConfig, dummyLocalTimezone).create();
     const expectedResponse = createDialogActionResponse(expectedCard);
     expect(result).toEqual(expectedResponse);
   });
@@ -386,7 +384,7 @@ describe('startPoll', () => {
               choices: ['Option 1'],
               anon: true,
               type: 1,
-            }).create(),
+            }, dummyLocalTimezone).create(),
           },
         },
       },

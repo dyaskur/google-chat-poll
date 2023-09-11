@@ -1039,6 +1039,13 @@
   dependencies:
     google-gax "^4.0.3"
 
+"@googleapis/chat@^17.2.2":
+  version "17.2.2"
+  resolved "https://registry.yarnpkg.com/@googleapis/chat/-/chat-17.2.2.tgz#e68662c59f6a62f3e0cedf03dcef4b1c5058892e"
+  integrity sha512-v6rz8ingrKGdEZVrVUOrOSiGW7DGDbMGJVjbD9FcUY3VTfzzTZdAN7qCV1Hi0z0xai4WLsgtFWmiCJHw3Zv38g==
+  dependencies:
+    googleapis-common "^7.0.0"
+
 "@grpc/grpc-js@~1.8.0":
   version "1.8.21"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.8.21.tgz#d282b122c71227859bf6c5866f4c40f4a2696513"
@@ -2869,14 +2876,6 @@ googleapis-common@^7.0.0:
     qs "^6.7.0"
     url-template "^2.0.8"
     uuid "^9.0.0"
-
-googleapis@126.0.1:
-  version "126.0.1"
-  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-126.0.1.tgz#161897d959548b6933f8735b1251f5f5a45544bd"
-  integrity sha512-4N8LLi+hj6ytK3PhE52KcM8iSGhJjtXnCDYB4fp6l+GdLbYz4FoDmx074WqMbl7iYMDN87vqD/8drJkhxW92mQ==
-  dependencies:
-    google-auth-library "^9.0.0"
-    googleapis-common "^7.0.0"
 
 gopd@^1.0.1:
   version "1.0.1"

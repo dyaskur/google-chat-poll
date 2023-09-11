@@ -1,4 +1,4 @@
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import BaseHandler from './BaseHandler';
 import {splitMessage} from '../helpers/utils';
 import PollCard from '../cards/PollCard';
@@ -31,6 +31,14 @@ export default class MessageHandler extends BaseHandler {
                       'onClick': {
                         'openLink': {
                           'url': 'https://github.com/dyaskur/google-chat-poll/issues',
+                        },
+                      },
+                    },
+                    {
+                      'text': 'Give Us a Star',
+                      'onClick': {
+                        'openLink': {
+                          'url': 'https://github.com/dyaskur/google-chat-poll',
                         },
                       },
                     },

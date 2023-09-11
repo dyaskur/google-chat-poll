@@ -1,6 +1,6 @@
 import BaseCard from './BaseCard';
 import {PollConfig} from '../helpers/interfaces';
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 
 export default class AddOptionFormCard extends BaseCard {
   private readonly config: PollConfig;

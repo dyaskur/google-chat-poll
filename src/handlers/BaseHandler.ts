@@ -1,4 +1,4 @@
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import {LocaleTimezone} from '../helpers/interfaces';
 import {DEFAULT_LOCALE_TIMEZONE} from '../helpers/time';
 

@@ -1,6 +1,5 @@
-import {HttpFunction} from '@google-cloud/functions-framework/build/src/functions';
-
-import {chat_v1 as chatV1} from 'googleapis/build/src/apis/chat/v1';
+import {HttpFunction} from '@google-cloud/functions-framework';
+import {chat_v1 as chatV1} from '@googleapis/chat';
 import CommandHandler from './handlers/CommandHandler';
 import MessageHandler from './handlers/MessageHandler';
 import ActionHandler from './handlers/ActionHandler';
@@ -60,7 +59,7 @@ export const app: HttpFunction = async (req, res) => {
     await new TaskHandler(event).process();
     res.json('');
   }
-  console.log(JSON.stringify(event));
+  // console.log(JSON.stringify(event));
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
     event.user.displayName, event.user.email, event.space.type, event.space.name);
@@ -73,8 +72,8 @@ export const app: HttpFunction = async (req, res) => {
       'Alternatively, you can create poll by mentioning me with question and answers. ' +
       'e.g *@Absolute Poll "Your Question" "Answer 1" "Answer 2"*',
   };
-  // Dispatch slash and action events
 
+  // Dispatch slash and action events
   if (event.type === 'MESSAGE') {
     const message = event.message;
     if (message.slashCommand?.commandId) {
@@ -91,16 +90,7 @@ export const app: HttpFunction = async (req, res) => {
     };
     const spaceType = event.space.type;
     if (spaceType === 'ROOM') {
-      message.text = 'Hi there! I\'d be happy to assist you in creating polls to improve collaboration and ' +
-        'decision-making efficiency on Google Chat™.\n' +
-        '\n' +
-        'To create a poll, simply use the */poll* command or click on the "Create Poll" button below. ' +
-        '\n' +
-        'Alternatively, you can ' +
-        'You can also test our app in a direct message if you prefer.\n' +
-        '\n' +
-        'We hope you find our service useful and please don\'t hesitate to contact us ' +
-        'if you have any questions or concerns.';
+      message.text = generateHelpText();
     } else if (spaceType === 'DM') {
       message.text = generateHelpText(true);
     }
