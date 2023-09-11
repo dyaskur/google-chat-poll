@@ -87,9 +87,16 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     };
 
     const apiResponse = await callMessageApi('create', request);
-    if (apiResponse.data?.name) {
+    if (apiResponse.status === 200 && apiResponse.data?.name) {
       await createAutoCloseTask(config, apiResponse.data.name);
       return createStatusActionResponse('Poll started.', 'OK');
+    } else if (apiResponse.status === 444) {
+      return {
+        actionResponse: {
+          type: 'NEW_MESSAGE',
+        },
+        ...pollCardMessage,
+      };
     } else {
       return createStatusActionResponse('Failed to start poll.', 'UNKNOWN');
     }
@@ -145,7 +152,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const userName = this.event.user?.displayName ?? '';
     const state = this.getEventPollState();
     const formValues = this.event.common?.formInputs;
-    const optionValue = formValues?.['value']?.stringInputs?.value?.[0]?.trim() || '';
+    const optionValue = formValues?.['value']?.stringInputs?.value?.[0]?.trim() ?? '';
     addOptionToState(optionValue, state, userName);
 
     const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
@@ -158,6 +165,14 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const apiResponse = await callMessageApi('update', request);
     if (apiResponse.status === 200) {
       return createStatusActionResponse('Option is added', 'OK');
+    } else if (apiResponse.status === 444) {
+      return {
+        thread: this.event.message?.thread,
+        actionResponse: {
+          type: 'UPDATE_MESSAGE',
+        },
+        ...cardMessage,
+      };
     } else {
       return createStatusActionResponse('Failed to add option.', 'UNKNOWN');
     }
@@ -184,6 +199,14 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const apiResponse = await callMessageApi('update', request);
     if (apiResponse.status === 200) {
       return createStatusActionResponse('Poll is closed', 'OK');
+    } else if (apiResponse.status === 444) {
+      return {
+        thread: this.event.message?.thread,
+        actionResponse: {
+          type: 'UPDATE_MESSAGE',
+        },
+        ...cardMessage,
+      };
     } else {
       return createStatusActionResponse('Failed to close poll.', 'UNKNOWN');
     }
@@ -230,8 +253,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const apiResponse = await callMessageApi('update', request);
     if (apiResponse.status === 200) {
       return createStatusActionResponse('Poll is scheduled to close', 'OK');
+    } else if (apiResponse.status === 444) {
+      return createStatusActionResponse('Your admin need allow you using 3rd party application', 'UNKNOWN');
     } else {
-      return createStatusActionResponse('Failed to schedule close poll.', 'UNKNOWN');
+      return createStatusActionResponse('Failed to schedule close poll. Unknown reason', 'UNKNOWN');
     }
   }
 

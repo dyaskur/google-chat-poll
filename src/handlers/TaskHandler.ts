@@ -54,12 +54,12 @@ export default class TaskHandler {
       name: this.event.id,
     };
     const apiResponse = await callMessageApi('get', request);
-    const currentState = getStateFromCardName(apiResponse.data!.cardsV2?.[0].card ?? {});
+    const currentState = getStateFromCardName(apiResponse.data.cardsV2?.[0].card ?? {});
     if (!currentState) {
       throw new Error('State not found');
     }
-    this.event.space = apiResponse.data!.space;
-    this.event.thread = apiResponse.data!.thread;
+    this.event.space = apiResponse.data.space;
+    this.event.thread = apiResponse.data.thread;
     return JSON.parse(currentState) as PollState;
   }
 

@@ -1,4 +1,5 @@
 import {chat, auth} from '@googleapis/chat';
+import {GaxiosResponse} from 'gaxios/build/src/common';
 
 /**
  * Create google api credentials
@@ -23,9 +24,10 @@ function gAuth() {
  *
  * @param {string} action - request action(create,update,get,delete)
  * @param {object} request - request body
- * @returns {object} Response from google api
+ * @returns {Promise<GaxiosResponse | {status: number, statusText: string, data: object}>} Response from google api
  */
-export async function callMessageApi(action: string, request: object) {
+export async function callMessageApi(
+  action: string, request: object): Promise<GaxiosResponse | {status: number, statusText: string, data: object}> {
   const chatApi = gAuth();
   let response;
 
@@ -41,7 +43,7 @@ export async function callMessageApi(action: string, request: object) {
     // @ts-ignore: all error should have this method
     const errorMessage = error.message ?? error.toString() ?? 'Unknown error';
     console.error('Error:', action, JSON.stringify(request), response, errorMessage);
-    throw new Error(errorMessage);
+    response = {'status': 444, 'statusText': errorMessage, 'data': {}};
   }
 
   if (!response) {
