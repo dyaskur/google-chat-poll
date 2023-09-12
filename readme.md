@@ -13,8 +13,13 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=dyaskur_google-chat-poll&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=dyaskur_google-chat-poll)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=dyaskur_google-chat-poll&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=dyaskur_google-chat-poll)
 
-This is just a bunch of code that I use to learn more about serverless and also google chat apps using note JS.
+Absolute Poll is a productivity software that enables you to create polls and make quick decisions within Chat. 
 
+Screenshots:
+
+![form](assets/screenshot_1.png "Create poll form") ![message](assets/screenshot_2.png "Vote poll message")
+
+This application has been installed more than **150k times**. It is the number one and the only working poll app in the Google Apps Marketplace.
 
 For anyone who is interested, you can install my application using the following URL:
 https://workspace.google.com/marketplace/app/absolute_poll/687007803052
@@ -28,25 +33,25 @@ Original Feature:
 - Doesn't using any database. (Vote records are saved in chat message)
 
 What I updated are:
+- [x] Upgrade Card v1 to Card v2
+- [x] Unit Test (ready to TDD)
+- [x] Save voter names
+- [x] Anonymous vote
+- [x] Add more option after poll is created
+- [x] Migrated to Typescript
+- [x] Close the poll
+- [x] Schedule close poll
 
-- Upgrade Card v1 to Card v2
-- Unit Test (ready to TDD)
-- Save voter names
-- Anonymous vote
-- Add more option after poll is created
-- Migrated to Typescript
 
 Todo:
 
- - Close the poll
- - Max vote(expired) time
- - Multiple choice vote(1 user can vote on more than 1 choice)
- - Duplicate Poll
- - Save state to database
- - Schedule poll
- - Other features (suggest me please...)
- - Deno or Cloudflare worker support (hopefully can)
- - Migrate to Golang (will create another repo)
+- [ ] Multiple choice vote(1 user can vote on more than 1 choice)
+- [ ] Duplicate Poll
+- [ ] Save state to database
+- [ ] Schedule poll
+- [ ] Other features (suggest me please...)
+- [ ] Deno or Cloudflare worker support (hopefully can)
+- [ ] Porting to Golang (will create another repo)
 
 
 Limitation:
@@ -56,7 +61,7 @@ Limitation:
 Tips: You can test the json file on **tests/json** folder to https://gw-card-builder.web.app/ to view the output of the application.
 
 <sub>
-Again, this code just my learning code. That's why I don't directly migrate to TypeScript or Golang in early stage. 
+This code just my learning code. That's why I don't directly migrate to TypeScript or Golang in early stage. 
 I just want to learning nodejs and google chat apps.
 Feel free if you have suggestion or advice for this apps and codes.
 </sub>
