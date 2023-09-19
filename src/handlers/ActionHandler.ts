@@ -71,7 +71,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
     if (config.closedTime) {
       // because previously in the form, we marked up the time with user timezone offset
-      const utcClosedTime = config.closedTime + this.getUserTimezone().offset;
+      const utcClosedTime = config.closedTime - this.getUserTimezone().offset;
       if (utcClosedTime < Date.now() - 360000) {
         const dialog = new NewPollFormCard(config, this.getUserTimezone()).create();
         return createDialogActionResponse(dialog);
@@ -231,7 +231,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const config = getConfigFromInput(formValues);
 
     // because previously in the form, we marked up the time with user timezone offset
-    const utcClosedTime = config.closedTime! + this.getUserTimezone()?.offset;
+    const utcClosedTime = config.closedTime! - this.getUserTimezone()?.offset;
     if (utcClosedTime < Date.now() - 360000) {
       const dialog = new ScheduleClosePollFormCard(config, this.getUserTimezone()).create();
       return createDialogActionResponse(dialog);

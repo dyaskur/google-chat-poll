@@ -635,21 +635,25 @@ describe('scheduleClosePoll', () => {
   });
 });
 it('should update message if close_schedule_time is correct', async () => {
+  const ms = Date.now() + dummyLocalTimezone.offset + 1000000;
   // Create an instance of ActionHandler
   const actionHandler = new ActionHandler({
     common: {
       invokedFunction: 'schedule_close_poll',
       formInputs: {
-        close_schedule_time: {dateTimeInput: {msSinceEpoch: (Date.now() + 1000000).toString()}},
+        close_schedule_time: {dateTimeInput: {msSinceEpoch: ms.toString()}},
         auto_mention: {stringInputs: {value: ['1']}},
       },
+      timeZone: {'id': dummyLocalTimezone.id, 'offset': dummyLocalTimezone.offset},
+      userLocale: dummyLocalTimezone.locale,
     },
     message: {'name': 'anu'},
   });
 
   const state = {
     type: ClosableType.CLOSEABLE_BY_CREATOR,
-    author: {name: 'creator', displayName: 'creator user'},
+    author: {name: 'creator', displayName: 'creator userzzzz'}, closedTime: undefined,
+
   };
   actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
   mockUpdate.mockReturnValue(state);
@@ -664,5 +668,8 @@ it('should update message if close_schedule_time is correct', async () => {
   expect(mockUpdate).toHaveBeenCalled();
   // since the schedule date is in the past, the form will show again
   expect(ScheduleClosePollFormCard).not.toHaveBeenCalled();
+
+  expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
+  expect(state.closedTime).toEqual(ms - dummyLocalTimezone.offset);
   // todo: create task toHaveBeenCalled
 });
