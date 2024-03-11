@@ -16,21 +16,21 @@
   "license": "MIT",
   "dependencies": {
     "@google-cloud/functions-framework": "^3.3.0",
-    "@google-cloud/tasks": "^4.0.0",
-    "@googleapis/chat": "^17.2.2"
+    "@google-cloud/tasks": "^5.0.0",
+    "@googleapis/chat": "^21.1.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.22.9",
-    "@babel/preset-typescript": "^7.22.5",
-    "@types/jest": "^29.5.3",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "babel-jest": "^29.6.2",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.23.3",
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.21.0",
+    "babel-jest": "^29.7.0",
     "coveralls": "^3.1.1",
-    "eslint": "^8.46.0",
+    "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
-    "jest": "^29.6.2",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.1.6"
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.2"
   }
 }
