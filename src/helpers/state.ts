@@ -57,6 +57,7 @@ export function getConfigFromInput(formValues: PollFormInputs) {
   state.autoMention = getStringInputValue(formValues.auto_mention) === '1';
   state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
   state.choices = getChoicesFromInput(formValues);
+  state.voteLimit = parseInt(getStringInputValue(formValues.vote_limit) || '1');
   return state;
 }
 
