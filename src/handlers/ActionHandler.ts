@@ -139,7 +139,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   /**
    * Handle the custom vote action from poll dialog. Updates the state to record
    * the UI will be showed as a dialog
-   *
+   * @param {boolean} eventPollState If true, the event state is from current event instead of calling API to get it
    * @returns {object} Response to send back to Chat
    */
   async switchVote(eventPollState: boolean=false) {

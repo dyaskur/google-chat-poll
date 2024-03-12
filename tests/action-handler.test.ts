@@ -710,7 +710,6 @@ it('voteForm action', () => {
 
 
 it('switchVote action', async () => {
-
   const event = {
     common: {
       parameters: {
@@ -722,5 +721,4 @@ it('switchVote action', async () => {
   await expect(async () => {
     await actionHandler.voteForm();
   }).rejects.toThrowError('Index Out of Bounds');
-
 });
