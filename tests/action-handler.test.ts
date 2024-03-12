@@ -17,8 +17,10 @@ import {PROHIBITED_ICON_URL} from '../src/config/default';
 import MessageDialogCard from '../src/cards/MessageDialogCard';
 import {dummyLocalTimezone} from './dummy';
 import {DEFAULT_LOCALE_TIMEZONE} from '../src/helpers/time';
+import PollDialogCard, {mockCreatePollDialogCard} from '../src/cards/PollDialogCard';
 
 jest.mock('../src/cards/PollCard');
+jest.mock('../src/cards/PollDialogCard');
 jest.mock('../src/cards/ClosePollFormCard');
 jest.mock('../src/cards/ScheduleClosePollFormCard');
 
@@ -672,4 +674,68 @@ it('should update message if close_schedule_time is correct', async () => {
   expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
   expect(state.closedTime).toEqual(ms - dummyLocalTimezone.offset);
   // todo: create task toHaveBeenCalled
+});
+
+
+it('voteForm action', () => {
+  const state = {
+    type: ClosableType.CLOSEABLE_BY_CREATOR,
+    author: {name: 'creator'},
+    votes: {},
+  };
+  const event = {
+    user: {name: '1123124124124', displayName: 'creator'},
+    common: {
+      parameters: {
+        index: '1',
+      },
+      timeZone: {'id': dummyLocalTimezone.id, 'offset': dummyLocalTimezone.offset},
+      userLocale: dummyLocalTimezone.locale,
+    },
+    message: {
+      thread: {
+        'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+      },
+      cardsV2: [{cardId: 'card', card: {}}],
+    },
+  };
+  const actionHandler = new ActionHandler(event);
+  actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+  // Act
+  actionHandler.voteForm();
+  expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
+  expect(PollDialogCard).toHaveBeenCalledWith(state, dummyLocalTimezone, {name: 'creator', uid: '1123124124124'});
+  expect(mockCreatePollDialogCard).toHaveBeenCalled();
+});
+
+
+it('switchVote action', () => {
+  const state = {
+    type: ClosableType.CLOSEABLE_BY_CREATOR,
+    author: {name: 'creator'},
+    votes: {},
+  };
+  const event = {
+    user: {name: '1123124124124', displayName: 'creator'},
+    common: {
+      parameters: {
+        index: '1',
+      },
+      timeZone: {'id': dummyLocalTimezone.id, 'offset': dummyLocalTimezone.offset},
+      userLocale: dummyLocalTimezone.locale,
+    },
+    message: {
+      thread: {
+        'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
+      },
+      cardsV2: [{cardId: 'card', card: {}}],
+    },
+  };
+  const actionHandler = new ActionHandler(event);
+  actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
+  // Act
+  actionHandler.switchVote();
+  expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
+  expect(PollDialogCard).toHaveBeenCalledWith(state, dummyLocalTimezone, {name: 'creator', uid: '1123124124124'});
+  expect(mockCreatePollDialogCard).toHaveBeenCalled();
 });

@@ -6,8 +6,8 @@ import {progressBarText} from '../helpers/vote';
 import {createButton} from '../helpers/cards';
 
 export default class PollCard extends BaseCard {
-  private readonly state: PollState;
-  private readonly timezone: LocaleTimezone;
+  protected readonly state: PollState;
+  protected readonly timezone: LocaleTimezone;
 
   constructor(state: PollState, timezone: LocaleTimezone) {
     super();
@@ -190,6 +190,10 @@ export default class PollCard extends BaseCard {
         },
       },
     };
+    if (this.state.voteLimit !== undefined && this.state.voteLimit !== 1) {
+      voteButton.onClick!.action!.interaction = 'OPEN_DIALOG';
+      voteButton.onClick!.action!.function = 'vote_form';
+    }
 
     if (this.isClosed()) {
       voteButton.disabled = true;

@@ -9,20 +9,55 @@ import {PollState, Voter, Votes} from './interfaces';
  * @param {object} voter - The voter
  * @param {object} votes - Total votes cast in the poll
  * @param {boolean} isAnonymous - save name or not
+ * @param {number} maxVotes - save name or not
  * @returns {Votes} Map of cast votes keyed by choice index
  */
-export function saveVotes(choice: number, voter: Voter, votes: Votes, isAnonymous = false) {
-  Object.keys(votes).forEach(function(choiceIndex) {
-    if (votes[choiceIndex]) {
-      const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
-      if (existed > -1) {
-        votes[choiceIndex].splice(existed, 1);
+export function saveVotes(choice: number, voter: Voter, votes: Votes, isAnonymous = false, maxVotes = 1) {
+  if (maxVotes === 1) {
+    Object.keys(votes).forEach(function(choiceIndex) {
+      if (votes[choiceIndex]) {
+        const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
+        if (existed > -1) {
+          votes[choiceIndex].splice(existed, 1);
+        }
       }
+    });
+  } else {
+    // get current voter total vote
+    let voteCount = 0;
+    let voted = false;
+    Object.keys(votes).forEach(function(choiceIndex) {
+      if (votes[choiceIndex]) {
+        const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
+        if (existed > -1) {
+          voteCount += 1;
+        }
+        if (existed > -1 && parseInt(choiceIndex) === choice) {
+          voted = true;
+        }
+      }
+    });
+    if (voteCount >= maxVotes || voted) {
+      let deleted = false;
+      Object.keys(votes).forEach(function(choiceIndex) {
+        if (votes[choiceIndex]) {
+          const existed = votes[choiceIndex].findIndex((x) => x.uid === voter.uid);
+          if (((voteCount >= maxVotes && existed > -1 && !voted) ||
+            (voted && parseInt(choiceIndex) === choice)) && !deleted) {
+            votes[choiceIndex].splice(existed, 1);
+            deleted = true;
+          }
+        }
+      });
     }
-  });
+    if (voted) {
+      return votes;
+    }
+  }
   if (isAnonymous) {
     delete voter.name;
   }
+
   if (votes[choice]) {
     votes[choice].push(voter);
   } else {

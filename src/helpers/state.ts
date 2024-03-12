@@ -1,6 +1,7 @@
 import {ClosableType, PollForm, PollFormInputs, PollState} from './interfaces';
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import {MAX_NUM_OF_OPTIONS} from '../config/default';
+import {callMessageApi} from './api';
 
 /**
  * Add a new option to the state(like DB)
@@ -79,4 +80,17 @@ function getStateFromParameter(event: chatV1.Schema$DeprecatedEvent) {
   const parameters = event.common?.parameters;
 
   return parameters?.['state'];
+}
+
+export async function getStateFromMessageId(eventId: string): Promise<PollState> {
+  const request = {
+    name: eventId,
+  };
+  const apiResponse = await callMessageApi('get', request);
+  const currentState = getStateFromCardName(apiResponse.data.cardsV2?.[0].card ?? {});
+  if (!currentState) {
+    console.log(apiResponse ? JSON.stringify(apiResponse) : 'empty response:' + eventId);
+    throw new Error('State not found');
+  }
+  return JSON.parse(currentState) as PollState;
 }
