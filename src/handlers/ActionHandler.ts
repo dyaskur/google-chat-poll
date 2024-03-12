@@ -142,7 +142,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
    *
    * @returns {object} Response to send back to Chat
    */
-  async switchVote() {
+  async switchVote(eventPollState: boolean=false) {
     const parameters = this.event.common?.parameters;
     if (!(parameters?.['index'])) {
       throw new Error('Index Out of Bounds');
@@ -152,7 +152,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const userName = this.event.user?.displayName ?? '';
     const voter: Voter = {uid: userId, name: userName};
     let state;
-    if (this.event!.message!.name) {
+    if (!eventPollState && this.event!.message!.name) {
       state = await getStateFromMessageId(this.event!.message!.name);
     } else {
       state = this.getEventPollState();
@@ -307,31 +307,8 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     return createDialogActionResponse(new ScheduleClosePollFormCard(state, this.getUserTimezone()).create());
   }
 
-  voteForm() {
-    const parameters = this.event.common?.parameters;
-    if (!(parameters?.['index'])) {
-      throw new Error('Index Out of Bounds');
-    }
-    const state = this.getEventPollState();
-    const userId = this.event.user?.name ?? '';
-    const userName = this.event.user?.displayName ?? '';
-    const voter: Voter = {uid: userId, name: userName};
-    const choice = parseInt(parameters['index']);
-
-    // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes!, state.anon, state.voteLimit);
-
-    const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
-    const request = {
-      name: this.event!.message!.name,
-      requestBody: cardMessage,
-      updateMask: 'cardsV2',
-    };
-    // Avoid using await here to allow parallel execution with returning response.
-    // However, be aware that occasionally the promise might be terminated.
-    // Although rare, if this becomes a frequent issue, we'll resort to using await.
-    callMessageApi('update', request);
-    return createDialogActionResponse(new PollDialogCard(state, this.getUserTimezone(), voter).create());
+  async voteForm() {
+    return await this.switchVote(true);
   }
 
   newPollOnChange() {

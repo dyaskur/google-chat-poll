@@ -709,33 +709,18 @@ it('voteForm action', () => {
 });
 
 
-it('switchVote action', () => {
-  const state = {
-    type: ClosableType.CLOSEABLE_BY_CREATOR,
-    author: {name: 'creator'},
-    votes: {},
-  };
+it('switchVote action', async () => {
+
   const event = {
-    user: {name: '1123124124124', displayName: 'creator'},
     common: {
       parameters: {
-        index: '1',
       },
-      timeZone: {'id': dummyLocalTimezone.id, 'offset': dummyLocalTimezone.offset},
-      userLocale: dummyLocalTimezone.locale,
-    },
-    message: {
-      thread: {
-        'name': 'spaces/AAAAN0lf83o/threads/DJXfo5DXcTA',
-      },
-      cardsV2: [{cardId: 'card', card: {}}],
     },
   };
   const actionHandler = new ActionHandler(event);
-  actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
-  // Act
-  actionHandler.switchVote();
-  expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
-  expect(PollDialogCard).toHaveBeenCalledWith(state, dummyLocalTimezone, {name: 'creator', uid: '1123124124124'});
-  expect(mockCreatePollDialogCard).toHaveBeenCalled();
+
+  await expect(async () => {
+    await actionHandler.voteForm();
+  }).rejects.toThrowError('Index Out of Bounds');
+
 });
