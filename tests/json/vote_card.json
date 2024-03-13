@@ -13,6 +13,7 @@
           "decoratedText": {
             "bottomLabel": " 0",
             "text": "Feather Duster Worm",
+            "wrapText": true,
             "button": {
               "text": "vote",
               "onClick": {
@@ -37,6 +38,7 @@
           "decoratedText": {
             "bottomLabel": " 0",
             "text": "Christmas Tree Worm",
+            "wrapText": true,
             "button": {
               "text": "vote",
               "onClick": {
@@ -63,6 +65,7 @@
           "decoratedText": {
             "bottomLabel": "██████████████████ 2",
             "text": "Coco Worm",
+            "wrapText": true,
             "button": {
               "text": "vote",
               "onClick": {
@@ -94,6 +97,7 @@
           "decoratedText": {
             "bottomLabel": "██████████████████ 2",
             "text": "Bearded Fireworm",
+            "wrapText": true,
             "button": {
               "text": "vote",
               "onClick": {
@@ -123,6 +127,7 @@
           "decoratedText": {
             "bottomLabel": " 0",
             "text": "Giant Tube Worm",
+            "wrapText": true,
             "button": {
               "text": "vote",
               "onClick": {

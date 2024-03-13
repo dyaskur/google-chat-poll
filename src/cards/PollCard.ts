@@ -223,6 +223,7 @@ export default class PollCard extends BaseCard {
       decoratedText: {
         bottomLabel: `${progressBar} ${voteCount}`,
         text: text,
+        wrapText: true,
         button: voteButton,
       },
     };
