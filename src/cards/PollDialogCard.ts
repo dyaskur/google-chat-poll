@@ -69,6 +69,7 @@ export default class PollDialogCard extends PollCard {
       decoratedText: {
         'bottomLabel': `${progressBar} ${voteCount}`,
         'text': text,
+        'wrapText': true,
         'switchControl': voteSwitch,
       },
     };
