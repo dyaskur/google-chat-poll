@@ -1,7 +1,7 @@
 import {dummyPollState} from './dummy';
 // @ts-ignore: unreasonable error
 import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
-import {Votes} from '../src/helpers/interfaces';
+import {PollState, Votes} from '../src/helpers/interfaces';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -15,7 +15,10 @@ test('test save voter', () => {
       {uid: 'users/222423423523532523532', name: 'Ammar'},
     ],
   };
-  const voterResult = saveVotes(2, voter, votes);
+  const state: PollState = {
+    votes,
+  };
+  const voterResult = saveVotes(2, voter, state);
   expect(voterResult).toStrictEqual({
     '0': [],
     '1': [],
@@ -29,7 +32,7 @@ test('test save voter', () => {
     ],
   });
 
-  const voterResult2 = saveVotes(1, voter, votes);
+  const voterResult2 = saveVotes(1, voter, state);
 
   expect(voterResult2).toStrictEqual({
     '0': [],
@@ -51,7 +54,12 @@ test('test save voter anonymously', () => {
     '2': [],
     '3': [],
   };
-  const voterResult = saveVotes(2, voter, votes, true);
+
+  const state: PollState = {
+    votes,
+    anon: true,
+  };
+  const voterResult = saveVotes(2, voter, state);
   expect(voterResult).toStrictEqual({
     '0': [],
     '1': [],
@@ -61,7 +69,7 @@ test('test save voter anonymously', () => {
     '3': [],
   });
 
-  const voterResult2 = saveVotes(4, voter, votes, true);
+  const voterResult2 = saveVotes(4, voter, state);
 
   expect(voterResult2).toStrictEqual({
     '0': [],
@@ -79,7 +87,12 @@ test('test save voter multiple vote allowed', () => {
     '2': [],
     '3': [],
   };
-  const voterResult = saveVotes(2, voter, votes, true, 2);
+  const state: PollState = {
+    voteLimit: 2,
+    votes,
+    anon: true,
+  };
+  const voterResult = saveVotes(2, voter, state);
   expect(voterResult).toStrictEqual({
     '0': [],
     '1': [],
@@ -89,7 +102,7 @@ test('test save voter multiple vote allowed', () => {
     '3': [],
   });
 
-  const voterResult2 = saveVotes(4, voter, votes, true, 2);
+  const voterResult2 = saveVotes(4, voter, state);
 
   expect(voterResult2).toStrictEqual({
     '0': [],
@@ -99,7 +112,7 @@ test('test save voter multiple vote allowed', () => {
     '4': [{uid: 'users/103846892623842357554'}],
   });
 
-  const voterResult3 = saveVotes(3, voter, votes, true, 2);
+  const voterResult3 = saveVotes(3, voter, state);
 
   expect(voterResult3).toStrictEqual({
     '0': [],
@@ -109,7 +122,7 @@ test('test save voter multiple vote allowed', () => {
     '4': [{uid: 'users/103846892623842357554'}],
   });
 
-  const voterResult4 = saveVotes(3, voter, votes, true, 2);
+  const voterResult4 = saveVotes(3, voter, state);
 
   expect(voterResult4).toStrictEqual({
     '0': [],

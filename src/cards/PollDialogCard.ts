@@ -29,7 +29,7 @@ export default class PollDialogCard extends PollCard {
 
   sectionInfo(): chatV1.Schema$GoogleAppsCardV1Section {
     const votedCount = this.userVotes.length;
-    const voteLimit = this.state.voteLimit || this.state.choices.length+1;
+    const voteLimit = this.state.voteLimit || this.state.choices.length;
     const voteRemaining = voteLimit - votedCount;
     let warningMessage = '';
     if (voteRemaining === 0) {

@@ -125,7 +125,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const state = this.getEventPollState();
 
     // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes!, state.anon);
+    state.votes = saveVotes(choice, voter, state);
     const card = new PollCard(state, this.getUserTimezone());
     return {
       thread: this.event.message?.thread,
@@ -160,7 +160,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
 
     // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes!, state.anon, state.voteLimit);
+    state.votes = saveVotes(choice, voter, state);
     const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
     const request = {
       name: this.event!.message!.name,

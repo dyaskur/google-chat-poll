@@ -7,12 +7,13 @@ import {PollState, Voter, Votes} from './interfaces';
  *
  * @param {number} choice - The choice index
  * @param {object} voter - The voter
- * @param {object} votes - Total votes cast in the poll
- * @param {boolean} isAnonymous - save name or not
- * @param {number} maxVotes - save name or not
+ * @param {PollState} state - PollState
  * @returns {Votes} Map of cast votes keyed by choice index
  */
-export function saveVotes(choice: number, voter: Voter, votes: Votes, isAnonymous = false, maxVotes = 1) {
+export function saveVotes(choice: number, voter: Voter, state: PollState) {
+  const votes: Votes = state.votes!;
+  const isAnonymous = state.anon || false;
+  const maxVotes = state.voteLimit === 0 ? state.choices.length : state.voteLimit || 1;
   if (maxVotes === 1) {
     Object.keys(votes).forEach(function(choiceIndex) {
       if (votes[choiceIndex]) {
