@@ -16,6 +16,19 @@ describe('PollCard', () => {
     expect(result).toBeDefined();
     expect(result.sections).toBeDefined();
   });
+  it('should return dialog interaction if voteLimit is set more than 1', () => {
+    const state: PollState = {
+      topic: 'Test Topic',
+      choices: ['Choice 1', 'Choice 2'],
+      votes: {},
+      voteLimit: 2,
+    };
+    const pollCard = new PollCard(state, dummyLocalTimezone);
+    const result = pollCard.create();
+    expect(result).toBeDefined();
+    expect(result.sections).toBeDefined();
+    expect(result.sections![1].widgets![0].decoratedText.button.onClick.action.interaction).toEqual('OPEN_DIALOG');
+  });
 
   it('should add a header to the card when the topic is less than or equal to 40 characters', () => {
     const state: PollState = {

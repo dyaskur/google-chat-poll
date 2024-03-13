@@ -28,6 +28,7 @@ export default class NewPollFormCard extends BaseCard {
     if (this.config.autoClose) {
       this.buildAutoCloseSection();
     }
+    this.buildMultipleVoteSection();
   }
 
   buildTopicInputSection() {
@@ -154,6 +155,67 @@ export default class NewPollFormCard extends BaseCard {
           },
         },
       });
+    this.card.sections!.push({
+      widgets,
+    });
+  }
+
+  buildMultipleVoteSection() {
+    const widgets: chatV1.Schema$GoogleAppsCardV1Widget[] = [];
+
+    const items = [
+      {
+        'text': 'No Limit',
+        'value': '0',
+        'selected': false,
+      },
+      {
+        'text': '1',
+        'value': '1',
+        'selected': false,
+      },
+      {
+        'text': '2',
+        'value': '2',
+        'selected': false,
+      },
+      {
+        'text': '3',
+        'value': '3',
+        'selected': false,
+      },
+      {
+        'text': '4',
+        'value': '4',
+        'selected': false,
+      },
+      {
+        'text': '5',
+        'value': '5',
+        'selected': false,
+      },
+      {
+        'text': '6',
+        'value': '6',
+        'selected': false,
+      },
+    ];
+      // set selected item
+    if (this.config.voteLimit !== undefined && items?.[this.config.voteLimit]) {
+      items[this.config.voteLimit].selected = true;
+    } else {
+      items[1].selected = true;
+    }
+    widgets.push(
+      {
+        'selectionInput': {
+          'type': 'DROPDOWN',
+          'label': 'Vote Limit (Max options that can be voted)',
+          'name': 'vote_limit',
+          items,
+        },
+      });
+
     this.card.sections!.push({
       widgets,
     });

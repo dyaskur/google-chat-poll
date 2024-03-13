@@ -1,7 +1,7 @@
 import {chat_v1 as chatV1} from '@googleapis/chat';
 import BaseHandler from './BaseHandler';
 import NewPollFormCard from '../cards/NewPollFormCard';
-import {addOptionToState, getConfigFromInput, getStateFromCard} from '../helpers/state';
+import {addOptionToState, getConfigFromInput, getStateFromCard, getStateFromMessageId} from '../helpers/state';
 import {callMessageApi} from '../helpers/api';
 import {createDialogActionResponse, createStatusActionResponse} from '../helpers/response';
 import PollCard from '../cards/PollCard';
@@ -13,6 +13,7 @@ import ClosePollFormCard from '../cards/ClosePollFormCard';
 import MessageDialogCard from '../cards/MessageDialogCard';
 import {createAutoCloseTask} from '../helpers/task';
 import ScheduleClosePollFormCard from '../cards/ScheduleClosePollFormCard';
+import PollDialogCard from '../cards/PollDialogCard';
 
 /*
 This list methods are used in the poll chat message
@@ -31,6 +32,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
         return await this.startPoll();
       case 'vote':
         return this.recordVote();
+      case 'switch_vote':
+        return this.switchVote();
+      case 'vote_form':
+        return this.voteForm();
       case 'add_option_form':
         return this.addOptionForm();
       case 'add_option':
@@ -120,7 +125,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
     const state = this.getEventPollState();
 
     // Add or update the user's selected option
-    state.votes = saveVotes(choice, voter, state.votes!, state.anon);
+    state.votes = saveVotes(choice, voter, state);
     const card = new PollCard(state, this.getUserTimezone());
     return {
       thread: this.event.message?.thread,
@@ -129,6 +134,43 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       },
       cardsV2: [card.createCardWithId()],
     };
+  }
+
+  /**
+   * Handle the custom vote action from poll dialog. Updates the state to record
+   * the UI will be showed as a dialog
+   * @param {boolean} eventPollState If true, the event state is from current event instead of calling API to get it
+   * @returns {object} Response to send back to Chat
+   */
+  async switchVote(eventPollState: boolean=false) {
+    const parameters = this.event.common?.parameters;
+    if (!(parameters?.['index'])) {
+      throw new Error('Index Out of Bounds');
+    }
+    const choice = parseInt(parameters['index']);
+    const userId = this.event.user?.name ?? '';
+    const userName = this.event.user?.displayName ?? '';
+    const voter: Voter = {uid: userId, name: userName};
+    let state;
+    if (!eventPollState && this.event!.message!.name) {
+      state = await getStateFromMessageId(this.event!.message!.name);
+    } else {
+      state = this.getEventPollState();
+    }
+
+
+    // Add or update the user's selected option
+    state.votes = saveVotes(choice, voter, state);
+    const cardMessage = new PollCard(state, this.getUserTimezone()).createMessage();
+    const request = {
+      name: this.event!.message!.name,
+      requestBody: cardMessage,
+      updateMask: 'cardsV2',
+    };
+    callMessageApi('update', request);
+
+    const card = new PollDialogCard(state, this.getUserTimezone(), voter);
+    return createDialogActionResponse(card.create());
   }
 
   /**
@@ -263,6 +305,10 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   scheduleClosePollForm() {
     const state = this.getEventPollState();
     return createDialogActionResponse(new ScheduleClosePollFormCard(state, this.getUserTimezone()).create());
+  }
+
+  async voteForm() {
+    return await this.switchVote(true);
   }
 
   newPollOnChange() {

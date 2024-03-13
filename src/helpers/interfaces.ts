@@ -28,6 +28,7 @@ export interface PollConfig {
   topic: string,
   type?: ClosableType,
   closedTime?: number,
+  voteLimit?: number,
 }
 
 export interface PollForm extends PollConfig {

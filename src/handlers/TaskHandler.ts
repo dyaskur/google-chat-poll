@@ -56,6 +56,7 @@ export default class TaskHandler {
     const apiResponse = await callMessageApi('get', request);
     const currentState = getStateFromCardName(apiResponse.data.cardsV2?.[0].card ?? {});
     if (!currentState) {
+      console.log(apiResponse ? JSON.stringify(apiResponse) : 'empty response:' + this.event.id);
       throw new Error('State not found');
     }
     this.event.space = apiResponse.data.space;

@@ -6,8 +6,8 @@ import {progressBarText} from '../helpers/vote';
 import {createButton} from '../helpers/cards';
 
 export default class PollCard extends BaseCard {
-  private readonly state: PollState;
-  private readonly timezone: LocaleTimezone;
+  protected readonly state: PollState;
+  protected readonly timezone: LocaleTimezone;
 
   constructor(state: PollState, timezone: LocaleTimezone) {
     super();
@@ -30,6 +30,14 @@ export default class PollCard extends BaseCard {
       this.card.sections!.push(widgetHeader);
     } else {
       this.card.header = this.cardHeader();
+    }
+    this.buildInfoSection();
+  }
+
+  buildInfoSection() {
+    if (this.state.voteLimit === 0 || (this.state.voteLimit && this.state.voteLimit > 1)) {
+      const widgetHeader = this.sectionInfo();
+      this.card.sections!.push(widgetHeader);
     }
   }
 
@@ -63,6 +71,19 @@ export default class PollCard extends BaseCard {
               'iconUrl': ICON_URL_48X48,
               'imageType': 'SQUARE',
             },
+          },
+        },
+      ],
+    };
+  }
+  sectionInfo(): chatV1.Schema$GoogleAppsCardV1Section {
+    return {
+      widgets: [
+        {
+          'decoratedText': {
+            'text': '',
+            'wrapText': true,
+            'topLabel': `This poll allow multiple votes. Max Votes: ${this.state.voteLimit || 'No limit'}`,
           },
         },
       ],
@@ -190,6 +211,10 @@ export default class PollCard extends BaseCard {
         },
       },
     };
+    if (this.state.voteLimit !== undefined && this.state.voteLimit !== 1) {
+      voteButton.onClick!.action!.interaction = 'OPEN_DIALOG';
+      voteButton.onClick!.action!.function = 'vote_form';
+    }
 
     if (this.isClosed()) {
       voteButton.disabled = true;
