@@ -31,6 +31,14 @@ export default class PollCard extends BaseCard {
     } else {
       this.card.header = this.cardHeader();
     }
+    this.buildInfoSection();
+  }
+
+  buildInfoSection() {
+    if (this.state.voteLimit === 0 || (this.state.voteLimit && this.state.voteLimit > 1)) {
+      const widgetHeader = this.sectionInfo();
+      this.card.sections!.push(widgetHeader);
+    }
   }
 
   getAuthorName() {
@@ -63,6 +71,19 @@ export default class PollCard extends BaseCard {
               'iconUrl': ICON_URL_48X48,
               'imageType': 'SQUARE',
             },
+          },
+        },
+      ],
+    };
+  }
+  sectionInfo(): chatV1.Schema$GoogleAppsCardV1Section {
+    return {
+      widgets: [
+        {
+          'decoratedText': {
+            'text': '',
+            'wrapText': true,
+            'topLabel': `This poll allow multiple votes. Max Votes: ${this.state.voteLimit || 'No limit'}`,
           },
         },
       ],

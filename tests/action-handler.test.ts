@@ -255,6 +255,23 @@ describe('process', () => {
     expect(closePollFormMock).toHaveBeenCalled();
   });
 
+  it('other actions"', async () => {
+    const switchVoteMock = jest.fn().mockReturnValue({});
+    const voteFormMock = jest.fn().mockReturnValue({});
+
+    const actionHandler = new ActionHandler({common: {invokedFunction: 'switch_vote'}});
+    actionHandler.switchVote = switchVoteMock;
+    await actionHandler.process();
+
+    const actionHandler2 = new ActionHandler({common: {invokedFunction: 'vote_form'}});
+    actionHandler2.voteForm = voteFormMock;
+    await actionHandler2.process();
+
+
+    expect(switchVoteMock).toHaveBeenCalled();
+    expect(voteFormMock).toHaveBeenCalled();
+  });
+
   // Tests that the 'unknown' action returns a message with an updated poll card
   it('should return a message with an updated poll card when the action is "add_option"', async () => {
     // Create an instance of ActionHandler

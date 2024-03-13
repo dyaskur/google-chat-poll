@@ -27,7 +27,7 @@ describe('PollCard', () => {
     const result = pollCard.create();
     expect(result).toBeDefined();
     expect(result.sections).toBeDefined();
-    expect(result.sections![0].widgets![0].decoratedText.button.onClick.action.interaction).toEqual('OPEN_DIALOG');
+    expect(result.sections![1].widgets![0].decoratedText.button.onClick.action.interaction).toEqual('OPEN_DIALOG');
   });
 
   it('should add a header to the card when the topic is less than or equal to 40 characters', () => {

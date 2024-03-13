@@ -5,19 +5,12 @@ import {progressBarText} from '../helpers/vote';
 
 export default class PollDialogCard extends PollCard {
   private readonly voter: Voter;
-  private userVotes: number[] | undefined;
+  private readonly userVotes: number[];
 
   constructor(state: PollState, timezone: LocaleTimezone, voter: Voter) {
     super(state, timezone);
     this.voter = voter;
-  }
-  create() {
-    this.buildHeader();
-    this.buildSections();
-    this.buildButtons();
-    this.buildFooter();
-    this.card.name = this.getSerializedState();
-    return this.card;
+    this.userVotes = this.getUserVotes();
   }
 
   getUserVotes(): number[] {
@@ -33,9 +26,28 @@ export default class PollDialogCard extends PollCard {
     }
     return votes;
   }
-  choice(index: number, text: string, voteCount: number, totalVotes: number): chatV1.Schema$GoogleAppsCardV1Widget {
-    this.userVotes = this.getUserVotes();
 
+  sectionInfo(): chatV1.Schema$GoogleAppsCardV1Section {
+    const votedCount = this.userVotes.length;
+    const voteLimit = this.state.voteLimit || this.state.choices.length+1;
+    const voteRemaining = voteLimit - votedCount;
+    let warningMessage = '';
+    if (voteRemaining === 0) {
+      warningMessage = 'Vote limit reached. Your vote will be overwritten.';
+    }
+    return {
+      widgets: [
+        {
+          'decoratedText': {
+            'text': `You have voted: ${votedCount} out of ${voteLimit} (remaining: ${voteRemaining})`,
+            'wrapText': true,
+            'bottomLabel': warningMessage,
+          },
+        },
+      ],
+    };
+  }
+  choice(index: number, text: string, voteCount: number, totalVotes: number): chatV1.Schema$GoogleAppsCardV1Widget {
     const progressBar = progressBarText(voteCount, totalVotes);
 
     const voteSwitch: chatV1.Schema$GoogleAppsCardV1SwitchControl = {
