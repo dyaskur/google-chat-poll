@@ -24,7 +24,7 @@ This application has been installed more than **1 million times**. It is the num
 For anyone who is interested, you can install my application using the following URL:
 https://workspace.google.com/marketplace/app/absolute_poll/687007803052
 
-<a href="" target="_blank" aria-label="Get it from the Google Workspace Marketplace">
+<a href="https://workspace.google.com/marketplace/app/absolute_poll/687007803052?pann=b" target="_blank" aria-label="Get it from the Google Workspace Marketplace">
   <img alt="Google Workspace Marketplace badge" alt-text="Get it from the Google Workspace Marketplace" src="https://workspace.google.com/static/img/marketplace/en/gwmBadge.svg?" style="height: 68px">
 </a>
 
