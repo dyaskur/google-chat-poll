@@ -19,10 +19,14 @@ Screenshots:
 
 ![form](assets/screenshot_1.png "Create poll form") ![message](assets/screenshot_2.png "Vote poll message")
 
-This application has been installed more than **150k times**. It is the number one and the only working poll app in the Google Apps Marketplace.
+This application has been installed more than **1 million times**. It is the number one and the only working poll app in the Google Apps Marketplace.
 
 For anyone who is interested, you can install my application using the following URL:
 https://workspace.google.com/marketplace/app/absolute_poll/687007803052
+
+<a href="" target="_blank" aria-label="Get it from the Google Workspace Marketplace">
+  <img alt="Google Workspace Marketplace badge" alt-text="Get it from the Google Workspace Marketplace" src="https://workspace.google.com/static/img/marketplace/en/gwmBadge.svg?" style="height: 68px">
+</a>
 
 I also have a landing page for the application, although I must admit it was created more out of necessity for Google's review requirements rather than as a serious component:
 https://absolute-poll.yaskur.com/
@@ -41,11 +45,11 @@ What I updated are:
 - [x] Migrated to Typescript
 - [x] Close the poll
 - [x] Schedule close poll
+- [x] Multiple choice vote(1 user can vote on more than 1 choice)
 
 
 Todo:
 
-- [ ] Multiple choice vote(1 user can vote on more than 1 choice)
 - [ ] Duplicate Poll
 - [ ] Save state to database
 - [ ] Schedule poll
