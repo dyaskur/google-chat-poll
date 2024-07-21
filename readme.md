@@ -62,7 +62,7 @@ Limitation:
 - Since the data state is saved in chat message at yet, there is maximum that can be save (I am still finding out the limit) my SO question : https://stackoverflow.com/questions/75478309/what-is-the-limit-of-google-chat-message-card-via-chatbot
 - Currently, only tested and worked using GCP cloud function, I will test later using Azure function, AWS lambda, Tencent OCF, and other FaaS/serverless service
 
-Tips: You can test the json file on **tests/json** folder to https://gw-card-builder.web.app/ to view the output of the application.
+Tips: You can test the json file on [**tests/json**](tests/json) folder to https://gw-card-builder.web.app/ to view the output of the application.
 
 <sub>
 This code just my learning code. That's why I don't directly migrate to TypeScript or Golang in early stage. 
