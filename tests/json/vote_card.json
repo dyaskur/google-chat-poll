@@ -60,6 +60,27 @@
     {
       "collapsible": true,
       "uncollapsibleWidgetsCount": 1,
+      "collapseControl": {
+        "horizontalAlignment": "CENTER",
+        "collapseButton": {
+          "icon": {
+            "materialIcon": {
+              "name": "visibility_off"
+            }
+          },
+          "text": "Hide Voters",
+          "type": "BORDERLESS"
+        },
+        "expandButton": {
+          "icon": {
+            "materialIcon": {
+              "name": "visibility"
+            }
+          },
+          "text": "Show Voters",
+          "type": "BORDERLESS"
+        }
+      },
       "widgets": [
         {
           "decoratedText": {
@@ -92,6 +113,27 @@
     {
       "collapsible": true,
       "uncollapsibleWidgetsCount": 1,
+      "collapseControl": {
+        "horizontalAlignment": "CENTER",
+        "collapseButton": {
+          "icon": {
+            "materialIcon": {
+              "name": "visibility_off"
+            }
+          },
+          "text": "Hide Voters",
+          "type": "BORDERLESS"
+        },
+        "expandButton": {
+          "icon": {
+            "materialIcon": {
+              "name": "visibility"
+            }
+          },
+          "text": "Show Voters",
+          "type": "BORDERLESS"
+        }
+      },
       "widgets": [
         {
           "decoratedText": {
