@@ -185,6 +185,28 @@ export default class PollCard extends BaseCard {
     if (this.state.votes[i].length > 0 && !this.state.anon) {
       section.collapsible = true;
       section.uncollapsibleWidgetsCount = 1;
+      // @ts-ignore we need to wait until google update it in the official schema
+      section.collapseControl = {
+        'horizontalAlignment': 'CENTER',
+        'collapseButton': {
+          'icon': {
+            'materialIcon': {
+              'name': 'visibility_off',
+            },
+          },
+          'text': 'Hide Voters',
+          'type': 'BORDERLESS',
+        },
+        'expandButton': {
+          'icon': {
+            'materialIcon': {
+              'name': 'visibility',
+            },
+          },
+          'text': 'Show Voters',
+          'type': 'BORDERLESS',
+        },
+      };
       // @ts-ignore: already defined above
       section.widgets.push({
         'textParagraph': {
