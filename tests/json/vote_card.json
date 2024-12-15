@@ -61,7 +61,7 @@
       "collapsible": true,
       "uncollapsibleWidgetsCount": 1,
       "collapseControl": {
-        "horizontalAlignment": "CENTER",
+        "horizontalAlignment": "START",
         "collapseButton": {
           "icon": {
             "materialIcon": {
@@ -114,7 +114,7 @@
       "collapsible": true,
       "uncollapsibleWidgetsCount": 1,
       "collapseControl": {
-        "horizontalAlignment": "CENTER",
+        "horizontalAlignment": "START",
         "collapseButton": {
           "icon": {
             "materialIcon": {
