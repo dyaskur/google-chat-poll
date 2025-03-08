@@ -238,6 +238,11 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       requestBody: cardMessage,
       updateMask: 'cardsV2',
     };
+
+    if (state.type !== ClosableType.CLOSEABLE_BY_ANYONE && state.author!.name !== this.event.user?.name) {
+      return createStatusActionResponse('This poll can not be closed by you', 'PERMISSION_DENIED');
+    }
+
     const apiResponse = await callMessageApi('update', request);
     if (apiResponse.status === 200) {
       return createStatusActionResponse('Poll is closed', 'OK');
