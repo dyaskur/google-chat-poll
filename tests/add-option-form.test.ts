@@ -15,7 +15,8 @@ test('add a new option to state', () => {
     'Bearded Fireworm',
     'Giant Tube Worm',
     'Unspecific Worm',
-  ]);
+  ]);580+450
+
   expect(state.choiceCreator).toStrictEqual({'5': ''});
   addOptionToState('Another Unspecific Worm', state, 'Dyas');
   expect(state.choices).toEqual([
