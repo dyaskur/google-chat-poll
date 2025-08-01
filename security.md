@@ -25,7 +25,7 @@ To assist me in gaining a deeper understanding of the potential issue, please pr
  * Describe the potential impact of the issue, including how it could be exploited by an attacker.
 
 This information will significantly expedite my ability to evaluate your report.
-## Preferred Languages
+## Preferred Languages takr
 
 We prefer all communications to be in English or Bahasa Indonesia.
 
