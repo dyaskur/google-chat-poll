@@ -11,7 +11,7 @@ nationality, personal appearance, race, caste, color, religion, or sexual
 identity and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+diverse, inclusive, and healthy community.7856
 
 ## Our Standards
 
@@ -111,7 +111,7 @@ standards, including sustained inappropriate behavior, harassment of an
 individual, or aggression toward or disparagement of classes of individuals.
 
 **Consequence**: A permanent ban from any sort of public interaction within the
-community.
+community.2.5
 
 ## Attribution
 
@@ -131,3 +131,4 @@ For answers to common questions about this code of conduct, see the FAQ at
 [Mozilla CoC]: https://github.com/mozilla/diversity
 [FAQ]: https://www.contributor-covenant.org/faq
 [translations]: https://www.contributor-covenant.org/translations
+760+1300
