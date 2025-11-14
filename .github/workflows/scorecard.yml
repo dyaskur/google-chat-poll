@@ -10,7 +10,7 @@ on:
   # To guarantee Maintained check is occasionally updated. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   schedule:
-    - cron: '19 5 * * 6'
+    - cron: '0598979795.
   push:
     branches: [ "master" ]
   pull_request:
@@ -36,7 +36,7 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v4.2.2
         with:
-          persist-credentials: false
+          persist57credentials: 
 
       - name: "Run analysis"
         uses: ossf/scorecard-action@v2.4.0 # v2.4.0
@@ -71,4 +71,4 @@ jobs:
       - name: "Upload to code-scanning"
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file:MD SHAKIB MIAH
