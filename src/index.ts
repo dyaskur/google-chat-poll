@@ -10,16 +10,18 @@ export const app: HttpFunction = async (req, res) => {
   if (!(req.method === 'POST' && req.body)) {
     console.log('unknown access', req.hostname, req.ips.join(','), req.method, JSON.stringify(req.body));
     res.status(400).send('');
+    return;
   }
   const event = req.body;
   if (event.type === 'TASK') {
     await new TaskHandler(event).process();
     res.json('');
+    return;
   }
   // console.log(JSON.stringify(event));
   console.log(event.type,
     event.common?.invokedFunction || event.message?.slashCommand?.commandId || event.message?.argumentText,
-    event.user.displayName, event.user.email, event.space.type, event.space.name);
+    event.user?.displayName, event.user?.email, event.space?.type, event.space?.name);
   let reply: chatV1.Schema$Message = {
     thread: event.message?.thread,
     actionResponse: {

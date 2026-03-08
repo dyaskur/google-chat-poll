@@ -694,7 +694,7 @@ it('should update message if close_schedule_time is correct', async () => {
 });
 
 
-it('voteForm action', () => {
+it('voteForm action', async () => {
   const state = {
     type: ClosableType.CLOSEABLE_BY_CREATOR,
     author: {name: 'creator'},
@@ -719,7 +719,7 @@ it('voteForm action', () => {
   const actionHandler = new ActionHandler(event);
   actionHandler.getEventPollState = jest.fn().mockReturnValue(state);
   // Act
-  actionHandler.voteForm();
+  await actionHandler.voteForm();
   expect(PollCard).toHaveBeenCalledWith(state, dummyLocalTimezone);
   expect(PollDialogCard).toHaveBeenCalledWith(state, dummyLocalTimezone, {name: 'creator', uid: '1123124124124'});
   expect(mockCreatePollDialogCard).toHaveBeenCalled();

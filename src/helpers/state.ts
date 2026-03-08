@@ -24,7 +24,7 @@ export function addOptionToState(option: string, state: PollState, creator = '')
 export function getStateFromCard(event: chatV1.Schema$DeprecatedEvent) {
   const card = event.message?.cardsV2?.[0]?.card as chatV1.Schema$GoogleAppsCardV1Card;
   if (!card) {
-    throw new ReferenceError('no valid card in the event');
+    throw new Error('no valid card in the event');
   }
   return getStateFromCardName(card) || getStateFromParameter(event) || getStateFromCardWhenNoHeader(card) ||
     getStateFromCardWhenHasHeader(card);
@@ -33,7 +33,7 @@ export function getStateFromCard(event: chatV1.Schema$DeprecatedEvent) {
 function getChoicesFromInput(formValues: PollFormInputs) {
   const choices = [];
   for (let i = 0; i < MAX_NUM_OF_OPTIONS; ++i) {
-    const choice = formValues[`option${i}`]?.stringInputs!.value![0]!.trim();
+    const choice = formValues[`option${i}`]?.stringInputs?.value?.[0]?.trim();
     if (choice) {
       choices.push(choice);
     }
@@ -45,7 +45,7 @@ function getStringInputValue(input: chatV1.Schema$Inputs) {
   if (!input) {
     return '';
   }
-  return input.stringInputs!.value![0];
+  return input.stringInputs?.value?.[0] ?? '';
 }
 
 export function getConfigFromInput(formValues: PollFormInputs) {
@@ -56,7 +56,7 @@ export function getConfigFromInput(formValues: PollFormInputs) {
   state.type = parseInt(getStringInputValue(formValues.type) || '1') as ClosableType;
   state.autoClose = getStringInputValue(formValues.is_autoclose) === '1';
   state.autoMention = getStringInputValue(formValues.auto_mention) === '1';
-  state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput!.msSinceEpoch ?? '0');
+  state.closedTime = parseInt(formValues.close_schedule_time?.dateTimeInput?.msSinceEpoch ?? '0');
   state.choices = getChoicesFromInput(formValues);
   state.voteLimit = parseInt(getStringInputValue(formValues.vote_limit) || '1');
   return state;

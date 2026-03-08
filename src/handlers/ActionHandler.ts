@@ -167,7 +167,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       requestBody: cardMessage,
       updateMask: 'cardsV2',
     };
-    callMessageApi('update', request);
+    await callMessageApi('update', request);
 
     const card = new PollDialogCard(state, this.getUserTimezone(), voter);
     return createDialogActionResponse(card.create());
@@ -223,7 +223,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
   getEventPollState(): PollState {
     const stateJson = getStateFromCard(this.event);
     if (!stateJson) {
-      throw new ReferenceError('no valid state in the event');
+      throw new Error('no valid state in the event');
     }
     return JSON.parse(stateJson);
   }
@@ -239,7 +239,7 @@ export default class ActionHandler extends BaseHandler implements PollAction {
       updateMask: 'cardsV2',
     };
 
-    if (state.type !== ClosableType.CLOSEABLE_BY_ANYONE && state.author!.name !== this.event.user?.name) {
+    if (state.type !== ClosableType.CLOSEABLE_BY_ANYONE && state.author?.name !== this.event.user?.name) {
       return createStatusActionResponse('This poll can not be closed by you', 'PERMISSION_DENIED');
     }
 
@@ -261,13 +261,13 @@ export default class ActionHandler extends BaseHandler implements PollAction {
 
   closePollForm() {
     const state = this.getEventPollState();
-    if (state.type === ClosableType.CLOSEABLE_BY_ANYONE || state.author!.name === this.event.user?.name) {
+    if (state.type === ClosableType.CLOSEABLE_BY_ANYONE || state.author?.name === this.event.user?.name) {
       return createDialogActionResponse(new ClosePollFormCard(state, this.getUserTimezone()).create());
     }
 
     const dialogConfig: MessageDialogConfig = {
       title: 'Sorry, you can not close this poll',
-      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author!.displayName}).`,
+      message: `The poll setting restricts the ability to close the poll to only the creator(${state.author?.displayName ?? 'unknown'}).`,
       imageUrl: PROHIBITED_ICON_URL,
     };
     return createDialogActionResponse(new MessageDialogCard(dialogConfig).create());

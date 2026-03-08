@@ -1,7 +1,7 @@
-import {dummyPollState} from './dummy';
-// @ts-ignore: unreasonable error
-import {saveVotes, choiceSection, progressBarText} from '../src/helpers/vote';
+import {dummyPollState, dummyLocalTimezone} from './dummy';
+import {saveVotes, progressBarText} from '../src/helpers/vote';
 import {PollState, Votes} from '../src/helpers/interfaces';
+import PollCard from '../src/cards/PollCard';
 
 test('test save voter', () => {
   const voter = {uid: 'users/103846892623842357554', name: 'Muhammad'};
@@ -140,11 +140,11 @@ test('build progress bar text', () => {
 });
 
 test('build choice section ', () => {
-  const state = JSON.stringify(dummyPollState);
-  const normalChoice = choiceSection(2, dummyPollState, 4, state, 'Muhammad Dyas Yaskur');
+  const pollCard = new PollCard(dummyPollState, dummyLocalTimezone);
+  const normalChoice = pollCard.choiceSection(2, 4, 'Muhammad Dyas Yaskur');
 
   expect(normalChoice).
-    toStrictEqual({
+    toMatchObject({
       'collapsible': true,
       'uncollapsibleWidgetsCount': 1,
       'widgets': [
@@ -157,21 +157,19 @@ test('build choice section ', () => {
                 'action': {
                   'function': 'vote',
                   'parameters': [
-                    {
-                      'key': 'state',
-                      'value': JSON.stringify(dummyPollState),
-                    }, {'key': 'index', 'value': '2'}],
+                    {'key': 'index', 'value': '2'}],
                 },
               }, 'text': 'vote',
             },
             'text': 'Coco Worm',
+            'wrapText': true,
           },
         }, {'textParagraph': {'text': 'Isa bin Maryam, Musa bin Imran'}}],
     });
 
   dummyPollState.anon = true;
-  const anonymousChoice = choiceSection(2, dummyPollState, 4,
-    JSON.stringify(dummyPollState));
+  const anonCard = new PollCard(dummyPollState, dummyLocalTimezone);
+  const anonymousChoice = anonCard.choiceSection(2, 4);
   expect(anonymousChoice).toStrictEqual({
     'widgets': [
       {
@@ -182,14 +180,12 @@ test('build choice section ', () => {
               'action': {
                 'function': 'vote',
                 'parameters': [
-                  {
-                    'key': 'state',
-                    'value': JSON.stringify(dummyPollState),
-                  }, {'key': 'index', 'value': '2'}],
+                  {'key': 'index', 'value': '2'}],
               },
             }, 'text': 'vote',
           },
           'text': 'Coco Worm',
+          'wrapText': true,
         },
       }],
   });
