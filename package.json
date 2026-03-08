@@ -8,8 +8,8 @@
     "coverage": "coveralls < coverage/lcov.info",
     "build": "tsc",
     "start": "functions-framework --target=app",
-    "deploy": "yarn build && gcloud functions deploy app --env-vars-file .env.yaml --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs20",
-    "release": "yarn build && gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs20"
+    "deploy": "yarn build && gcloud functions deploy app --env-vars-file .env.yaml --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs22",
+    "release": "yarn build && gcloud functions deploy app --trigger-http --security-level=secure-always --allow-unauthenticated --runtime nodejs22"
   },
   "keywords": [],
   "author": "",
